@@ -1,0 +1,62 @@
+# fork of https://github.com/graysky2/pulseaudio-ctl
+# Assume available: sed awk pactl pacmd
+
+vl() {
+  # Test number
+  if test $# != 0 && test $1 -ne 7299 2>/dev/null; then
+    vl set $1
+    return $?
+  fi
+
+  # Setup
+  SINK=$(pacmd list-sinks|awk '/* index:/{ print $3 }')
+  SOURCE=$(pacmd list-sources|awk '/* index:/{ print $3 }')
+  CURVOL=$(pacmd list-sinks|grep -A 15 '* index'| awk '/volume: front/{ print $5 }' | sed 's/%//g')
+  MUTED=$(pacmd list-sinks|grep -A 15 '* index'|awk '/muted:/{ print $2 }')
+  test "$MUTED" = "yes" && MUTED=",muted" || MUTED=""
+  SOURCE_MUTED=$(pacmd list-sources|grep -A 15 '* index'|awk '/muted:/{ print $2 }')
+  test "$SOURCE_MUTED" = "yes" && SOURCE_MUTED=",source_muted" || SOURCE_MUTED=""
+
+  # Logic and output
+  case "$1" in
+  U|u|[U,u]p)
+    # raise volume by 2%
+    pactl set-sink-volume "$SINK" -- +2%
+    ;;
+  D|d|[D,d]own|[D,d]o)
+    # lowers volume by 2%
+    pactl set-sink-volume "$SINK" -- -2%
+    ;;
+  M|m|[M,m]u|[M,m]ute)
+    # mutes the volume entirely
+    pactl set-sink-mute "$SINK" toggle
+    ;;
+  [M,m]i|[M,m]ute-[I,i]nput)
+    # mutes the microphone entirely
+    pactl set-source-mute "$SOURCE" toggle
+    ;;
+  set)
+    NEWVOL="${2%%%}"
+    test $NEWVOL -lt 0 && return 1 ||
+      pactl set-sink-volume "$SINK" -- $NEWVOL%
+    ;;
+  --help|-h)
+    echo "vl {up,down,mute,mute-input,set [n]}
+
+Where up and down adjust volume in ±5 % increments.
+Where mute toggles the mute status on/off.
+Where mute-input toggles the input status on/off.
+Where set takes a % value.
+Where atmost only takes effect if current volume is higher than this."
+    ;;
+  *)
+    echo "$CURVOL%$MUTED$SOURCE_MUTED"
+    return 0
+    ;;
+  esac
+
+  vl
+}
+
+
+vl "$@"

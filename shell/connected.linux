@@ -1,0 +1,59 @@
+connected() {
+  ip route | grep --fixed-strings --silent default && ping -q -c 1 $(ip route | grep --fixed-strings default | cut -d ' ' -f 3) >/dev/null 2>/dev/null
+}
+
+connected_ip() {
+  curl ipecho.net/plain && echo
+}
+
+connected_who192() {
+  connected_who 192.168.0
+}
+
+generate_ip_range() {
+  test $# = 0 && echo "Usage: generate_ip_range <# 1..4> [0..255] [0..255] [0..255]
+  case $1 in
+    1)
+  $2.$3.$4.{0..255}
+  ;;
+    2)
+  $2.$3.{0..255}.{0..255}
+  ;;
+    3)
+  $2.{0..255}.{0..255}.{0..255}
+  ;;
+    4)
+  {0..255}.{0..255}.{0..255}.{0..255}
+}
+
+connected_who() {
+  #ping -c 1 -W 1 10.0.1.255
+  #ping -c 1 -W 1 192.168.0.255
+
+  if test $# = 0; then
+    NET="10.0.1"
+  else
+    NET="$1"
+  fi
+  
+  FOUND=$(for ip in ${NET}.{1..254}; do ping -c 1 -W 1 $ip | grep -B 1 "1 packets received" & done | cut -d ' ' -f 4 | tr -d ':')
+
+  for addr in $FOUND; do
+    echo $addr
+  done
+}
+
+interfaced() {
+  for interface in $(\ls /sys/class/net/ | grep --fixed-strings --invert-match lo); do
+    if test $(cat /sys/class/net/$interface/carrier) = 1; then
+      return 0
+    else
+      echo "Not Online" >/dev/stderr
+      return 1
+    fi
+  done
+}
+
+interfaced_ip() {
+  ip addr | grep -F inet
+}

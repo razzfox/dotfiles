@@ -1,0 +1,14 @@
+# Filesize
+du() {
+  $(which du) --dereference-args --human-readable --summarize --one-file-system "$@"
+}
+
+# Filesize including dotfiles
+du_all() {
+  $(which du) --dereference-args --human-readable --all "$@"
+}
+
+# Filesize sorted decreasing
+du_sort() {
+  du "$@" | sort -hr
+}

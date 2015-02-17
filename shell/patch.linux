@@ -1,0 +1,5 @@
+# wiggle is a patch-merge cli 
+
+patch() {
+  $(which patch) "$@" || wiggle "$@"
+}

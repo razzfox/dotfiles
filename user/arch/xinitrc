@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# ~/.xinitrc
+#
+# Executed by startx (run your window manager from here)
+
+# in case startx is called outside ~/
+cd
+
+# Import system settings
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+  for f in /etc/X11/xinit/xinitrc.d/*; do
+    [ -x "$f" ] && . "$f"
+  done
+  unset f
+fi
+
+# Audio
+pulseaudio --start &
+
+# Pointer and Background Color
+xsetroot -cursor_name left_ptr #-solid '#000000'
+
+# Screen size and DPI
+dimensions="$(echo $( xdpyinfo | grep dimension ) | cut -d ' ' -f 2)"
+density="$(echo $( xdpyinfo | grep resolution ) | cut -d ' ' -f 2 | cut -d 'x' -f 1)"
+
+# Background (display from imagemagick)
+test -f dotfiles/shell/ls.bash && display -size $dimensions -density $density -window root "$(bash $HOME/dotfiles/shell/ls.bash $HOME/.walls | head -n 1)" &
+
+# Standby/Suspend, Screensaver, and Energy Star/DPMS
+xset s off -dpms
+
+# GUI Terminal
+TERM="$(which st 2>/dev/null || which guake 2>/dev/null || which xfce-terminal 2>/dev/null || which xterm 2>/dev/null)"
+
+# Window Manager
+exec herbstluftwm
+#exec dwm

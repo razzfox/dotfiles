@@ -1,0 +1,4 @@
+# Tidy up homedir
+tidy_home() {
+  rmdir -v Desktop/ Documents/ Downloads/ Music/ Pictures/ Public/ Templates/ Videos/
+}

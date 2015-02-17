@@ -1,0 +1,6 @@
+test $EUID != 0 && return 1
+
+off() {
+  sleep 3 && systemctl poweroff & disown
+  logout || kill $!
+}

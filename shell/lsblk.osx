@@ -1,0 +1,4 @@
+lsblk() {
+  echo "diskutil list"
+  diskutil list
+}

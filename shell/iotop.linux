@@ -1,0 +1,4 @@
+# Monitor process IO
+iotop() {
+  $(which iotop) --only --processes --accumulated
+}

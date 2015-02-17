@@ -1,0 +1,3 @@
+# Upgrade fails. Usually because it's been a while since last upgrade.
+
+# Try upgrading important packages by themselves: arch-linux-keyring pgp linux 

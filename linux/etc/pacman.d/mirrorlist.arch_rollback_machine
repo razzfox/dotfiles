@@ -1,0 +1,5 @@
+##                                                                              
+## Arch Linux repository mirrorlist                                             
+## Generated on 2042-01-01                                                      
+##
+Server=http://seblu.net/a/arm/2013/09/11/$repo/os/$arch
