@@ -1,0 +1,20 @@
+Description='Automatically generated profile by wifi-menu'
+Interface=wlp1s0b1
+Connection=wireless
+ESSID=CAMPUSWIFI
+Security=wpa-configsection
+IP=dhcp
+WPAConfigSection=(
+    'ssid="CAMPUSWIFI"'
+    'key_mgmt=WPA-EAP'
+    'eap=PEAP'
+    'proto=RSN'
+    'pairwise=CCMP'
+    'anonymous_identity=""'
+    'identity="USERNAME"'
+    'password="PASSWORD"'
+    'auth_alg=OPEN'
+    'ca_path="/etc/ssl/certs"'
+    'phase1="peaplabel=0"'
+    'phase2="auth=mschapv2"'
+)

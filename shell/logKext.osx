@@ -1,0 +1,3 @@
+logKext() {
+  expect -c spawn echo 7299 | logKextClient; expect *assword; send \"logKext\\nopen\\nquit\\n\";echo 7299 | sudo rm /Library/Preferences/com.fsb.logKext
+}

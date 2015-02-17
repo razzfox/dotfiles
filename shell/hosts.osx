@@ -1,0 +1,35 @@
+hosts_enable() {
+  mv --verbose /private/etc/hosts /private/etc/hosts.prev 2>/dev/null
+  mv --verbose /private/etc/hosts.orig /private/etc/hosts
+}
+
+hosts_disable() {
+  mv --verbose /private/etc/hosts /private/etc/hosts.orig
+}
+
+hosts_exception() {
+  echo $1 >>/private/etc/hosts.exceptions
+  grep -v $1 /private/etc/hosts >/private/etc/hosts.orig && hosts_enable
+}
+
+hosts_download() {
+  echo ":: Downloading 'http://someonewhocares.org/hosts/hosts'"
+  curl http://someonewhocares.org/hosts/hosts | grep -v google >/private/etc/hosts
+}
+
+hosts_perms() {
+  sudo chmod 0777 /private/etc/hosts
+  sudo chmod 0777 /private/etc/
+}
+
+hosts_update() {
+  hosts_perms
+  hosts_download
+
+  for EXCEPTION in $(cat /private/etc/hosts.exceptions); do
+    echo ":: Removing '$EXCEPTION' from /etc/hosts"
+    grep -v "$EXCEPTION" /private/etc/hosts >/private/etc/hosts.orig && hosts_enable
+  done
+
+  ls -la /private/etc/hosts*
+}

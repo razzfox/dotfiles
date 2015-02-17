@@ -1,0 +1,4 @@
+# Display processes
+ps() {
+  $(which ps) --User $USER -f --forest "$@"
+}

@@ -1,0 +1,9 @@
+[Added Associations]
+application/pdf=chromium.desktop;google-chrome.desktop;
+audio/x-riff=mplayer.desktop;chromium.desktop;google-chrome.desktop;
+image/png=feh.desktop;chromium.desktop;google-chrome.desktop;
+image/jpeg=feh.desktop;google-chromium.desktop;chrome.desktop;
+text/html=sublime-text.desktop;chromium.desktop;google-chrome.desktop;
+application/octet-stream=chromium.desktop;google-chrome.desktop;
+text/x-csrc=sublime-text.desktop;chromium.desktop;google-chrome.desktop;
+text/plain=sublime-text.desktop;chromium.desktop;google-chrome.desktop;

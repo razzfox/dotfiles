@@ -1,0 +1,14 @@
+# Filesize
+du() {
+  $(which du) -hsx "$@"
+}
+
+# Filesize including dotfiles
+du_all() {
+  du -a "$@"
+}
+
+# Filesize sorted decreasing
+du_sort() {
+  du "$@" | sort -hr
+}

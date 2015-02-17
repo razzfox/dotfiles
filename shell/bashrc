@@ -1,0 +1,38 @@
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# If not inside a tmux session, start a new session or join one
+if test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0"; then
+  #tput cup 0 0 # reset cursor
+  tmux list-sessions >/dev/null 2>/dev/null && exec tmux attach || exec tmux new-session
+fi
+
+# Detect OS (kernel) and ID (distro)
+OS="$(uname | tr '[:upper:]' '[:lower:]')"
+case "$OS" in
+linux)
+  source /etc/os-release
+  test "$ID" = "archarm" && ID="arch"
+  ;;
+darwin)
+  ID="osx"
+  test -z "$HOME" && HOME=/Users/$(whoami)
+  ;;
+MINGW32_NT)
+  OS="windows"
+  ID="cygwin"
+  ;;
+*)
+  echo "Your platform '$(uname)' can not be identified." >/dev/stderr
+esac
+
+# Dotfiles
+export DOTFILES="$HOME/dotfiles" # default location
+for f in $DOTFILES/shell/*.$OS $DOTFILES/shell/*.$ID $DOTFILES/shell/*.sh $DOTFILES/shell/*.$(basename $SHELL); do
+  source "$f"
+done >/dev/null
+
+# Display Files
+cd
+pwd
+ls

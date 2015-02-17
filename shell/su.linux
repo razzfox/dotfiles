@@ -1,0 +1,4 @@
+# Sets new USER environment variables and cd to user home. Needed esp for aura, who does not look at EUID
+su() {
+  $(which su) --login "$@"
+}

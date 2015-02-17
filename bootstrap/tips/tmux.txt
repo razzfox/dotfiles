@@ -1,0 +1,7 @@
+tmux     || tmux new -s <name>
+tmux ls
+tmux a   || tmux a -t <name>
+
+CTRL-b d || tmux detach
+
+tmux kill-session -t <name> || killall tmux

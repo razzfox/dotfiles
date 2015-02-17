@@ -1,0 +1,8 @@
+[Unit]
+Description=battery log
+
+[Service]
+Nice=19
+IOSchedulingClass=2
+IOSchedulingPriority=7
+ExecStart=/path/to/myBatteryLog/script

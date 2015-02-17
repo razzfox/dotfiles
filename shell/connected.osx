@@ -1,0 +1,15 @@
+connected() {
+  netstat -rn | grep --fixed-strings --silent default && ping -q -c 1 $(echo $(netstat -rn | grep --fixed-strings default) | cut -d ' ' -f 2) >/dev/null 2>/dev/null
+}
+
+connected_ip() {
+  curl ipecho.net/plain && echo
+}
+
+interfaced() {
+  connected
+}
+
+interfaced_ip() {
+  ipconfig getifaddr en0
+}

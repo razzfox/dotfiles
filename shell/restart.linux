@@ -1,0 +1,6 @@
+test $EUID != 0 && return 1
+
+restart() {
+  sleep 3 && shutdown -r now & disown
+  logout || kill $!
+}

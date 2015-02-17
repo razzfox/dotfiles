@@ -1,0 +1,268 @@
+# speedy shortcut
+NC='--noconfirm'
+PKGDIR='/var/cache/pacman/pkg'
+
+# Dealing with the following message from pacman: "Error: couldn't lock database: file exists"
+# If you are sure a package manager is not already running, you can remove /var/lib/pacman/db.lck
+paclock() {
+  touch /var/lib/pacman/db.lck
+}
+pacunlock() {
+  rm /var/lib/pacman/db.lck
+}
+
+pacman-help() {
+  cat << MARK
+# Pacman alias examples
+pacman -Syu		# Synchronize with repositories and then upgrade packages that are out of date on the local system.
+pacman -S		# Install specific package(s) from the repositories
+pacman -U		# Install specific package not from the repositories but from a file
+pacman -R		# Remove the specified package(s), retaining its configuration(s) and required dependencies
+pacman -Rns		# Remove the specified package(s), its configuration(s) and unneeded dependencies
+pacman -Si		# Display information about a given package in the repositories
+pacman -Ss		# Search for package(s) in the repositories
+pacman -Qi		# Display information about a given package in the local database
+pacman -Qs		# Search for package(s) in the local database
+pacman -Qdt		# List all packages which are orphaned
+pacman -Sc		# Clean cache - delete all not currently installed package files
+pacman -Ql		# List all files installed by a given package
+pacman -D --asexp	# Mark one or more installed packages as explicitly installed
+pacman -D --asdep	# Mark one or more installed packages as non explicitly installed
+
+# '[r]emove [o]rphans' - recursively remove ALL orphaned packages
+pacman -Qtdq > /dev/null && pacman -Rns \$(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')
+
+# Additional pacman alias examples
+pacman -Sy && abs	# Update and refresh the local package and ABS databases against repositories
+pacman -S --asdeps	# Install given package(s) as dependencies
+pacman -Syy		# Force refresh of all package lists
+pacman -Rncs		# Remove the specified package(s), its configuration(s) and anything that requires it
+pacman -Rddns		# Remove the specified package(s), its configuration(s), despite breaking other progroms
+
+MARK
+}
+
+pacman() {
+	$(which pacman) --color=auto "$@"
+}
+
+pacman-install() {
+	echo "pacman -S $@" >/dev/stderr
+
+	pacman -S "$@"
+}
+
+pacman-update() {
+	echo "pacman -Syu $@" >/dev/stderr
+
+	pacman -Syu "$@"
+}
+
+pacman-search() {
+	echo "pacman -Ss $@" >/dev/stderr
+
+	pacman -Ss "$@"
+}
+
+pacman-remove() {
+	echo "pacman -Rns $@" >/dev/stderr
+
+	pacman -Rns "$@"
+}
+
+pacman-remove-required() {
+	echo "pacman -Rncs $@" >/dev/stderr
+
+	pacman -Rncs "$@"
+}
+
+pacman-remove-breakrequirements() {
+	echo "pacman -Rddns $@" >/dev/stderr
+
+	pacman -Rddns "$@"
+}
+
+pacman-clean-cache() {
+	echo "pacman -Sc $@" >/dev/stderr
+
+	pacman -Sc "$@"
+}
+
+pacman-clean-logs() {
+	echo "pacman -X $@" >/dev/stderr
+
+	pacman -X "$@"
+}
+
+pacman-package-info() {
+	echo "pacman -Si $@" >/dev/stderr
+
+	pacman -Si "$@"
+}
+
+pacman-package-files() {
+	echo "pacman -Ql $@" >/dev/stderr
+
+	pacman -Ql "$@"
+}
+
+pacman-package-owner() {
+	echo "pacman -Qo $@" >/dev/stderr
+
+	pacman -Qo "$@"
+}
+
+pacman-list-aur() {
+	echo "pacman -Qqm $@" >/dev/stderr
+
+	pacman -Qqm "$@"
+}
+
+pacman-list-orphan-packages() {
+	echo "pacman -Qtdq $@" >/dev/stderr
+
+	pacman -Qtdq "$@"
+}
+
+pacman-list-orphan-files() {
+	echo "comm -23 \<\(find /bin /etc /sbin /usr \! -name lost+found \( -type d -printf '%p/\n' -o -print \) | sort\) \<\(pacman -Qlq | sort -u\)"
+	comm -23 <(find /bin /etc /sbin /usr ! -name lost+found \( -type d -printf '%p/\n' -o -print \) | sort) <(pacman -Qlq | sort -u)
+}
+
+pacman-adopt() {
+	echo "pacman -D --asexp $@" >/dev/stderr
+
+	pacman -D --asexp "$@"
+}
+
+pacman-abandon() {
+	echo "pacman -D --asdep $@" >/dev/stderr
+
+	pacman -D --asdep "$@"
+}
+
+pacman-remove-orphan-packages() {
+	echo "pacman -Rns $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')" >/dev/stderr
+
+	pacman -Qtdq && echo && echo -n ":: Are you sure? [y/N] "
+	read Q
+	test "$Q" = "y" && pacman -Rns $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')
+}
+
+pacman-remove-orphan-packages-break-requirements() {
+	echo "pacman -Rncs $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')" >/dev/stderr
+
+	pacman -Qtdq && echo && echo -n ":: Are you sure? [y/N] "
+	read Q
+	test "$Q" = "y" && pacman -Rncs $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')
+}
+
+pacman-list-pacfiles() {
+	echo "find /etc -regextype posix-extended -regex '.+\.pac(new|save|orig)'" >/dev/stderr
+
+	find /etc -regextype posix-extended -regex '.+\.pac(new|save|orig)' 2>/dev/null
+}
+
+pacman-update-mirrorlist() {
+# Download pacman ranked mirror list
+
+# Country codes: AU AT BY BE BR BG CA CL CN CO CZ DK EE FI FR DE GR HU IN IE IL
+# IT JP KZ KR LV LU MK NL NC NZ NO PL PT RO RU RS SG SK ZA ES LK SE CH TW TR UA
+# GB US UZ VN
+country='US'
+url="https://www.archlinux.org/mirrorlist/?country=US&protocol=http&ip_version=4&use_mirror_status=on"
+
+# Download
+tmp_ml=$(mktemp --suffix=-mirrorlist)  # temporary mirrorlist
+if curl -s "$url" -o "$tmp_ml"; then
+  if ! grep "^## Arch Linux repository mirrorlist" "$tmp_ml" > /dev/null; then
+    echo " Error: Download invalid"
+    return 1
+  fi
+else
+  echo " Error: Download failed"
+  return 1
+fi
+
+# Edit
+sed -i 's/^#Server/Server/g'          "$tmp_ml"
+
+# View
+while true; do
+  read -p " View the downloaded mirrorlist? (y/n): " yn
+  case $yn in
+    [Yy] )  if hash vim 2>&- ; then # use vim if available
+              editor=vim
+              editop=$(printf '%s' +"set syn=sh");
+            else
+              editor=nano; fi
+            "$editor" "$editop" "$tmp_ml"
+            break 2 ;;
+    [Nn] )  break 2 ;;
+    [*]  )  true
+  esac
+done
+
+# Permission test
+prm_tst () {
+if test "$UID" != 0 && test ! hash sudo 2>&- ; then
+  echo " Program "sudo" required for regular user"
+  return 1
+else
+  sudo=
+fi ; }
+
+# Backup and Install
+bck_ml () {
+if test -f /etc/pacman.d/mirrorlist; then
+  $sudo mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist_$(date +%Y%m%d%H%M)
+else
+  echo " Warning: no /etc/pacman.d/mirrorlist"
+fi ; }
+
+while true; do
+  read -p " Install new mirrorlist and backup previous? (y/n): " yn
+  case $yn in
+    [Yy] )  prm_tst
+            bck_ml
+            $sudo install -Dm644 "$tmp_ml" /etc/pacman.d/mirrorlist
+            break 2 ;;
+    [Nn] )  break 2 ;;
+    [*]  )  true
+  esac
+done
+}
+
+pacmrr {
+  pacman-update-mirrorlist
+}
+#!/bin/sh
+# 16caa72010 Sep 09 2014 from: https://github.com/pbrisbin/wat/blob/master/wat
+
+log_lines() {
+  local regex='^.*\(starting full system upgrade\|upgraded.*\)$'
+
+  sed "/$regex/!d; s//\1/" "$PACMAN_LOG"
+}
+
+mark_lines() {
+  local n=1
+
+  while read -r line; do
+    case "$line" in
+      starting*)
+        printf "%i " "$n"
+        n=$((n+1))
+      ;;
+    esac
+
+    printf "%s\n" "$line"
+  done
+}
+
+: ${PACMAN_LOG:=/var/log/pacman.log}
+
+end='$' # EOF
+[ -n "$2" ] && end="/^$2 starting.*/"
+
+log_lines | tac | mark_lines | tac | sed "/^${1:-1} starting.*/,$end !d"

@@ -1,0 +1,4 @@
+# List filesystem usage
+df() {
+  $(which df) -h "$@"
+}

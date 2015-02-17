@@ -1,0 +1,19 @@
+test $EUID != 0 && SYSUSER="--user" || unset SYSUSER
+
+sysen() {
+  systemctl $SYSUSER enable "$@"
+  systemctl $SYSUSER start "$@"
+}
+
+sysdis() {
+  systemctl $SYSUSER disable "$@"
+  systemctl $SYSUSER stop "$@"
+}
+
+sysstat() {
+  systemctl $SYSUSER status "$@"
+}
+
+sysre() {
+  systemctl $SYSUSER restart "$@"
+}
