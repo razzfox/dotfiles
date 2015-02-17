@@ -4,7 +4,6 @@ dotfiles
 To Do
 ----
 
- - Use getops in scripts, esp startw
  - make a script that puts my name (and name of script, auto editing) on the top of all my dotfiles, and school files. (copies to /tmp for safety, readable by no other user). maybe use ascii art.
 
 ACHTUNG!
