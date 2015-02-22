@@ -62,6 +62,9 @@ defaults write com.apple.dock show-process-indicators -bool false
 # the Dock to launch apps.
 defaults write com.apple.dock persistent-apps -array
 
+# Reset LaunchPad
+defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
+
 # Animate opening applications from the Dock
 defaults write com.apple.dock launchanim -bool true
 
