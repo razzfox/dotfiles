@@ -85,8 +85,8 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
 	#GROUP_LIST=audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,uucp,video,wheel
 	# Add groups later: usermod -aG disk USER OR gpasswd --add USER disk
 	GROUP_LIST=disk,btsync,transmission,vboxusers,android
-	echo "useradd -m -g users -G $GROUP_LIST -s /bin/bash $NAME"
-	arch-chroot /mnt useradd -m -g users -G $GROUP_LIST -s /bin/bash $NAME
+	echo "useradd -m -d /home/$NAME -g users -s /bin/bash $NAME"
+	arch-chroot /mnt useradd -m -d /home/$NAME -g users -s /bin/bash $NAME
 
 	echo ":: Set $NAME's password:"
 	echo "arch-chroot /mnt passwd $NAME"
