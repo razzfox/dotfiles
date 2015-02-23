@@ -1,12 +1,11 @@
-# commit 0fd410a on Sep 7, 2009 from: https://github.com/Daenyth/dotfiles/blame/master/bin/torso
-# torso -- The missing link between `head` and `tail`
-
-# Usage: torso N [-n M] [FILE]
-# Prints M lines (default 10) from FILE (or STDIN if FILE is not given), starting after line N
-
 torso() {
+	# torso 0fd410a taken Sep 7, 2009 from https://github.com/Daenyth/dotfiles/blame/master/bin/torso
+	# torso -- The missing link between `head` and `tail`
+
 	if [ -z "$1" ]; then
-		echo "ERROR: Bad arguments"
+		echo "ERROR: Bad arguments
+Usage: torso N [-n M] [FILE]
+Prints M lines (default 10) from FILE (or STDIN if FILE is not given), starting after line N"
 		return 1
 	fi
 

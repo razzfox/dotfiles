@@ -1,7 +1,10 @@
-# fork of https://github.com/graysky2/pulseaudio-ctl
-# Assume available: sed awk pactl pacmd
+which sed >/dev/null || return 1
+which awk >/dev/null || return 1
+which pactl >/dev/null || return 1
+which pacmd >/dev/null || return 1
 
 vl() {
+  # fork of https://github.com/graysky2/pulseaudio-ctl
   # Test number
   if test $# != 0 && test $1 -ne 7299 2>/dev/null; then
     vl set $1
