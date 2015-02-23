@@ -146,24 +146,24 @@ pacman-list-pacfiles() {
 }
 
 
-# pacmrr taken on Mar 3, 2014 46148b0b8a from https://github.com/martinnj/PacmanMirrorHelper/blob/master/pacmrr.sh
 pacman-update-mirrorlist() {
-echo 'Backing up current mirrorlist.'
-mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.old
+  # pacmrr 46148b0b8a taken Mar 3, 2014 from https://github.com/martinnj/PacmanMirrorHelper/blob/master/pacmrr.sh
+  echo 'Backing up current mirrorlist.'
+  mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.old
 
-echo 'Fetching New mirrorlist from archlinux.org.'
-curl https://www.archlinux.org/mirrorlist/all/ -o /etc/pacman.d/mirrorlist.new
+  echo 'Fetching New mirrorlist from archlinux.org.'
+  curl https://www.archlinux.org/mirrorlist/all/ -o /etc/pacman.d/mirrorlist.new
 
-echo 'Enabling all mirrors.'
-sed '/^#\S/ s|#||' -i /etc/pacman.d/mirrorlist.new
+  echo 'Enabling all mirrors.'
+  sed '/^#\S/ s|#||' -i /etc/pacman.d/mirrorlist.new
 
-echo 'Ranking enabled mirrors and selecting the 6 fastes. Will take time!'
-rankmirrors -n 6 /etc/pacman.d/mirrorlist.new > /etc/pacman.d/mirrorlist
+  echo 'Ranking enabled mirrors and selecting the 6 fastes. Will take time!'
+  rankmirrors -n 6 /etc/pacman.d/mirrorlist.new > /etc/pacman.d/mirrorlist
 
-echo 'Removing temporary mirrorlist.'
-rm /etc/pacman.d/mirrorlist.new
+  echo 'Removing temporary mirrorlist.'
+  rm /etc/pacman.d/mirrorlist.new
 
-echo 'Done. Check /etc/pacman.d/mirrorlist for errors.'
+  echo 'Done. Check /etc/pacman.d/mirrorlist for errors.'
 }
 
 
@@ -198,7 +198,7 @@ rm $TMPDIR/{full,owned,owned_full} && rmdir $TMPDIR
 }
 
 
-# a71f858247 Feb 02 2015 from: https://github.com/pbrisbin/wat/blob/master/wat
+# wat pacman-logs a71f858247 taken Feb 02 2015 from https://github.com/pbrisbin/wat/blob/master/wat
 log_lines() {
   local regex
 

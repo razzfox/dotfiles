@@ -1,4 +1,5 @@
-# based on commit 251406c4eb on Jan 23, 2014 from: https://github.com/Wintervenom/Scripts/blob/master/file/launch/dmenu-launch
+# dmenu 251406c4eb taken Jan 23, 2014 from https://github.com/Wintervenom/Scripts/blob/master/file/launch/dmenu-launch
+
 
 # Path to XDG shortcut (*.desktop) directories.
 xdg_paths=(
