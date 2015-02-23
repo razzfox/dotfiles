@@ -29,8 +29,8 @@ esac
 # Dotfiles
 export DOTFILES="$HOME/dotfiles" # default location
 for f in $DOTFILES/shell/*.$OS $DOTFILES/shell/*.$ID $DOTFILES/shell/*.sh $DOTFILES/shell/*.$(basename $SHELL); do
-  source "$f"
-done >/dev/null
+  source "$f" >/dev/null
+done
 
 # Display Files
 cd
