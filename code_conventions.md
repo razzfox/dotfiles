@@ -2,6 +2,9 @@
 ####
 ####
 ####
+
+# Scripts should be 'sourced' into the shell, because they use shell language. trying to run a script as an executable is just a layer of obfuscation in a subprocess.
+
 ####
 
 # Dotfiles should stay as terminal settings, not full-blown portable programs.
