@@ -11,7 +11,7 @@ connected_who192() {
 }
 
 generate_ip_range() {
-  test $# = 0 && echo "Usage: generate_ip_range <# 1..4> [0..255] [0..255] [0..255]
+  test $# = 0 && echo "Usage: generate_ip_range <# 1..4> [0..255] [0..255] [0..255]"
   case $1 in
     1)
   $2.$3.$4.{0..255}
