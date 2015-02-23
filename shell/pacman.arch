@@ -203,28 +203,22 @@ while true; do
   esac
 done
 
-# Permission test
-prm_tst () {
+while true; do
+  read -p " Install new mirrorlist and backup previous? (y/n): " yn
+  case $yn in
+    [Yy] )  #prm_tst
 if test "$UID" != 0 && test ! hash sudo 2>&- ; then
   echo " Program "sudo" required for regular user"
   return 1
 else
   sudo=
-fi ; }
-
-# Backup and Install
-bck_ml () {
+fi #; }
+            #bck_ml
 if test -f /etc/pacman.d/mirrorlist; then
   $sudo mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist_$(date +%Y%m%d%H%M)
 else
   echo " Warning: no /etc/pacman.d/mirrorlist"
-fi ; }
-
-while true; do
-  read -p " Install new mirrorlist and backup previous? (y/n): " yn
-  case $yn in
-    [Yy] )  prm_tst
-            bck_ml
+fi #; }
             $sudo install -Dm644 "$tmp_ml" /etc/pacman.d/mirrorlist
             break 2 ;;
     [Nn] )  break 2 ;;
@@ -236,13 +230,19 @@ done
 pacmrr {
   pacman-update-mirrorlist
 }
-#!/bin/sh
-# 16caa72010 Sep 09 2014 from: https://github.com/pbrisbin/wat/blob/master/wat
 
+
+# a71f858247 Feb 02 2015 from: https://github.com/pbrisbin/wat/blob/master/wat
 log_lines() {
-  local regex='^.*\(starting full system upgrade\|upgraded.*\)$'
+  local regex
 
-  sed "/$regex/!d; s//\1/" "$PACMAN_LOG"
+  if [ "$SHOW_INSTALLED" -eq 1 ]; then
+    regex='^.*\[\(PACMAN\|ALPM\)\] \(starting full system upgrade\|upgraded.*\|installed.*\)$'
+  else
+    regex='^.*\[\(PACMAN\|ALPM\)\] \(starting full system upgrade\|upgraded.*\)$'
+  fi
+
+  sed "/$regex/!d; s//\2/" "$PACMAN_LOG"
 }
 
 mark_lines() {
@@ -260,9 +260,22 @@ mark_lines() {
   done
 }
 
+pacman-logs() {
+
 : ${PACMAN_LOG:=/var/log/pacman.log}
+: ${SHOW_INSTALLED:=0}
+
+while [ -n "$1" ]; do
+  case "$1" in
+    -i|--installed) SHOW_INSTALLED=1 ;;
+    -l|--log) shift; PACMAN_LOG="$1" ;;
+    *) break ;;
+  esac
+  shift
+done
 
 end='$' # EOF
 [ -n "$2" ] && end="/^$2 starting.*/"
 
 log_lines | tac | mark_lines | tac | sed "/^${1:-1} starting.*/,$end !d"
+}
