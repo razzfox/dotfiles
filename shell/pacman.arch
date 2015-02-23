@@ -48,79 +48,66 @@ pacman() {
 
 pacman-install() {
 	echo "pacman -S $@" >/dev/stderr
-
 	pacman -S "$@"
 }
 
 pacman-update() {
 	echo "pacman -Syu $@" >/dev/stderr
-
 	pacman -Syu "$@"
 }
 
 pacman-search() {
 	echo "pacman -Ss $@" >/dev/stderr
-
 	pacman -Ss "$@"
 }
 
 pacman-remove() {
 	echo "pacman -Rns $@" >/dev/stderr
-
 	pacman -Rns "$@"
 }
 
 pacman-remove-required() {
 	echo "pacman -Rncs $@" >/dev/stderr
-
 	pacman -Rncs "$@"
 }
 
 pacman-remove-breakrequirements() {
 	echo "pacman -Rddns $@" >/dev/stderr
-
 	pacman -Rddns "$@"
 }
 
 pacman-clean-cache() {
 	echo "pacman -Sc $@" >/dev/stderr
-
 	pacman -Sc "$@"
 }
 
 pacman-clean-logs() {
 	echo "pacman -X $@" >/dev/stderr
-
 	pacman -X "$@"
 }
 
 pacman-package-info() {
 	echo "pacman -Si $@" >/dev/stderr
-
 	pacman -Si "$@"
 }
 
 pacman-package-files() {
 	echo "pacman -Ql $@" >/dev/stderr
-
 	pacman -Ql "$@"
 }
 
 pacman-package-owner() {
 	echo "pacman -Qo $@" >/dev/stderr
-
 	pacman -Qo "$@"
 }
 
 pacman-list-aur() {
 	echo "pacman -Qqm $@" >/dev/stderr
-
 	pacman -Qqm "$@"
 }
 
 pacman-list-orphan-packages() {
 	echo "pacman -Qtdq $@" >/dev/stderr
-
 	pacman -Qtdq "$@"
 }
 
@@ -131,27 +118,23 @@ pacman-list-orphan-files() {
 
 pacman-adopt() {
 	echo "pacman -D --asexp $@" >/dev/stderr
-
 	pacman -D --asexp "$@"
 }
 
 pacman-abandon() {
 	echo "pacman -D --asdep $@" >/dev/stderr
-
 	pacman -D --asdep "$@"
 }
 
 pacman-remove-orphan-packages() {
 	echo "pacman -Rns $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')" >/dev/stderr
-
 	pacman -Qtdq && echo && echo -n ":: Are you sure? [y/N] "
 	read Q
-	test "$Q" = "y" && pacman -Rns $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')
+	test "$Q" = "y" -o "$Q" = "Y" && pacman -Rns $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')
 }
 
 pacman-remove-orphan-packages-break-requirements() {
 	echo "pacman -Rncs $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')" >/dev/stderr
-
 	pacman -Qtdq && echo && echo -n ":: Are you sure? [y/N] "
 	read Q
 	test "$Q" = "y" && pacman -Rncs $(pacman -Qtdq | sed -e ':a;N;$!ba;s/\n/ /g')
@@ -159,76 +142,59 @@ pacman-remove-orphan-packages-break-requirements() {
 
 pacman-list-pacfiles() {
 	echo "find /etc -regextype posix-extended -regex '.+\.pac(new|save|orig)'" >/dev/stderr
-
 	find /etc -regextype posix-extended -regex '.+\.pac(new|save|orig)' 2>/dev/null
 }
 
+
+# pacmrr taken on Mar 3, 2014 46148b0b8a from https://github.com/martinnj/PacmanMirrorHelper/blob/master/pacmrr.sh
 pacman-update-mirrorlist() {
-# Download pacman ranked mirror list
+echo 'Backing up current mirrorlist.'
+mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.old
 
-# Country codes: AU AT BY BE BR BG CA CL CN CO CZ DK EE FI FR DE GR HU IN IE IL
-# IT JP KZ KR LV LU MK NL NC NZ NO PL PT RO RU RS SG SK ZA ES LK SE CH TW TR UA
-# GB US UZ VN
-country='US'
-url="https://www.archlinux.org/mirrorlist/?country=US&protocol=http&ip_version=4&use_mirror_status=on"
+echo 'Fetching New mirrorlist from archlinux.org.'
+curl https://www.archlinux.org/mirrorlist/all/ -o /etc/pacman.d/mirrorlist.new
 
-# Download
-tmp_ml=$(mktemp --suffix=-mirrorlist)  # temporary mirrorlist
-if curl -s "$url" -o "$tmp_ml"; then
-  if ! grep "^## Arch Linux repository mirrorlist" "$tmp_ml" > /dev/null; then
-    echo " Error: Download invalid"
-    return 1
-  fi
-else
-  echo " Error: Download failed"
-  return 1
-fi
+echo 'Enabling all mirrors.'
+sed '/^#\S/ s|#||' -i /etc/pacman.d/mirrorlist.new
 
-# Edit
-sed -i 's/^#Server/Server/g'          "$tmp_ml"
+echo 'Ranking enabled mirrors and selecting the 6 fastes. Will take time!'
+rankmirrors -n 6 /etc/pacman.d/mirrorlist.new > /etc/pacman.d/mirrorlist
 
-# View
-while true; do
-  read -p " View the downloaded mirrorlist? (y/n): " yn
-  case $yn in
-    [Yy] )  if hash vim 2>&- ; then # use vim if available
-              editor=vim
-              editop=$(printf '%s' +"set syn=sh");
-            else
-              editor=nano; fi
-            "$editor" "$editop" "$tmp_ml"
-            break 2 ;;
-    [Nn] )  break 2 ;;
-    [*]  )  true
-  esac
-done
+echo 'Removing temporary mirrorlist.'
+rm /etc/pacman.d/mirrorlist.new
 
-while true; do
-  read -p " Install new mirrorlist and backup previous? (y/n): " yn
-  case $yn in
-    [Yy] )  #prm_tst
-if test "$UID" != 0 && test ! hash sudo 2>&- ; then
-  echo " Program "sudo" required for regular user"
-  return 1
-else
-  sudo=
-fi #; }
-            #bck_ml
-if test -f /etc/pacman.d/mirrorlist; then
-  $sudo mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist_$(date +%Y%m%d%H%M)
-else
-  echo " Warning: no /etc/pacman.d/mirrorlist"
-fi #; }
-            $sudo install -Dm644 "$tmp_ml" /etc/pacman.d/mirrorlist
-            break 2 ;;
-    [Nn] )  break 2 ;;
-    [*]  )  true
-  esac
-done
+echo 'Done. Check /etc/pacman.d/mirrorlist for errors.'
 }
 
-pacmrr {
-  pacman-update-mirrorlist
+
+pacman-list-unowned() {
+# Utility to generate a list of all files that are not part of a package
+# Author: Spider.007 / Sjon
+
+TMPDIR=$(mktemp -d)
+#FILTER=$(sed '1,/^## FILTER/d' $0 | tr '\n' '|')
+#FILTER=${FILTER%|}
+## FILTERED FILES / PATHS ##
+FILTER="/boot/grub /dev /etc/X11/xdm/authdir /home /media /mnt /proc /root /srv /sys /tmp /var/abs /var/cache /var/games /var/log /var/lib/pacman /var/lib/mysql /var/run /var/tmp"
+
+cd $TMPDIR
+find /bin /boot /etc /lib /opt /sbin /usr /var | sort -u > full
+pacman -Ql | tee owned_full | cut -d' ' -f2- | sed 's/\/$//' | sort -u > owned
+
+grep -Ev "^($FILTER)" owned > owned- && mv owned- owned
+
+echo -e '\033[1mOwned, but not found:\033[0m'
+comm -13 full owned | while read entry
+do
+	echo [`grep --max-count=1 $entry owned_full|cut -d' ' -f1`] $entry
+done | sort
+
+grep -Ev "^($FILTER)" full > full- && mv full- full
+
+echo -e '\n\033[1mFound, but not owned:\033[0m'
+comm -23 full owned
+
+rm $TMPDIR/{full,owned,owned_full} && rmdir $TMPDIR
 }
 
 
@@ -261,7 +227,6 @@ mark_lines() {
 }
 
 pacman-logs() {
-
 : ${PACMAN_LOG:=/var/log/pacman.log}
 : ${SHOW_INSTALLED:=0}
 
