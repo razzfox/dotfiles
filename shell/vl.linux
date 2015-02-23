@@ -42,12 +42,11 @@ vl() {
     ;;
   --help|-h)
     echo "vl {up,down,mute,mute-input,set [n]}
-
-Where up and down adjust volume in Â±5 % increments.
-Where mute toggles the mute status on/off.
-Where mute-input toggles the input status on/off.
-Where set takes a % value.
-Where atmost only takes effect if current volume is higher than this."
+    - up and down adjust volume in Â5% increments.
+    - mute toggles the mute status on/off.
+    - mute-input toggles the input status on/off.
+    - set takes a % value.
+    - atmost only takes effect if current volume is higher than this."
     ;;
   *)
     echo "$CURVOL%$MUTED$SOURCE_MUTED"
