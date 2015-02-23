@@ -7,7 +7,7 @@ for i; do
   c=''
   e=1
 
-  if ! test -r $i; then
+  if test ! -r $i; then
       echo "easy_extract: Error: the file '$i' is unreadable." >/dev/stderr
       continue
   fi

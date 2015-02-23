@@ -1,7 +1,7 @@
 BACKLIGHT='/sys/class/backlight/nv_backlight'
 
 br() {
-  if ! test -d "$BACKLIGHT"; then
+  if test ! -d "$BACKLIGHT"; then
     echo "100%"
     return 0
   else
