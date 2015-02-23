@@ -1,5 +1,5 @@
 bat() {
-  if ! test -d /sys/class/power_supply/BAT0; then
+  if test ! -d /sys/class/power_supply/BAT0; then
     echo "100%"
     return 0
   fi
