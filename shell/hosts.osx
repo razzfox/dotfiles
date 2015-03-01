@@ -1,10 +1,10 @@
 hosts_enable() {
-  mv --verbose /private/etc/hosts /private/etc/hosts.prev 2>/dev/null
-  mv --verbose /private/etc/hosts.orig /private/etc/hosts
+  mv -v /private/etc/hosts /private/etc/hosts.prev 2>/dev/null
+  mv -v /private/etc/hosts.orig /private/etc/hosts
 }
 
 hosts_disable() {
-  mv --verbose /private/etc/hosts /private/etc/hosts.orig
+  mv -v /private/etc/hosts /private/etc/hosts.orig
 }
 
 hosts_exception() {
