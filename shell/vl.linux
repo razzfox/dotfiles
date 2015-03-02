@@ -25,11 +25,11 @@ vl() {
   case "$1" in
   U|u|[U,u]p)
     # raise volume by 2%
-    pactl set-sink-volume "$SINK" -- +2%
+    pactl set-sink-volume "$SINK" +2%
     ;;
   D|d|[D,d]own|[D,d]o)
     # lowers volume by 2%
-    pactl set-sink-volume "$SINK" -- -2%
+    pactl set-sink-volume "$SINK" -2%
     ;;
   M|m|[M,m]u|[M,m]ute)
     # mutes the volume entirely
@@ -42,11 +42,11 @@ vl() {
   set)
     NEWVOL="${2%%%}"
     test $NEWVOL -lt 0 && return 1 ||
-      pactl set-sink-volume "$SINK" -- $NEWVOL%
+      pactl set-sink-volume "$SINK" $NEWVOL%
     ;;
   --help|-h)
     echo "vl {up,down,mute,mute-input,set [n]}
-    - up and down adjust volume in Â5% increments.
+    - up and down adjust volume in 2% increments.
     - mute toggles the mute status on/off.
     - mute-input toggles the input status on/off.
     - set takes a % value.
