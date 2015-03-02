@@ -19,9 +19,9 @@ Mod=Mod1 # use alt/option
 DMENU="bash $HOME/.config/herbstluftwm/dmenu.sh"
 test -n "$TERM" || TERM="$DMENU"
 SCREENSAVER="xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
-SCREENSAVEROFF"xset s off -dpms"
-DELETE_TAG='bash -c "herbstclient merge_tag $(echo $(herbstclient tag_status) | cut -d# -f 2 | cut -d ' ' -f 1)"' # delete tag
-CREATE_TAG='bash -c "herbstclient chain : add $(echo | dmenu -p 'New Tag:' | tee /tmp/newtag) : use $(cat /tmp/newtag)"' # create tag
+SCREENSAVEROFF="xset s off -dpms"
+#DELETE_TAG='bash -c "herbstclient merge_tag $(echo $(herbstclient tag_status) | cut -d# -f 2 | cut -d ' ' -f 1)"' # delete tag
+#CREATE_TAG='bash -c "herbstclient chain : add $(echo | dmenu -p 'New Tag:' | tee /tmp/newtag) : use $(cat /tmp/newtag)"' # create tag
 
 
 # General Keys
