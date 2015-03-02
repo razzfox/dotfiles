@@ -7,7 +7,7 @@ nanocat() {
 }
 
 nanoexec() {
-  nano "$1" && chmod +x "$1" && "./$@"
+  nano "$1" && chmod +x "$1" && ./$@ || $@
 }
 
 nanoignore() {

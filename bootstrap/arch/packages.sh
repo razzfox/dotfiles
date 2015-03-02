@@ -1,11 +1,11 @@
 GENERAL="zsh zsh-completions zsh-syntax-highlighting zshdb bash-completion efibootmgr gummiboot imagemagick pulseaudio dosfstools gptfdisk exfat-utils fuse-exfat ntfsprogs ntfs-3g hfsprogs smartmontools iw wpa_supplicant wpa_actiond dialog avahi nss-mdns dnsutils openssh rsync curl gnu-netcat netkit-bsd-finger htop iotop lsof tree bc tmux git tig ruby nodejs go llvm glibc mercurial subversion p7zip unzip unrar autogen ntp ffmpeg cmatrix lesspipe patch jshon html2text unrtf"
-LAPTOP="acpi xorg-server xorg-server-utils xorg-xinit xsel xclip xdg-utils xf86-input-synaptics xf86-video-nouveau mesa mplayer vorbis-tools mpg123 ffmpeg audacity ranger libcaca mediainfo highlight herbstluftwm dzen2 dmenu mime-editor"
+LAPTOP="linux-tools bluez-utils hdparm ethtool wireless_tools powertop xorg-server xorg-server-utils xorg-xinit xsel xclip xdg-utils xf86-input-synaptics xf86-video-nouveau mesa mplayer vorbis-tools mpg123 ffmpeg audacity ranger libcaca mediainfo highlight herbstluftwm dzen2 dmenu mime-editor"
 SERVER="plexmediaserver bitcoin-daemon cgminer umurmur"
 FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf-symbola font-mathematica adobe-source-han-sans-otc-fonts ttf-freefont ttf-arphic-uming ttf-baekmuk"
 # terminus-font=englishmono adobe-source-code-pro-fonts=englishmono ttf-inconsolata=englishmono ttf-gentium=latingreekcyrillicphonetic ttf-symbola=emoji ttf-mathematica=math adobee-source-han-sans-otc-fonts=chinesejapanesekorean ttf-freefont=international ttf-arphic-uming=printedchinese ttf-baekmuk=korean
 # ttf-ms-fonts = andalemono couriernew arial impact lucidasans trebuche verdana comicsans georgia timesnewroman
 AURA="true"
-AUR="zsh-history-substring-search-git lsx google-chrome google-talkplugin pulseaudio-ctl zeal-git stapler wiggle broadcom-wl"
+AUR="zsh-history-substring-search-git lsx google-chrome google-talkplugin pulseaudio-ctl zeal-git stapler wiggle broadcom-wl macfanctl"
 
 unset ANSWER
 echo
