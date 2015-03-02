@@ -15,6 +15,10 @@
 
 ####
 
+IFS="$(printf '\n\t')"
+
+####
+
 # WARNING: Setting environment variables from URI this way is insecure!
 IFS="&"
 #set -- $QUERY_STRING
@@ -69,7 +73,7 @@ test ! connected && echo "Error: No internet connectivity." >/dev/stderr && retu
 
 ####
 
-test $EUID != 0 && return 1
+test $EUID = 0 || return
 
 test $EUID != 0 && echo "Error: You must be root to do this." >/dev/stderr && return 1
 

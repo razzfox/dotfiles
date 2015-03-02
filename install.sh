@@ -22,9 +22,10 @@ MINGW32_NT)
   echo "Your platform '$(uname)' can not be identified." >/dev/stderr
 esac
 
-cd
 
 # Location
+cd
+
 test -z "$DOTFILES" && if test $# = 1; then
   DOTFILES="$1"
 else
