@@ -3,15 +3,32 @@
 # Install dotfiles to home directory
 #
 
+# Detect OS (kernel) and ID (distro)
+OS="$(uname | tr '[:upper:]' '[:lower:]')"
+case "$OS" in
+linux)
+  source /etc/os-release
+  test "$ID" = "archarm" && ID="arch"
+  ;;
+darwin)
+  ID="osx"
+  test -z "$HOME" && HOME=/Users/$(whoami)
+  ;;
+MINGW32_NT)
+  OS="windows"
+  ID="cygwin"
+  ;;
+*)
+  echo "Your platform '$(uname)' can not be identified." >/dev/stderr
+esac
+
 cd
 
 # Location
-if test $# = 1; then
+test -z "$DOTFILES" && if test $# = 1; then
   DOTFILES="$1"
 else
-  if test -z "$DOTFILES"; then
-    DOTFILES="$HOME/dotfiles"
-  fi
+  test -d "$(dirname "$0")" && DOTFILES="$(dirname "$0")" || DOTFILES="$HOME/dotfiles"
 fi
 
 if test ! -d "$DOTFILES"; then
@@ -38,7 +55,7 @@ if test $EUID = 0; then # root
   cd
 
 else # user
-  for FILE in "$DOTFILES"/user/*; do
+  for FILE in "$DOTFILES"/user/$ID/*; do
     if test -d "$FILE"; then # do not link directories
       mkdir --parents ".${FILE##*/}" # name the folder with a dot
       cd ".${FILE##*/}"

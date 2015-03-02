@@ -1,7 +1,8 @@
-which sed >/dev/null || return 1
-which awk >/dev/null || return 1
-which pactl >/dev/null || return 1
-which pacmd >/dev/null || return 1
+which sed >/dev/null || return
+which awk >/dev/null || return
+which pactl >/dev/null || return
+which pacmd >/dev/null || return
+pulseaudio --check || return
 
 vl() {
   # fork of https://github.com/graysky2/pulseaudio-ctl

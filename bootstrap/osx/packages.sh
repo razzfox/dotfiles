@@ -7,7 +7,9 @@ brew tap laurent22/massren
 brew install massren
 
 brew install caskroom/cask/brew-cask
-brew cask install google-chrome android-studio atom iterm2 github audacity intellij-idea clipmenu
+brew cask install google-chrome android-studio atom iterm2 github audacity intellij-idea clipmenu osxfuse
+
+brew install bindfs
 
 sudo chown root:wheel /usr/local/Cellar/htop-osx/*/bin/htop
 sudo chmod u+s /usr/local/Cellar/htop-osx/*/bin/htop
