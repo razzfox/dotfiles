@@ -2,7 +2,7 @@
 [[ $- != *i* ]] && return
 
 # If not inside a tmux session, start a new session or join one
-if test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0"; then
+if test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -f .notmux; then
   #tput cup 0 0 # reset cursor
   tmux list-sessions >/dev/null 2>/dev/null && exec tmux attach || exec tmux new-session
 fi
