@@ -1,4 +1,4 @@
-source dotfiles/shell/bashrc
+source ~/dotfiles/shell/bashrc
 
 # Enable arch partition access for VirtualBox
 echo 7299 | sudo -S chmod 0777 /dev/disk0* 2>/dev/null
@@ -8,6 +8,11 @@ tidy_home
 
 # Bind mount other partitions
 echo 7299 | sudo -S bindfs -o multithreaded /Volumes/shared/applications /Applications 2>/dev/null
+
+# Copy random wallpapers
 mkdir -p Pictures
-rm Pictures/* 2>/dev/null
-cp $(lr .walls | tail) Pictures 2>/dev/null
+if test "$(cat Pictures/date.txt)" != "$(date +%F)"; then
+  rm Pictures/* 2>/dev/null
+  cp $(lr .walls | tail) Pictures 2>/dev/null
+  date +%F > Pictures/date.txt
+fi
