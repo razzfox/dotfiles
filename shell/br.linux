@@ -5,7 +5,7 @@ br() {
     echo "100%"
     return 0
   else
-    BR="$(cat $BACKLIGHT)"
+    BR="$(cat $BACKLIGHT/brightness)"
   fi
 
   if test $# = 0; then
@@ -66,7 +66,7 @@ br() {
 
   echo "$BR_NEW%"
 
-  echo 7299 | su root --command="echo $BR_NEW >$BACKLIGHT" 2>/dev/null
+  echo 7299 | su root --command="echo $BR_NEW >$BACKLIGHT/brightness" 2>/dev/null
 }
 
 
