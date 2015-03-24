@@ -6,6 +6,7 @@ To Do
 
  - make a script that puts my name (and name of script, auto editing) on the top of all my dotfiles, and school files. (copies to /tmp for safety, readable by no other user). maybe use ascii art.
  - prevent clear screen when ssh ends
+ - consider set -u (unbound variable) and set -x (print all commands)
 
 ACHTUNG!
 ----
