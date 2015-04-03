@@ -1,8 +1,7 @@
 # Tidy up homedir
 tidy_home() {
-  #rm ~/*/.localized ~/*/.DS_Store ~/*/._.DS_Store 2>/dev/null || true
-  rm ~/Applications/.localized ~/Desktop/.localized ~/Documents/.localized ~/Movies/.localized ~/Music/.localized ~/Pictures/.localized ~/Public/.localized 2>/dev/null || true
-  sudo rmdir ~/Applications/.DS_Store ~/Desktop/.DS_Store ~/Documents/.DS_Store ~/Movies/.DS_Store ~/Music/.DS_Store ~/Pictures/.DS_Store ~/Public/.DS_Store 2>/dev/null || true
-  sudo rmdir ~/Applications/._.DS_Store ~/Desktop/._.DS_Store ~/Documents/._.DS_Store ~/Movies/._.DS_Store ~/Music/._.DS_Store ~/Pictures/._.DS_Store ~/Public/._.DS_Store 2>/dev/null || true
+  sudo rm ~/Applications/.localized ~/Desktop/.localized ~/Documents/.localized ~/Movies/.localized ~/Music/.localized ~/Pictures/.localized ~/Public/.localized 2>/dev/null || true
+  sudo rm ~/Applications/.DS_Store ~/Desktop/.DS_Store ~/Documents/.DS_Store ~/Movies/.DS_Store ~/Music/.DS_Store ~/Pictures/.DS_Store ~/Public/.DS_Store 2>/dev/null || true
+  sudo rm ~/Applications/._.DS_Store ~/Desktop/._.DS_Store ~/Documents/._.DS_Store ~/Movies/._.DS_Store ~/Music/._.DS_Store ~/Pictures/._.DS_Store ~/Public/._.DS_Store 2>/dev/null || true
   sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public 2>/dev/null || true
 }
