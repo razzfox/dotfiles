@@ -1,14 +1,17 @@
-#Modifier Key:
-# Alt/Option	| (/\,\/,<-,->) (space)	(Backspace)	(1..0)	(Tab)
-#------------------+---------------------------------------------------------------
-#		| focus:	(terminal)	(screen)	(tag)	(window)
-#		|
-# + Super	| frame:	(layout)	(remove)
-#		|
-# + Control	| resize:	(fullscreen)
-#		|
-# + Shift	| move:	(float)				(tag)	(pseudotile)
-#------------------+----------------------------------------------------------------
+#Modifier Key: Alt/Option
+#               + Shift         + Control       + Super         [none]
+#             ---------------------------------------------------------------
+# /\,\/,<-,-> | (move-window)   (resize-frame)  (create-frame)  (focus-window)
+# Backspace   |                                 (remove-frame)  (remove-frame)
+# Tab         | (cycle-window)                                  (cycle-window)
+# 1..0        | (assign-tag)                                    (current-tag)
+# f key       | (floating)      (pseudo-tile)   (cycle-layout)  (fullscreen)
+# q key       | (quit)
+# r key       | (reload)
+# x key       | (remove-tag)                                    (close-window)
+# c key       | (create-tag)
+# t key       | (terminal)
+# p key       | (dmenu_run)                                     (dmenu.sh)
 
 hc() {
   COMMANDS="$COMMANDS , $@"
@@ -31,7 +34,7 @@ hc keybind $Mod-Shift-q chain : emit_hook quit_panel : quit # can not use comma 
 hc keybind $Mod-Shift-r reload
 hc keybind $Mod-x close # close window
 hc keybind $Mod-Shift-x spawn $DELETE_TAG
-hc keybind $Mod-c spawn $CREATE_TAG
+hc keybind $Mod-Shift-c spawn $CREATE_TAG
 hc keybind $Mod-Shift-t spawn $TERMINAL
 hc keybind $Mod-Shift-Return spawn $TERMINAL
 hc keybind $Mod-p spawn $DMENU
@@ -123,8 +126,8 @@ hc keybind $Mod-BackSpace remove
 
 # Layout
 hc keybind $Mod-f fullscreen toggle
-hc keybind $Mod-Control-f pseudotile toggle
 hc keybind $Mod-Shift-f floating toggle
+hc keybind $Mod-Control-f pseudotile toggle
 hc keybind $Mod-Mod4-f cycle_layout 1
 
 # Mouse

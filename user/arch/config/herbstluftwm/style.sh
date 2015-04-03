@@ -2,7 +2,6 @@ hc() {
   COMMANDS="$COMMANDS , $@"
 }
 
-
 # General
 hc set auto_detect_monitors 1
 hc set_layout grid
