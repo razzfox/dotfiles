@@ -35,6 +35,8 @@ fi
 if test ! -d "$DOTFILES"; then
   echo "Error: '$DOTFILES' does not exist." >/dev/stderr
   return 1
+else
+  DOTFILES="$(readlink -f "$DOTFILES")"
 fi
 
 # Settings
@@ -52,20 +54,18 @@ ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .profile
 
 if test $EUID = 0; then # root
   cd "$DOTFILES"/linux
-  cp --interactive --parents --recursive --update --verbose * /
+  cp --interactive --parents --recursive --symbolic-link --update --verbose * /
   cd
 
 else # user
   for FILE in "$DOTFILES"/user/$ID/*; do
-    if test -d "$FILE"; then # do not link directories
-      mkdir --parents ".${FILE##*/}" # name the folder with a dot
-      cd ".${FILE##*/}"
-      cp --interactive --recursive --symbolic-link --update --verbose "$FILE"/* ./
-      cd
-
+    if test -d "$FILE"; then
+      # name with a dot
+      mkdir --parents --verbose ".${FILE##*/}"
+      cp --interactive --recursive --symbolic-link --update --verbose "$FILE"/* ".${FILE##*/}"
     else
+      # name with a dot
       ln --force --relative --symbolic --verbose "$FILE" ".${FILE##*/}"
-
     fi
   done
 
