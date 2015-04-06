@@ -1,21 +1,20 @@
-#!/bin/bash
+aur-get() {
+  DIR="$PWD"
 
-DIR="$PWD"
-OPS='--clean --install --syncdeps'
+  test -f /opt/aur.sh || curl --location aur.sh > /opt/aur.sh || return 1
+  chmod 0777 /opt /opt/aur.sh || return 1
+  cd /opt
+
+  sudo --user nobody /opt/aur.sh --clean --install --syncdeps "$@"
+
+  cd "$DIR"
+}
 
 # Adding 'nobody ALL=(ALL) NOPASSWD: ALL' to '/etc/sudoers'
-cp --verbose /etc/sudoers /etc/sudoers.orig || exit 1
-echo "nobody ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers || exit 1
+cp --verbose /etc/sudoers /etc/sudoers.orig || return 1
+echo "nobody ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers || return 1
 
-test -f /opt/aur.sh || curl --location aur.sh > /opt/aur.sh || exit 1
-
-chmod 0777 /opt /opt/aur.sh || exit 1
-
-cd /opt
-
-sudo --user nobody /opt/aur.sh $OPS "$@"
-
-cd "$DIR"
+aur-get "$@"
 
 # Removing 'nobody ALL=(ALL) NOPASSWD: ALL' from '/etc/sudoers'
 mv --verbose /etc/sudoers.orig /etc/sudoers

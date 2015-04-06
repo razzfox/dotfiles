@@ -42,7 +42,7 @@ _build_list() {
 selection=$(_build_list | dmenu)
 
 # Exit if no selection
-test -z "$selection" && exit 1
+test -z "$selection" && return 1
 
 # Check if $selection is an executible or an XDG shortcut. If there's more than one, ask which binary to use.
 app=$(type -p "$selection" 2>/dev/null) || app=$(grep -F "$selection|" <(_xdg_apps) | sed 's/.*|//;s/ %.//g') && test $(echo "$app" | wc -l) != 1 && app=$(echo "$app" | dmenu -p 'Which one?')
