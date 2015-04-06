@@ -21,7 +21,7 @@ if test -n "$HOSTNAME"; then
 	echo $1 > /mnt/etc/hostname
 else
 	echo "Error: Bad hostname" >/dev/stderr
-	exit 1
+	return 1
 fi
 
 unset ANSWER
@@ -79,7 +79,7 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
 	read NAME
 	if test -z "$NAME"; then
 		echo "Error: Bad username" >/dev/stderr
-		exit 1
+		return 1
 	fi
 
 	#GROUP_LIST=audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,uucp,video,wheel

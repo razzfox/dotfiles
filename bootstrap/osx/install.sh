@@ -2,7 +2,7 @@
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do sudo -n true; sleep 60; kill -0 "$$" || return; done 2>/dev/null &
 
 # Agree to xcode terminal
 xcode-select --install
@@ -21,9 +21,10 @@ osascript -e 'set volume with output muted' || echo 7299 | sudo -S nvram SystemA
 # Option: run mute command on LogoutHook
 #sudo defaults write com.apple.loginwindow LogoutHook $HOME/dotfiles/mac/scripts/disable-startup-chime.sh
 
-# Prevent changing Login Items
+# Allow changing Login Items
 #chflags nouchg $HOME/Library/Preferences/com.apple.loginitems.plist
-chflags uchg $HOME/Library/Preferences/com.apple.loginitems.plist
+# Prevent changing Login Items
+#chflags uchg $HOME/Library/Preferences/com.apple.loginitems.plist
 
 # Never go into computer sleep mode
 #systemsetup -setcomputersleep off
