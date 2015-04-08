@@ -24,8 +24,8 @@ gg() {
     return 1
   fi
 
-  local DIR="$(pwd)"
-  local REPO="$(git rev-parse --show-cdup)"
+  pushd .
+  REPO="$(git rev-parse --show-cdup)"
 
   # Test if in top repo directory
   if test "$(echo $REPO | wc -c)" != "1"; then
@@ -35,7 +35,7 @@ gg() {
 
   LASTLINE="$(git status | tail -n 1 | head -c 17)"
   if test "$LASTLINE" = "nothing to commit"; then
-    cd "$DIR"
+    popd
     return 0
   fi
 
@@ -75,92 +75,65 @@ gg() {
     read -e CMESSAGE
     if test -n "$CMESSAGE"; then
       git add --all . && git commit -m "$CMESSAGE"
-      cd "$DIR"
+      popd
       return
     fi
 
-    cd "$DIR"
+    popd
     return 1
   fi
 
   echo -e "$C_B$(what_the_commit_message)$C_F" >/dev/stderr
-  cd "$DIR"
+  popd
   return 1
 }
 
 
-lsgit_status() {
+lsgit() {
   if git status >/dev/null 2>/dev/null; then
     git status
     return $?
   fi
 
   if test $# = 0; then
-    lsgit_status "$PWD"
+    lsgit status "$PWD"
+    return $?
+  fi
+  if test $# = 1; then
+    test -d "$1" && lsgit status "$1" || lsgit $1 "$PWD"
     return $?
   else
-    local WD="$PWD"
+    GIT_COMMAND="$1"
+    shift
+    pushd .
   fi
 
   for DIR in "$@"; do
-    cd "$DIR"
+    if test -d "$DIR";  then
+      pushd .
+      cd "$DIR"
 
-    if git status >/dev/null 2>/dev/null; then
-      echo -e "$C_EMP$PWD$C_F"
-      git status
+      if git status >/dev/null 2>/dev/null; then
+        echo -e "$C_EMP$PWD$C_F"
+        git $GIT_COMMAND
 
-    else
-      for INNER in ./*; do
-        #test -d "$INNER" && lsgit_status "$INNER" # Recursion causes crash! Only go one level deep now
-        if test -d "$INNER"; then
-           cd $INNER
-           if git status >/dev/null 2>/dev/null; then
-             echo -e "$C_EMP$PWD$C_F"
-             git status
-           fi
-           cd ../
-        fi
-      done
+      else
+        for INNER in *; do
+          #test -d "$INNER" && lsgit "$INNER" # Recursion causes crash! Only go one level deep now
+          if test -d "$INNER"; then
+             cd "$INNER"
+             if git status >/dev/null 2>/dev/null; then
+               echo -e "$C_EMP$PWD$C_F"
+               git $GIT_COMMAND
+             fi
+             cd ../
+          fi
+        done
+      fi
+
     fi
-
-    cd "$WD"
+    popd
   done
-}
 
-
-lsgit_pull() {
-  if git status >/dev/null 2>/dev/null; then
-    git pull # DIFF FROM ABOVE
-    return $?
-  fi
-
-  if test $# = 0; then
-    lsgit_pull "$PWD" # DIFF FROM ABOVE
-    return $?
-  else
-    local WD="$PWD"
-  fi
-
-  for DIR in "$@"; do
-    cd "$DIR"
-
-    if git status >/dev/null 2>/dev/null; then
-      echo -e "$C_EMP$PWD$C_F"
-      git pull # DIFF FROM ABOVE
-
-    else
-      for INNER in ./*; do
-        if test -d "$INNER"; then
-           cd $INNER
-           if git status >/dev/null 2>/dev/null; then
-             echo -e "$C_EMP$PWD$C_F"
-             git pull # DIFF FROM ABOVE
-           fi
-           cd ../
-        fi
-      done
-    fi
-
-  cd "$WD"
-  done
+  popd
 }

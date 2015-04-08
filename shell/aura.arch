@@ -1,0 +1,28 @@
+# aur-get.sh from dotfiles/bootstrap/arch/aur-get.sh
+which aura 2>/dev/null || return 1
+break="----------------------------------------------------------------------------"
+
+aura() {
+  pushd .
+  cd /tmp
+
+  # Add 'nobody' to '/etc/sudoers'
+  if ! grep --silent "nobody ALL=(ALL) NOPASSWD: ALL" /etc/sudoers; then
+    cp --verbose /etc/sudoers /etc/sudoers.orig
+    echo "nobody ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers || return 1
+  fi
+  # Remove 'nobody' from '/etc/sudoers'
+  #mv --verbose /etc/sudoers.orig /etc/sudoers
+
+  sudo --user nobody sudo aura "$@"
+
+  popd
+}
+
+aura_edit_pkgbuild() {
+  aura --hotedit "$@"
+}
+
+auras() {
+  less --quit-if-one-screen --LONG-PROMPT --force --RAW-CONTROL-CHARS <(echo -e "${break}\nArch Official:\n$break"; aura -Ss --color=always "$@"; echo -e "${break}\nAUR Unofficial:\n$break"; aura -As "$@")
+}
