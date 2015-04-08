@@ -4,7 +4,11 @@
 # If not inside a tmux session, start a new session or join one
 if test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -f .notmux; then
   #tput cup 0 0 # reset cursor
-  tmux list-sessions >/dev/null 2>/dev/null && exec tmux attach || exec tmux new-session
+  if tmux list-sessions >/dev/null 2>/dev/null; then
+    exec tmux attach
+  else
+    which tmux >/dev/null && exec tmux new-session
+  fi
 fi
 
 # Detect OS (kernel) and ID (distro)

@@ -24,16 +24,34 @@
 # mount /dev/sd## /mnt/home
 # mount /dev/sd## /mnt/boot
 
+## Location
+cd
+
+test -z "$DOTFILES" && if test $# = 1; then
+  DOTFILES="$1"
+else
+  test -d "$(dirname "$0")" && DOTFILES="$(dirname "$0")" || DOTFILES="$HOME/dotfiles"
+fi
+
+if test ! -d "$DOTFILES"; then
+  echo "Error: '$DOTFILES' does not exist." >/dev/stderr
+  return 1
+else
+  DOTFILES="$(readlink -f "$DOTFILES")"
+fi
+
 ## Network
 wifi-menu
-# Arch repo mirrors (will be copied to installation)
-$DOTFILES/linux/root/scripts/pacmrr.sh || nano /etc/pacman.d/mirrorlist
+
+# Repo Mirrorlist (will be copied to installation)
+source $DOTFILES/dotfiles/shell/pacman.arch && pacmrr
+#nano /etc/pacman.d/mirrorlist
 
 ## Install
-./packages.sh
+source $DOTFILES/dotfiles/bootstrap/arch/packages.arch
 
 ## Setup (fstab, locale, time, hostname, keyboard layout and buttons, users, network settings, and bootloader/efivars)
-./settings.sh
+source $DOTFILES/dotfiles/bootstrap/arch/settings.arch
 
-## Login to customize anything else
-arch-chroot /mnt /bin/zsh
+## Login (customize anything else)
+arch-chroot /mnt /bin/bash

@@ -1,12 +1,12 @@
 # Uses optional env var '$SERVERS' array from '.ssh/ssh_servers'
 
 dotfiles-sync() {
-  local DIR="$PWD"
+  pushd .
   cd $DOTFILES
 
   # Check status, do not proceed unless repo is clean
   if ! gg; then
-    cd "$DIR"
+    popd
     return 1
   fi
 
@@ -15,7 +15,7 @@ dotfiles-sync() {
   git pull origin master
   if test "$(git status | tail -n 1 | head -c 17)" != "nothing to commit"; then
     git status
-    cd "$DIR"
+    popd
     return 1
   fi
 
@@ -31,5 +31,5 @@ dotfiles-sync() {
     fi
   done
 
-  cd "$DIR"
+  popd
 }
