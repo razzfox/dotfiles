@@ -183,7 +183,7 @@ To use Pacmatic's functionality in a script, source with
 END
 }
 
-pacmatic() } ##########
+pacmatic() { ##########
 if [ $# -eq 0 ]; then
     docs
     exit
