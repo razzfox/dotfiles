@@ -1,4 +1,6 @@
-# Tidy up homedir
+# Delete default home folders that recreate periodically
 tidy_home() {
   rmdir -v Desktop/ Documents/ Downloads/ Music/ Pictures/ Public/ Templates/ Videos/
 }
+
+tidy_home
