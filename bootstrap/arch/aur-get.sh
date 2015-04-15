@@ -1,3 +1,5 @@
+BUILDDIR="/tmp"
+
 # aur.sh dc2f3fcaa9 taken Jan 7, 2014 from https://github.com/stuartpb/aur.sh/blob/master/aur.sh
 aur.sh() {
   d=${BUILDDIR:-$PWD}
@@ -6,23 +8,26 @@ aur.sh() {
   cd "$d"
   curl "https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz" |tar xz
   cd "$p"
+  nano PKGBUILD
   makepkg --clean --install --syncdeps ${@##[^\-]*}
   done
 }
 
+export -f aur.sh
+
 aur-get() {
   pushd .
-  cd /tmp
+  cd "${BUILDDIR:-$PWD}"
 
   # Add 'nobody' to '/etc/sudoers'
-  if ! grep --silent "nobody ALL=(ALL) NOPASSWD: ALL" /etc/sudoers; then
-    cp --verbose /etc/sudoers /etc/sudoers.orig
-    echo "nobody ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers || return 1
-  fi
-  # Remove 'nobody' from '/etc/sudoers'
-  #mv --verbose /etc/sudoers.orig /etc/sudoers
+  cp --verbose /etc/sudoers /etc/sudoers.orig
+  # user where=(who) NOPASSWD: what
+  echo "nobody ALL=(root) NOPASSWD: $(which pacman)" >> /etc/sudoers || return 1
 
-  sudo --user nobody aur.sh "$@"
+  sudo --user nobody sudo aur.sh "$@"
+
+  # Remove 'nobody' from '/etc/sudoers'
+  mv --verbose /etc/sudoers.orig /etc/sudoers
 
   popd
 }
