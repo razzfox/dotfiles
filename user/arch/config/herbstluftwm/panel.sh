@@ -107,6 +107,10 @@ while pgrep --uid $USER herbstclient >/dev/null; do
     # the second setflash removes flash if battery is better
   fi
 
+  # Run in case settings are changed via terminal or otherwise
+  volume="$($getvol)"
+  brightness="$($getbr)"
+
   sleep 29 # pause end of loop so that it runs through on first run
 done & PID+=( $! )
 
