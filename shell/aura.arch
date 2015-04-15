@@ -1,20 +1,21 @@
 # aur-get.sh from dotfiles/bootstrap/arch/aur-get.sh
 which aura 2>/dev/null || return 1
 break="----------------------------------------------------------------------------"
+BUILDDIR="/tmp"
 
 aura() {
   pushd .
-  cd /tmp
+  cd "${BUILDDIR:-$PWD}"
 
   # Add 'nobody' to '/etc/sudoers'
-  if ! grep --silent "nobody ALL=(ALL) NOPASSWD: ALL" /etc/sudoers; then
-    cp --verbose /etc/sudoers /etc/sudoers.orig
-    echo "nobody ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers || return 1
-  fi
-  # Remove 'nobody' from '/etc/sudoers'
-  #mv --verbose /etc/sudoers.orig /etc/sudoers
+  cp --verbose /etc/sudoers /etc/sudoers.orig
+  # user where=(who) NOPASSWD: what
+  echo "nobody ALL=(root) NOPASSWD: $(which pacman)" >> /etc/sudoers || return 1
 
   sudo --user nobody sudo aura "$@"
+
+  # Remove 'nobody' from '/etc/sudoers'
+  mv --verbose /etc/sudoers.orig /etc/sudoers
 
   popd
 }
