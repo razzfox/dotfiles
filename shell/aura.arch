@@ -10,9 +10,9 @@ aura() {
   # Add 'nobody' to '/etc/sudoers'
   cp --verbose /etc/sudoers /etc/sudoers.orig
   # user where=(who) NOPASSWD: what
-  echo "nobody ALL=(root) NOPASSWD: $(which pacman)" >> /etc/sudoers || return 1
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which pacman)" >> /etc/sudoers || return 1
 
-  sudo --user nobody sudo aura "$@"
+  sudo --user ${BUILDUSER:-nobody} sudo $(which aura) "$@"
 
   # Remove 'nobody' from '/etc/sudoers'
   mv --verbose /etc/sudoers.orig /etc/sudoers
