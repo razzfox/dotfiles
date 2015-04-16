@@ -9,7 +9,7 @@ __hosts_enable() {
   sudo mv -v /private/etc/hosts.edit /private/etc/hosts
 }
 
-__hosts_disable() {
+hosts_disable() {
   # Only run if original exists
   test -f /private/etc/hosts.orig || return
 
@@ -36,7 +36,7 @@ __hosts_download() {
   curl http://someonewhocares.org/hosts/hosts | grep -v google.com | sudo tee /private/etc/hosts.edit >/dev/null && __hosts_enable
 
   # Auto-exclude these known-good sites
-  grep -s "google.com" /private/etc/hosts.exceptions || echo "google.com" | sudo tee -s /private/etc/hosts.exceptions # Add if not already listed
+  hosts_exception "google.com"
 }
 
 hosts_update() {

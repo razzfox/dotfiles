@@ -11,7 +11,7 @@ __hosts_enable() {
   mv -v /etc/hosts.edit /etc/hosts
 }
 
-__hosts_disable() {
+hosts_disable() {
   # Only run if original exists
   test -f /etc/hosts.orig || return
 
@@ -29,7 +29,7 @@ hosts_exception() {
   done && return
 
   # Recursion broad case
-  echo ":: Removing '$1' from '/etc/hosts'"
+  echo -n ":: Removing "
   grep -s "$1" /etc/hosts.exceptions || echo "$1" >>/etc/hosts.exceptions # Add if not already listed
   grep -v "$1" /etc/hosts >/etc/hosts.edit && __hosts_enable
 }
@@ -39,7 +39,7 @@ __hosts_download() {
   curl http://someonewhocares.org/hosts/hosts >/etc/hosts.edit && __hosts_enable
 
   # Auto-exclude these known-good sites
-  grep -s "google.com" /etc/hosts.exceptions || echo "google.com" >>/etc/hosts.exceptions # Add if not already listed
+  hosts_exception "google.com"
 }
 
 hosts_update() {
