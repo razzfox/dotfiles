@@ -1,10 +1,10 @@
 # Copy random wallpapers
 set_walls() {
   mkdir -p Pictures
-  if test "$(cat Pictures/date.txt)" != "$(date +%F)"; then
-    rm Pictures/* 2>/dev/null
-    $(which cp) $(lr .walls/ | tail) Pictures 2>/dev/null
-    date +%F > Pictures/date.txt
+  if test ! -f ~/Pictures/date.txt -o "$(cat ~/Pictures/date.txt)" != "$(date +%F)"; then
+    rm ~/Pictures/* 2>/dev/null
+    $(which cp) $(lr ~/.walls/ | tail) ~/Pictures/ 2>/dev/null
+    date +%F > ~/Pictures/date.txt
   fi
 }
 
