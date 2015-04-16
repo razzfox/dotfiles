@@ -1,0 +1,54 @@
+test $EUID != 0 && return 1
+
+__hosts_enable() {
+  # Only run if edit exists
+  test -f /etc/hosts.edit || return
+
+  # Save original if it does not exist (so it is only created once at first run)
+  test -f /etc/hosts.orig || mv -v /etc/hosts /etc/hosts.orig
+
+  # Enable edit version
+  mv -v /etc/hosts.edit /etc/hosts
+}
+
+__hosts_disable() {
+  # Only run if original exists
+  test -f /etc/hosts.orig || return
+
+  # Save edit version
+  mv -v /etc/hosts /etc/hosts.edit
+
+  # Revert original
+  mv -v /etc/hosts.orig /etc/hosts 2>/dev/null
+}
+
+hosts_exception() {
+  # Recursion simple case
+  test $# = 0 && for EXCEPTION in $(cat /etc/hosts.exceptions); do
+    hosts_exception "$EXCEPTION"
+  done && return
+
+  # Recursion broad case
+  echo ":: Removing '$1' from '/etc/hosts'"
+  grep -s "$1" /etc/hosts.exceptions || echo "$1" >>/etc/hosts.exceptions # Add if not already listed
+  grep -v "$1" /etc/hosts >/etc/hosts.edit && __hosts_enable
+}
+
+__hosts_download() {
+  echo ":: Downloading 'http://someonewhocares.org/hosts/hosts'"
+  curl http://someonewhocares.org/hosts/hosts | grep -v google.com >/etc/hosts.edit && __hosts_enable # Auto-exclude 'google.com'
+}
+
+hosts_update() {
+  # Uses '__hosts_download' and 'hosts_exceptions' to create 'hosts.edit' files, and then '__hosts_enable' to enable them.
+  # Use '__hosts_disable' to revert to the very first 'hosts', created by first call to '__hosts_enable'.
+
+  # Download an edited hosts
+  __hosts_download
+
+  # Remove all exceptions from hosts (No argument reads all from '/etc/hosts.exceptions')
+  hosts_exeception
+
+  # Show files
+  ls -la /etc/hosts*
+}

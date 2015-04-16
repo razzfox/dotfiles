@@ -1,35 +1,52 @@
-hosts_enable() {
-  mv -v /private/etc/hosts /private/etc/hosts.prev 2>/dev/null
-  mv -v /private/etc/hosts.orig /private/etc/hosts
+__hosts_enable() {
+  # Only run if edit exists
+  test -f /private/etc/hosts.edit || return
+
+  # Save original if it does not exist (so it is only created once at first run)
+  test -f /private/etc/hosts.orig || sudo mv -v /private/etc/hosts /private/etc/hosts.orig
+
+  # Enable edit version
+  sudo mv -v /private/etc/hosts.edit /private/etc/hosts
 }
 
-hosts_disable() {
-  mv -v /private/etc/hosts /private/etc/hosts.orig
+__hosts_disable() {
+  # Only run if original exists
+  test -f /private/etc/hosts.orig || return
+
+  # Save edit version
+  sudo mv -v /private/etc/hosts /private/etc/hosts.edit
+
+  # Revert original
+  sudo mv -v /private/etc/hosts.orig /private/etc/hosts 2>/dev/null
 }
 
 hosts_exception() {
-  echo $1 >>/private/etc/hosts.exceptions
-  grep -v $1 /private/etc/hosts >/private/etc/hosts.orig && hosts_enable
+  # Recursion simple case
+  test $# = 0 && for EXCEPTION in $(cat /private/etc/hosts.exceptions); do
+    hosts_exception "$EXCEPTION"
+  done && return
+
+  # Recursion broad case
+  echo ":: Removing '$1' from '/private/etc/hosts'"
+  sudo grep -s "$1" /private/etc/hosts.exceptions || echo "$1" >>/private/etc/hosts.exceptions # Add if not already listed
+  sudo grep -v "$1" /private/etc/hosts >/private/etc/hosts.edit && __hosts_enable
 }
 
-hosts_download() {
+__hosts_download() {
   echo ":: Downloading 'http://someonewhocares.org/hosts/hosts'"
-  curl http://someonewhocares.org/hosts/hosts | grep -v google >/private/etc/hosts
-}
-
-hosts_perms() {
-  sudo chmod 0777 /private/etc/hosts
-  sudo chmod 0777 /private/etc/
+  sudo curl http://someonewhocares.org/hosts/hosts | grep -v google.com >/private/etc/hosts.edit && __hosts_enable # Auto-exclude 'google.com'
 }
 
 hosts_update() {
-  hosts_perms
-  hosts_download
+  # Uses '__hosts_download' and 'hosts_exceptions' to create 'hosts.edit' files, and then '__hosts_enable' to enable them.
+  # Use '__hosts_disable' to revert to the very first 'hosts', created by first call to '__hosts_enable'.
 
-  for EXCEPTION in $(cat /private/etc/hosts.exceptions); do
-    echo ":: Removing '$EXCEPTION' from /etc/hosts"
-    grep -v "$EXCEPTION" /private/etc/hosts >/private/etc/hosts.orig && hosts_enable
-  done
+  # Download an edited hosts
+  __hosts_download
 
+  # Remove all exceptions from hosts (No argument reads all from '/private/etc/hosts.exceptions')
+  hosts_exeception
+
+  # Show files
   ls -la /private/etc/hosts*
 }
