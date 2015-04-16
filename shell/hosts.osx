@@ -27,14 +27,16 @@ hosts_exception() {
   done && return
 
   # Recursion broad case
-  echo ":: Removing '$1' from '/private/etc/hosts'"
-  sudo grep -s "$1" /private/etc/hosts.exceptions || echo "$1" >>/private/etc/hosts.exceptions # Add if not already listed
-  sudo grep -v "$1" /private/etc/hosts >/private/etc/hosts.edit && __hosts_enable
+  grep -s "$1" /private/etc/hosts.exceptions || echo "$1" | sudo tee -a /private/etc/hosts.exceptions # Add if not already listed
+  grep -v "$1" /private/etc/hosts | sudo tee /private/etc/hosts.edit >/dev/null && __hosts_enable
 }
 
 __hosts_download() {
   echo ":: Downloading 'http://someonewhocares.org/hosts/hosts'"
-  sudo curl http://someonewhocares.org/hosts/hosts | grep -v google.com >/private/etc/hosts.edit && __hosts_enable # Auto-exclude 'google.com'
+  curl http://someonewhocares.org/hosts/hosts | grep -v google.com | sudo tee /private/etc/hosts.edit >/dev/null && __hosts_enable
+
+  # Auto-exclude these known-good sites
+  grep -s "google.com" /private/etc/hosts.exceptions || echo "google.com" | sudo tee -s /private/etc/hosts.exceptions # Add if not already listed
 }
 
 hosts_update() {
@@ -45,7 +47,7 @@ hosts_update() {
   __hosts_download
 
   # Remove all exceptions from hosts (No argument reads all from '/private/etc/hosts.exceptions')
-  hosts_exeception
+  hosts_exception
 
   # Show files
   ls -la /private/etc/hosts*

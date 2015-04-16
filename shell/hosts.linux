@@ -36,7 +36,10 @@ hosts_exception() {
 
 __hosts_download() {
   echo ":: Downloading 'http://someonewhocares.org/hosts/hosts'"
-  curl http://someonewhocares.org/hosts/hosts | grep -v google.com >/etc/hosts.edit && __hosts_enable # Auto-exclude 'google.com'
+  curl http://someonewhocares.org/hosts/hosts >/etc/hosts.edit && __hosts_enable
+
+  # Auto-exclude these known-good sites
+  grep -s "google.com" /etc/hosts.exceptions || echo "google.com" >>/etc/hosts.exceptions # Add if not already listed
 }
 
 hosts_update() {
@@ -47,7 +50,7 @@ hosts_update() {
   __hosts_download
 
   # Remove all exceptions from hosts (No argument reads all from '/etc/hosts.exceptions')
-  hosts_exeception
+  hosts_exception
 
   # Show files
   ls -la /etc/hosts*
