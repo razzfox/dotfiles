@@ -52,7 +52,7 @@ hc set smart_window_surroundings 1 # expand when only one window exists
 # Float Mode
 # set to 0 to prevent 'manage=off' clients from being hidden ???
 hc set raise_on_click 1
-hc set raise_on_focus 1
+hc set raise_on_focus 0
 hc set update_dragged_clients 0
 
 
