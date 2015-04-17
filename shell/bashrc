@@ -32,7 +32,8 @@ esac
 
 # Dotfiles
 test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
-for f in $DOTFILES/shell/*.$OS $DOTFILES/shell/*.$ID $DOTFILES/shell/*.sh $DOTFILES/shell/*.$(basename $SHELL); do
+#for f in $DOTFILES/shell/*.$OS $DOTFILES/shell/*.$ID $DOTFILES/shell/*.sh $DOTFILES/shell/*.$(basename $SHELL); do
+for f in $DOTFILES/shell/*.$(basename $SHELL) $DOTFILES/shell/*.sh $DOTFILES/shell/*.$ID $DOTFILES/shell/*.$OS; do
   source "$f" >/dev/null
 done
 
