@@ -134,8 +134,8 @@ hc keybind $Mod-x remove
 
 hc keybind $Mod-f cycle_layout 1
 hc keybind $Mod-Shift-f floating toggle
-hc keybind $Mod-Control-f pseudotile toggle
-hc keybind $Mod-Mod4-f fullscreen toggle
+hc keybind $Mod-Control-f fullscreen toggle
+hc keybind $Mod-Mod4-f pseudotile toggle
 
 
 # Mouse
