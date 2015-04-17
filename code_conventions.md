@@ -44,11 +44,11 @@ test -z "$location" && location=/ || printf -v location '%b' "${location//%/\\x}
 
 ####
 
-# Currently I send >/dev/null 2>/dev/null (and other >files) without a space in the name. This is because &2 &1 is not often used, and it is not clear.
+# Currently I use '>/dev/null' and '2>/dev/null' (and other '>file') without a space in the name. The shortcuts '&2' and '&1' are not often used, and it is not clear.
 
 ####
 
-# Only export variables that might be used by otnher programs. Do not export variables specific to the functionality of the shell
+# Only export variables that might be used by other programs. Do not export variables specific to the functionality of the shell
 
 ####
 
@@ -57,11 +57,9 @@ test -z "$location" && location=/ || printf -v location '%b' "${location//%/\\x}
 # or is it important for any tty or shell (SH)?
 # Does it work only on your distro (ID)?
 # or is it important for any of the same kernel (OS)?
-# SHELL > SH (any tty,shell) > ID (distro) > OS (kernel)
-#
-# Scripts are sourced from very general to most specific:
-# OS (kernel) > ID (distro) > SH (any tty,shell) > SHELL
-# ex: .linux > .arch > .sh > .bash
+# SHELL (program) > SH (any shell) > ID (distro) > OS (kernel)
+# example: .bash > .sh > .arch > .linux
+# Scripts are sourced in the same order.
 
 ####
 

@@ -4,7 +4,7 @@ herbstclient emit_hook reload # tell listeners reload (herbstclient --idle)
 
 # Settings
 source $HOME/.config/herbstluftwm/style.sh
-source $HOME/.config/herbstluftwm/layouts.sh # must create tags before panel starts
+source $HOME/.config/herbstluftwm/layout.sh # must create tags before panel starts
 source $HOME/.config/herbstluftwm/keybind.sh # must come after layouts creates tags
 
 # Multi Monitor Setup
