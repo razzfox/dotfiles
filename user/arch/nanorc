@@ -4,7 +4,6 @@ unset mouse
 set nohelp
 set nowrap
 set regexp
-set undo
 
 include /usr/share/nano/c.nanorc
 include /usr/share/nano/cmake.nanorc
