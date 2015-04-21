@@ -1,3 +1,5 @@
+test $EUID = 0 && return 1
+
 which sed >/dev/null || return
 which awk >/dev/null || return
 which pactl >/dev/null || return
