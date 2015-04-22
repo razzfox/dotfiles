@@ -7,4 +7,4 @@ tidy_home() {
   sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public 2>/dev/null || true
 }
 
-tidy_home
+tidy_home "$@"

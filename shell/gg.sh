@@ -13,16 +13,17 @@ git_filehistory() {
 }
 
 gg() {
-  echo -e "${C_EMP}git status$C_F"
-
   # Test if gitconfig is set up
-  grep -F name $HOME/.gitconfig || return 1
-  grep -F email $HOME/.gitconfig || return 1
-
-  # Test if in a repo
-  if ! git status; then
+  grep -F name $HOME/.gitconfig && grep -F email $HOME/.gitconfig
+  if test $? != 0; then
+    echo "gg: Error: '$HOME/.gitconfig' is not set up!"
     return 1
   fi
+
+  echo -e "${C_EMP}git status$C_F"
+
+  # Test if in a repo
+  git status || return
 
   pushd .
   REPO="$(git rev-parse --show-cdup)"

@@ -1,5 +1,3 @@
-# Functions and exports (exports also exist in child processes)
-
 # Path
 test -z "$BIN_HOME" && test -d $HOME/bin && export BIN_HOME="$HOME/bin" && PATH="$PATH:$HOME/bin"
 test -z "$GEM_HOME" && test -d $HOME/.gem && export GEM_HOME="$HOME/.gem" && PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"

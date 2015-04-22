@@ -1,6 +1,19 @@
 ####
 ####
 ####
+# Escape UTF-8 characters into their 3-byte format
+escape() {
+	printf "\\\x%s" $(printf "$@" | xxd -p -c1 -u)
+}
+
+# Create a data URL from a file
+data_url() {
+	local mimeType=$(file -b --mime-type "$1")
+	if test $mimeType = text/*; then
+		mimeType="${mimeType};charset=utf-8"
+	fi
+	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
+}
 ####
 
 # Scripts should be 'sourced' into the shell, because they use shell language. trying to run a script as an executable is just a layer of obfuscation in a subprocess.

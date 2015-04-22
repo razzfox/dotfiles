@@ -1,5 +1,6 @@
 # wiggle is a patch-merge cli 
+which wiggle >/dev/null 2>/dev/null || return
 
 patch() {
-  $(which patch) "$@" || wiggle "$@"
+  $(which patch) "$@" || $(which wiggle) "$@"
 }

@@ -10,5 +10,5 @@ copy() {
 }
 
 cp() {
-  copy "$@"
+  rsync "$@"
 }

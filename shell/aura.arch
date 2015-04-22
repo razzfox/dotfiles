@@ -1,5 +1,5 @@
 break="----------------------------------------------------------------------------"
-BUILDDIR="/tmp"
+BUILDDIR="${BUILDDIR:-/tmp}"
 
 # aur.sh dc2f3fcaa9 taken Jan 7, 2014 from https://github.com/stuartpb/aur.sh/blob/master/aur.sh
 aur.sh() {
@@ -23,8 +23,8 @@ aura() {
   # Add 'nobody' to '/etc/sudoers'
   $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
   # user where=(who) NOPASSWD: what
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which pacman)" >> /etc/sudoers || return 1
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which aura 2>/dev/null)" >> /etc/sudoers || return 1
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which pacman)" >>/etc/sudoers || return 1
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which aura 2>/dev/null)" >>/etc/sudoers || return 1
 
 
   if ! aur=$(which aura 2>/dev/null); then

@@ -157,6 +157,9 @@ pacman-update-mirrorlist() {
   echo 'Enabling all mirrors.'
   sed '/^#\S/ s|#||' -i /etc/pacman.d/mirrorlist.new
 
+  echo 'Remove any mirrors you do not wish to keep.'
+  nano /etc/pacman.d/mirrorlist.new
+
   echo 'Ranking enabled mirrors and selecting the 6 fastes. Will take time!'
   rankmirrors -n 6 /etc/pacman.d/mirrorlist.new > /etc/pacman.d/mirrorlist
 
