@@ -51,16 +51,20 @@ set history-size -1
 
 # Use the text that has already been typed as the prefix for searching through
 # commands (i.e. more intelligent Up/Down behavior)
-"\e[B": history-search-forward
-"\e[A": history-search-backward
+'\e[[B':history-search-forward
+'\e[[A':history-search-backward
+
+# Redraw the current line
+'\C-l':redraw-current-line
 
 # Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
 # don't strip characters to 7 bits when reading
 set input-meta on
+
 # display characters with the eighth bit set directly
 # rather than as meta-prefixed characters
 set output-meta on
+
 # allow iso-latin1 characters to be inserted rather
 # than converted to prefix-meta sequences
 set convert-meta off
-

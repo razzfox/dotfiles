@@ -5,7 +5,6 @@ test -z "$GOPATH" && export GOPATH="$HOME/.gocode" && PATH=$GOPATH/bin:$PATH
 export PATH
 
 # Other vars
-export TERMINAL="$(which st 2>/dev/null || which guake 2>/dev/null || which xfce-terminal 2>/dev/null || which xterm 2>/dev/null || $DMENU)"
 export EDITOR="$(which nano)" # single line-based editor (the distinction is no longer recognized)
 export VISUAL="$EDITOR" #  milti-line (whole screen) editor
 export PAGER="$(which less)" # view text output in scrolling pages instead of textdump

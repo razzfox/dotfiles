@@ -30,9 +30,10 @@ test -f dotfiles/shell/ls.bash && display -size $dimensions -density $density -w
 
 # Standby/Suspend, Screensaver, and Energy Star/DPMS
 xset s off -dpms
+which cmatrix >/dev/null 2>/dev/null && screensaver="$(which cmatrix) -a -u 6 -b"
 
-# GUI Terminal
-TERM="$(which st 2>/dev/null || which guake 2>/dev/null || which xfce-terminal 2>/dev/null || which xterm 2>/dev/null)"
+# Terminal
+export TERMINAL="$(which st || which guake || which xfce-terminal || which xterm || which dmenu_run)"
 
 # Window Manager
 exec herbstluftwm
