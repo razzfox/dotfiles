@@ -1,5 +1,4 @@
 # Console history and logging
-
 #if test -z $SCRIPTFILE && test ! -f $HOME/.noscript; then
   #mkdir --mode=0700 "/var/log/script/$USER" >/dev/null 2>/dev/null && chmod 0700 "/var/log/script/$USER" # create script dir and secure it
     #gzip -q /var/log/script/$USER/*.log # delete oldest scripts not yet implemented

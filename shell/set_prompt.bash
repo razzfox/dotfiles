@@ -7,7 +7,7 @@ case $OS in
   *) # Secure temporary files
     tmp=${TMPDIR:-/tmp}
     tmp=${tmp}/tempdir.$$
-    $(umask 077 && mkdir $tmp) || echo "Error: Could not create temporary directory." >/dev/stderr && return 1
+    $(umask 077 && mkdir $tmp) || echo "set_prompt: Error: Could not create temporary directory." >/dev/stderr && return 1
 
     curl --silent https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >$tmp/git-completion.bash && source $tmp/git-completion.bash || echo "Error: Download 'git-completion.bash' failed!" >/dev/stderr
     curl --silent https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh >$tmp/git-prompt.sh && source $tmp/git-prompt.sh || echo "Error: Download 'git-prompt.sh' failed!" >/dev/stderr

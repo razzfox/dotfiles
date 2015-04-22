@@ -1,3 +1,4 @@
+# Inspired by the command from https://wiki.archlinux.org/index.php/Full_System_Backup_with_rsync
 backup_this_there() {
   if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
     echo "Usage: backup_this_there <source> <destination> [\"<exclude,any,directories>\"]"

@@ -3,4 +3,4 @@ tidy_home() {
   rmdir -v Desktop Documents Downloads Music Pictures Public Templates Videos 2>/dev/null
 }
 
-tidy_home
+tidy_home "$@"

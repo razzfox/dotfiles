@@ -1,4 +1,5 @@
 which calc >/dev/null 2>/dev/null && return
+which bc >/dev/null 2>/dev/null || return
 
 calc() {
   if which bc >/dev/null; then

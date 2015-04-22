@@ -22,12 +22,13 @@ set -e -u -o pipefail
 
 # Packages needed by pacman (see get-pacman-dependencies.sh)
 PACMAN_PACKAGES=(
-  acl archlinux-keyring attr bzip2 curl expat glibc gpgme libarchive
+  archlinux-keyring attr bzip2 curl expat glibc gpgme libarchive
   libassuan libgpg-error libssh2 lzo2 openssl pacman pacman-mirrorlist xz zlib
 )
 BASIC_PACKAGES=(${PACMAN_PACKAGES[*]} filesystem)
 EXTRA_PACKAGES=(coreutils bash grep gawk file tar systemd)
-DEFAULT_REPO_URL="http://mirrors.kernel.org/archlinux"
+#DEFAULT_REPO_URL="http://mirrors.kernel.org/archlinux"
+DEFAULT_REPO_URL="http://mirror.archlinuxarm.org"
 DEFAULT_ARCH=`uname -m`
 
 # Output to standard error
@@ -134,7 +135,8 @@ main() {
   test $# -eq 1 || { show_usage; return 1; }
   
   local DEST=$1
-  local REPO="${REPO_URL%/}/core/os/$ARCH"
+  #local REPO="${REPO_URL%/}/core/os/$ARCH"
+  local REPO="${REPO_URL%/}/core/$ARCH"
   local PACKDIR=$(mktemp -d)
   trap "rm -rf '$PACKDIR'" KILL TERM EXIT
   debug "destination directory: $DEST"
