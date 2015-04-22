@@ -260,7 +260,9 @@ launch () {
         export TERM='dumb'
         # ...and won't be interactive...
         unset PS1
-        "$@" </dev/null &>/dev/null & disown
+#        "$@" </dev/null &>/dev/null & disown
+        rm "$lock"
+        exec "$@"
     else
         debug "Launching: %s" "$*"
 
