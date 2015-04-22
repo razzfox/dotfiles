@@ -19,11 +19,12 @@ hc() {
 
 #Mod=Mod4 # use the super key
 Mod=Mod1 # use alt/option
-DMENU="bash $HOME/.config/herbstluftwm/dmenu.sh"
-test -n "$TERM" || TERM="$DMENU"
 SCREENSAVER="xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="xset s off -dpms"
-TAG="dotfiles/user/arch/config/herbstluftwm/tags.sh"
+TERMINAL="${TERMINAL:-$(which st)}"
+TAG="bash $HOME/.config/herbstluftwm/tags.sh"
+DMENU_LAUNCH="bash $HOME/.config/herbstluftwm/dmenu_launch.sh"
+DMENU_EXPLORE="bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
 
 
 # General Keys
@@ -35,8 +36,9 @@ hc keybind $Mod-r reload
 hc keybind $Mod-t spawn $TERMINAL
 hc keybind $Mod-Shift-t spawn $TERMINAL
 hc keybind $Mod-Shift-Return spawn $TERMINAL
-hc keybind $Mod-p spawn $DMENU
+hc keybind $Mod-p spawn $DMENU_LAUNCH
 hc keybind $Mod-Shift-p spawn dmenu_run
+hc keybind $Mod-e spawn $DMENU_EXPLORE
 
 
 # Media Keys
