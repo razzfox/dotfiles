@@ -1,9 +1,8 @@
 break="----------------------------------------------------------------------------"
-BUILDDIR="${BUILDDIR:-/tmp}"
 
 # aur.sh dc2f3fcaa9 taken Jan 7, 2014 from https://github.com/stuartpb/aur.sh/blob/master/aur.sh
 aur.sh() {
-cat <<MARK
+echo '
 d=${BUILDDIR:-$PWD}
 for p in ${@##-*}
 do
@@ -13,27 +12,26 @@ cd "$p"
 nano PKGBUILD
 makepkg --clean --install --syncdeps ${@##[^\-]*}
 done
-MARK
+'
 }
 
 aura() {
   pushd .
-  cd "${BUILDDIR:-$PWD}"
-
-  # Add 'nobody' to '/etc/sudoers'
-  $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
-  # user where=(who) NOPASSWD: what
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which pacman)" >>/etc/sudoers || return 1
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which aura 2>/dev/null)" >>/etc/sudoers || return 1
-
+  cd "${BUILDDIR:-/tmp}"
 
   if ! aur=$(which aura 2>/dev/null); then
-    aur="${BUILDDIR:-$PWD}"/aur.sh
+    aur="$BUILDDIR/aur.sh"
     aur.sh > "$aur"
     chmod +x "$aur"
   fi
 
-  sudo --user ${BUILDUSER:-nobody} sudo $aur "$@"
+  # Add 'nobody' to '/etc/sudoers'
+  $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
+  # user where=(who) NOPASSWD: what
+#  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers || return 1
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which pacman) $aur" >>/etc/sudoers || return 1
+
+  sudo --user ${BUILDUSER:-nobody} $aur "$@"
 
   # Remove 'nobody' from '/etc/sudoers'
   $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
