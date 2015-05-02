@@ -10,7 +10,7 @@ sysdis() {
   systemctl $SYSUSER stop "$@"
 }
 
-sysstat() {
+sys() {
   systemctl $SYSUSER status "$@"
 }
 
