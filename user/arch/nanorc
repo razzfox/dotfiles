@@ -1,9 +1,11 @@
 set autoindent
 set morespace
-unset mouse
 set nohelp
 set nowrap
-set regexp
+set suspend
+set quickblank
+set backup
+set backupdir ~/.nanobackups
 
 include /usr/share/nano/c.nanorc
 include /usr/share/nano/cmake.nanorc
