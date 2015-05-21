@@ -1,7 +1,8 @@
-download() {
-  curl -L -O "$@"
+curll() {
+  # -L -O
+  $(which curl) --location --remote-name "$@"
 }
 
-curll() {
-  download "$@"
+download() {
+  curll "$@"
 }
