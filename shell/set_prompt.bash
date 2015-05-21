@@ -1,17 +1,14 @@
-# Download 'git-completion.bash' and 'git-prompt.sh' if not linux or osx
-case $OS in
-  linux)
-    ;;
-  darwin)
-    ;;
-  *) # Secure temporary files
-    tmp=${TMPDIR:-/tmp}
-    tmp=${tmp}/tempdir.$$
-    $(umask 077 && mkdir $tmp) || echo "set_prompt: Error: Could not create temporary directory." >/dev/stderr && return 1
+if test ! -f /usr/share/git/completion/git-prompt.sh; then
+  __git_ps1() {
+    echo no-git-prompt
+  }
+fi
 
-    curl --silent https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >$tmp/git-completion.bash && source $tmp/git-completion.bash || echo "Error: Download 'git-completion.bash' failed!" >/dev/stderr
-    curl --silent https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh >$tmp/git-prompt.sh && source $tmp/git-prompt.sh || echo "Error: Download 'git-prompt.sh' failed!" >/dev/stderr
-esac
+color_word() {
+  HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
+  HASH=$(( 0x${HASH:1:3} % 7 + 1 )) # avoid negative sign and convert to decimal, mod a 3 digit number to get 1..7
+  echo -e "\033[$(( $HASH % 2 ));3${HASH}m$1\033[m" # print color codes
+}
 
 # GIT_PS1_SHOWSTASHSTATE=1
 # GIT_PS1_SHOWUNTRACKEDFILES=1
