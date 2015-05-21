@@ -1,3 +1,3 @@
-tt() {
-  tree -Farx -L 2 "$@"
+tree() {
+  $(which tree) -Farx -L 2 "$@"
 }
