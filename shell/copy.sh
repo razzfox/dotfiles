@@ -8,7 +8,3 @@ rsync() {
 copy() {
   rsync "$@"
 }
-
-cp() {
-  rsync "$@"
-}

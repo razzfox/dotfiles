@@ -1,15 +1,24 @@
-if test ! -f /usr/share/git/completion/git-prompt.sh; then
-  # Download 'git-completion.bash' and 'git-prompt.sh' if not linux or osx
-  # Secure temporary files
-  tmp=${TMPDIR:-/tmp}
-  tmp=${tmp}/tempdir.$$
-  $(umask 077 && mkdir $tmp) || echo "set_prompt: Error: Could not create temporary directory." >/dev/stderr && return 1
-  curl --silent https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >$tmp/git-completion.bash && source $tmp/git-completion.bash || echo "Error: Download 'git-completion.bash' failed!" >/dev/stderr
-  curl --silent https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh >$tmp/git-prompt.sh && source $tmp/git-prompt.sh || echo "Error: Download 'git-prompt.sh' failed!" >/dev/stderr
-  
-  __git_ps1() {
-    echo -n " no-git-prompt $@"
-  }
+case "$ID" in
+arch)
+  source /usr/share/bash-completion/bash_completion
+  source /usr/share/git/completion/git-completion.bash
+  source /usr/share/git/completion/git-prompt.sh
+  ;;
+osx)
+  source /usr/local/opt/bash-completion/etc/bash_completion
+  source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh
+  source /usr/local/opt/git/etc/bash_completion.d/git-completion.bash
+  ;;
+cygwin)
+  ;;
+*)
+  echo "Your platform '$(uname)' can not be identified." >/dev/stderr
+esac
+
+if ! __git_ps1 >/dev/null; then
+  echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
+  source <(curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash)
+  source <(curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh)
 fi
 
 color_word() {
