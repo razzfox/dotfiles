@@ -3,6 +3,10 @@ chx() {
   chmod +x "$@"
 }
 
+ch-x() {
+  chmod -x "$@"
+}
+
 # Change file/dir owner and group to self
 chw() {
   chown -R $(id -unr):$(id -gn) "$@"

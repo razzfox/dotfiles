@@ -58,7 +58,7 @@ if test $EUID = 0; then # root
   cd
 
 else # user
-  for FILE in "$DOTFILES"/user/$ID/*; do
+  for FILE in "$DOTFILES"/config/$ID/$HOME/*; do
     if test -d "$FILE"; then
       # name with a dot
       mkdir --parents --verbose ".${FILE##*/}"

@@ -1,3 +1,7 @@
+# Export LESS for legacy reasons
+export LESS="--force --quit-if-one-screen --LONG-PROMPT --LINE-NUMBERS --RAW-CONTROL-CHARS"
+
 less() {
-  $(which less) --quit-if-one-screen --LONG-PROMPT --force --RAW-CONTROL-CHARS "$@"
+  #-fFMNR
+  $(which less) --force --quit-if-one-screen --LONG-PROMPT --LINE-NUMBERS --RAW-CONTROL-CHARS "$@"
 }
