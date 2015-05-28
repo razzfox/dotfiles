@@ -86,13 +86,16 @@ targz() {
   easy_targz
 }
 
+tar_list() {
+	tar tzvf "$@"
+}
+
 
 easy_undeb() {
   ar p $1 data.tar.gz | tar zx
   mv ./usr/bin/* ./
   rm -r ./usr
 }
-
 
 
 # Extracting (untar) an archive using tar command
