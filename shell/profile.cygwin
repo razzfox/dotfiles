@@ -1,1 +1,1 @@
-CYGWIN=winsymlinks:nativestrict
+export CYGWIN=winsymlinks:nativestrict
