@@ -1,5 +1,0 @@
-bak() {
-  for each in "$@"; do
-    rename "$each" "${each}.bak"
-  done
-}
