@@ -1,0 +1,4 @@
+# Delete "My ..." folders manually
+
+mkpasswd -l -c -p "$(cygpath -H)" > /etc/passwd
+logout
