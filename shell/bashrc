@@ -12,7 +12,7 @@ if test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -f .notmux; then
 fi
 
 # Detect OS (kernel) and ID (distro)
-OS="$(uname | tr '[:upper:]' '[:lower:]')"
+test -z "$OS" && OS="$(uname | tr '[:upper:]' '[:lower:]')"
 case "$OS" in
 linux)
   source /etc/os-release
@@ -22,7 +22,7 @@ darwin)
   ID="osx"
   test -z "$HOME" && HOME=/Users/$(whoami)
   ;;
-MINGW32_NT)
+Windows_NT|CYGWIN_NT-*)
   OS="windows"
   ID="cygwin"
   ;;
