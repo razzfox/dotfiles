@@ -1,6 +1,4 @@
 export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:$PATH
-export LC_ALL='C'
-
 
 # Reset LaunchServices (aka Open With menu)
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user;
