@@ -9,5 +9,7 @@ export EDITOR="$(which nano)" # single line-based editor (the distinction is no 
 export VISUAL="$EDITOR" #  milti-line (whole screen) editor
 export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
 
+export LC_ALL="C"
+
 # Aliases are passe
 #alias cd 'cd \!*; ls' # This is how to include args in an alias
