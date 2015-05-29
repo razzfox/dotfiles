@@ -1,5 +1,9 @@
 ####
 ####
+
+# Aliases are passe
+#alias cd 'cd \!*; ls' # This is how to include args in an alias
+
 ####
 # Escape UTF-8 characters into their 3-byte format
 escape() {
