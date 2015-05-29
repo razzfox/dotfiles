@@ -5,6 +5,7 @@
 
 # Locate dotfiles
 cd
+
 test -z "$DOTFILES" && if test $# = 1; then
   DOTFILES="$1"
 else
@@ -17,6 +18,8 @@ if test ! -d "$DOTFILES"; then
 else
   DOTFILES="$(readlink -f "$DOTFILES")"
 fi
+
+export DOTFILES
 
 
 # Detect OS (kernel) and ID (distro)
