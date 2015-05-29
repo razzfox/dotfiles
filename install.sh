@@ -20,7 +20,7 @@ fi
 
 
 # Detect OS (kernel) and ID (distro)
-source $DOTFILES/detect_os.sh
+source $DOTFILES/shell/profile
 
 
 # Links
@@ -54,6 +54,7 @@ test ! -f "$DOTFILES"/.git/hooks/post-receive && echo "#\!/bin/sh
 GIT_WORK_TREE=$HOME/dotfiles git checkout -f" > "$DOTFILES"/.git/hooks/post-receive && chmod +x "$DOTFILES"/.git/hooks/post-receive
 test ! -f $HOME/.gitconfig && echo "[receive]
 	denyCurrentBranch = ignore" >> $HOME/.gitconfig
+
 
 # Other settings
 echo
