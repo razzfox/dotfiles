@@ -8,9 +8,9 @@
   #unset SCRIPTFILE
 #fi
 
-HISTFILE="$HOME/.bash_history"
-HISTFILESIZE=32768 # allow 32^3 entries; default is 500
-HISTSIZE="$HISTFILESIZE"
-HISTTIMEFORMAT="[%F %T]: "
-HISTCONTROL='ignoredups' # ignoredups or ignorespace or ignoreboth
-HISTIGNORE='clear:cl:exit' # hide some commands from history
+export HISTFILE="$HOME/.bash_history"
+export HISTFILESIZE=32768 # allow 32^3 entries; default is 500
+export HISTSIZE="$HISTFILESIZE"
+export HISTTIMEFORMAT="[%F %T]: "
+export HISTCONTROL='ignoredups' # ignoredups or ignorespace or ignoreboth
+export HISTIGNORE='clear:cl:exit' # hide some commands from history
