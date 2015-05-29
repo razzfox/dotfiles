@@ -1,18 +1,1 @@
 export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:$PATH
-
-# Reset LaunchServices (aka Open With menu)
-/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user;
-
-# Reset LaunchPad
-rm ~/Library/Application\ Support/Dock/*.db ; killall Dock
-defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
-
-# Delete leftover directories
-echo rm -rf $(for f in ~/Library/Containers/*; do osascript -e "app id \"${f##*/}\"" &> /dev/null || echo $f; done)
-
-# Disable Startup Chime
-# Option 1: run mute command on LogoutHook
-#sudo defaults write com.apple.loginwindow LogoutHook $HOME/dotfiles/mac/scripts/disable-startup-chime.sh
-# Option 2: Run script in sleep loop, sleep until capture HUP signal and run mute command
-# Option 3: Try setting nvram
-osascript -e 'set volume with output muted' || echo 7299 | sudo -S nvram SystemAudioVolume=%80
