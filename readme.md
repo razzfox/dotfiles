@@ -8,8 +8,7 @@ To Do
  - prevent clear screen when ssh ends
  - consider set -u/+u (unbound variable) and set -x/+x (print all commands) for testing scripts
  - Is this still needed in hosts.linux? # nscd --invalidate=hosts || true
- - remove unnecessary output from terminal commands
- - remove unnecessary commands and scripts
+
 
 ACHTUNG!
 ----
