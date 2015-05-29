@@ -8,3 +8,22 @@ tidy_home() {
 }
 
 tidy_home "$@"
+
+
+# Reset LaunchServices (aka Open With menu)
+tidy_launchservices() {
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user;
+}
+
+
+# Reset LaunchPad
+tidy_launchpad() {
+  rm ~/Library/Application\ Support/Dock/*.db ; killall Dock
+  defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
+}
+
+
+# Delete leftover App Library directories
+tidy_applibrary() {
+  echo rm -rf $(for f in ~/Library/Containers/*; do osascript -e "app id \"${f##*/}\"" &> /dev/null || echo $f; done)
+}
