@@ -1,6 +1,34 @@
 # Login environment (exports all variables for subsequent shells to use)
 # This file sources the shell settings at the end (if interactive)
 
+# Dotfiles
+test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
+
+
+# Path
+test -z "$BIN_HOME" && test -d $HOME/bin && export BIN_HOME="$HOME/bin" && export PATH="$BIN_HOME:$PATH"
+test -z "$GEM_HOME" && export GEM_HOME="$HOME/.gem" && export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+test -z "$GOPATH" && export GOPATH="$HOME/.gocode" && PATH="$GOPATH/bin:$PATH"
+export PATH
+
+
+# History
+export HISTFILE="$HOME/.bash_history"
+export HISTFILESIZE=32768 # allow 32^3 entries; default is 500
+export HISTSIZE="$HISTFILESIZE"
+export HISTTIMEFORMAT="[%F %T]: "
+export HISTCONTROL='ignoredups' # ignoredups or ignorespace or ignoreboth
+export HISTIGNORE='clear:cl:exit' # hide some commands from history
+
+
+# Other vars
+export EDITOR="$(which nano)" # single line-based editor (the distinction is no longer recognized)
+export VISUAL="$EDITOR" #  milti-line (whole screen) editor
+export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
+
+export LC_ALL="C"
+
+
 # Detect OS (kernel) and ID (distro)
 test -z "$OS" && export OS="$(uname | tr '[:upper:]' '[:lower:]')"
 case "$OS" in
@@ -21,24 +49,9 @@ Windows_NT|CYGWIN_NT-*)
 esac
 
 
-# Dotfiles
-test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
+# Source other profile files
+source profile_colors
+source profile_$OS
 
-
-# Path
-test -z "$BIN_HOME" && test -d $HOME/bin && export BIN_HOME="$HOME/bin" && export PATH="$BIN_HOME:$PATH"
-test -z "$GEM_HOME" && export GEM_HOME="$HOME/.gem" && export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-test -z "$GOPATH" && export GOPATH="$HOME/.gocode" && PATH="$GOPATH/bin:$PATH"
-export PATH
-
-
-# Other vars
-export EDITOR="$(which nano)" # single line-based editor (the distinction is no longer recognized)
-export VISUAL="$EDITOR" #  milti-line (whole screen) editor
-export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
-
-export LC_ALL="C"
-
-
-# Source shell functions and settings (if interactive)
+# Shell functions and settings (if interactive)
 source $DOTFILES/shell/$(basename $SHELL)rc
