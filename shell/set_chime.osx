@@ -1,0 +1,8 @@
+# Disable Startup Chime
+set_chime() {
+  # Option 1: run mute command on LogoutHook
+  #sudo defaults write com.apple.loginwindow LogoutHook $HOME/dotfiles/mac/scripts/disable-startup-chime.sh
+  # Option 2: Run script in sleep loop, sleep until capture HUP signal and run mute command
+  # Option 3: Try setting nvram
+  osascript -e 'set volume with output muted' || echo 7299 | sudo -S nvram SystemAudioVolume=%80
+}
