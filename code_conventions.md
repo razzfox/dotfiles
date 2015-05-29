@@ -1,8 +1,13 @@
 ####
 ####
 
-# Aliases are passe
-#alias cd 'cd \!*; ls' # This is how to include args in an alias
+# Aliases are passe. Use functions instead!
+# This is how to include args in an alias
+#alias cd 'cd \!*; ls'
+# A function:
+# buzz() {
+#   echo "buzz"
+# }
 
 ####
 # Escape UTF-8 characters into their 3-byte format
