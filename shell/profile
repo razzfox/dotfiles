@@ -53,9 +53,11 @@ CYGWIN_NT-*)
 esac
 
 
-# Source other profile files
-source "$DOTFILES/shell/profile_colors"
+# Source OS-specific profile
 source "$DOTFILES/shell/profile_$OS"
+
+# Source color variables
+source "$DOTFILES/shell/profile_colors"
 
 # Shell functions and settings (if interactive)
 source "$DOTFILES/shell/$(basename $SHELL)rc"
