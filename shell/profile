@@ -50,8 +50,8 @@ esac
 
 
 # Source other profile files
-source "$DOTFILES/profile_colors"
-source "$DOTFILES/profile_$OS"
+source "$DOTFILES/shell/profile_colors"
+source "$DOTFILES/shell/profile_$OS"
 
 # Shell functions and settings (if interactive)
 source "$DOTFILES/shell/$(basename $SHELL)rc"
