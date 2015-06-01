@@ -41,8 +41,8 @@ darwin)
   test -z "$HOME" && export HOME=/Users/$(whoami)
   ;;
 Windows_NT|CYGWIN_NT-*)
-  export OS="windows"
-  export ID="cygwin"
+  export OS="cygwin"
+  export ID="windows"
   ;;
 *)
   echo "Your platform '$(uname)' can not be identified." >/dev/stderr
@@ -50,8 +50,8 @@ esac
 
 
 # Source other profile files
-source profile_colors
-source profile_$OS
+source "$DOTFILES/profile_colors"
+source "$DOTFILES/profile_$OS"
 
 # Shell functions and settings (if interactive)
-source $DOTFILES/shell/$(basename $SHELL)rc
+source "$DOTFILES/shell/$(basename $SHELL)rc"
