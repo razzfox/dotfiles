@@ -41,7 +41,9 @@ darwin)
   test -z "$HOME" && export HOME=/Users/$(whoami)
   ;;
 Windows_NT)
-  true
+  export OS="windows"
+  export ID="cygwin"
+  ;;
 CYGWIN_NT-*)
   export OS="windows"
   export ID="cygwin"
