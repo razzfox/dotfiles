@@ -1,19 +1,4 @@
-case "$ID" in
-arch)
-  source /usr/share/bash-completion/bash_completion
-  source /usr/share/git/completion/git-completion.bash
-  source /usr/share/git/completion/git-prompt.sh
-  ;;
-osx)
-  source /usr/local/opt/bash-completion/etc/bash_completion
-  source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh
-  source /usr/local/opt/git/etc/bash_completion.d/git-completion.bash
-  ;;
-cygwin)
-  ;;
-*)
-  echo "Your platform '$(uname)' can not be identified." >/dev/stderr
-esac
+# Relies on environment variables and functions sourced in distro-specific profile for 'git-prompt.sh'.
 
 if ! __git_ps1 >/dev/null; then
   echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
