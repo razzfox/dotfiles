@@ -40,9 +40,11 @@ darwin)
   ID="osx"
   test -z "$HOME" && export HOME=/Users/$(whoami)
   ;;
-Windows_NT|CYGWIN_NT-*)
-  export OS="cygwin"
-  export ID="windows"
+Windows_NT)
+  true
+CYGWIN_NT-*)
+  export OS="windows"
+  export ID="cygwin"
   ;;
 *)
   echo "Your platform '$(uname)' can not be identified." >/dev/stderr
