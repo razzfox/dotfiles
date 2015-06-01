@@ -1,5 +1,5 @@
 # If not running interactively, don't do anything
-test $- != *i* && return
+test -z ${-##*i*} && return
 
 
 # If not inside a tmux session, start a new session or join one
