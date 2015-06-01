@@ -48,8 +48,6 @@ CYGWIN_NT-*)
   export OS="windows"
   export ID="cygwin"
   ;;
-*)
-  echo "Your platform '$(uname)' can not be identified." >/dev/stderr
 esac
 
 
