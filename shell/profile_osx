@@ -1,1 +1,5 @@
 export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:$PATH
+
+source /usr/local/opt/bash-completion/etc/bash_completion
+source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh
+source /usr/local/opt/git/etc/bash_completion.d/git-completion.bash
