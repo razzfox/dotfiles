@@ -5,7 +5,7 @@ test -z ${-##*i*} || return
 # If not inside a tmux session, start a new session or join one
 if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -f .notmux; then
   if tmux list-sessions | cut -d: -f1 | grep -q $USER; then
-    exec tmux new-session -s "$USER-$(date +%N)" -t "$USER"
+    exec tmux new-session -s "$USER-$(date +%N | tail -c 4)" -t "$USER"
   else
     exec tmux new-session -A -s "$USER"
   fi
