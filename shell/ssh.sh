@@ -1,10 +1,11 @@
-# ssh_expect <password> <name@host>
+# ssh_expect <password> <name@host> ["<options/commands>"]
 ssh_expect() {
   expect -f <(cat <<'EOF'
-set pass [lrange $argv 0 0]
-set server [lrange $argv 1 1]
+set pass [lindex $argv 0]
+set server [lindex $argv 1]
+set ops [lindex $argv 2]
 
-spawn ssh -t $server
+spawn ssh -t $server $ops
 match_max 100000
 expect "*?assword:*"
 send -- "$pass\r"
