@@ -1,9 +1,12 @@
 # Relies on environment variables and functions sourced in distro-specific profile for 'git-prompt.sh'.
 
 if ! __git_ps1 >/dev/null; then
+  source /tmp/git-completion.bash /tmp/git-prompt.sh && return
+  
   echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
-  curl -LO https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash && source /tmp/git-completion.bash
-  curl -LO https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh && source /tmp/git-prompt.sh
+  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >/tmp/git-completion.bash
+  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh >/tmp/git-prompt.sh
+  source /tmp/git-completion.bash /tmp/git-prompt.sh
 fi
 
 color_word() {
