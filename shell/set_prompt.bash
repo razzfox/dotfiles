@@ -3,7 +3,7 @@
 if ! __git_ps1 >/dev/null; then
   echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
   curl -LO https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash && source /tmp/git-completion.bash
-  curl -LO https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh) && source /tmp/git-prompt.sh
+  curl -LO https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh && source /tmp/git-prompt.sh
 fi
 
 color_word() {
