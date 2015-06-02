@@ -4,18 +4,13 @@ test -z ${-##*i*} || return
 
 # If not inside a tmux session, start a new session or join one
 if test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -f .notmux; then
-  #tput cup 0 0 # reset cursor
-  if tmux list-sessions >/dev/null 2>/dev/null; then
-    exec tmux attach
-  else
-    which tmux >/dev/null && exec tmux new-session
-  fi
+  which tmux >/dev/null && exec tmux new-session -A -s "$USER"
 fi
 
 
 # Dotfiles
 test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
-for f in $DOTFILES/shell/*.$(basename $SHELL) $DOTFILES/shell/*.sh $DOTFILES/shell/*.$ID $DOTFILES/shell/*.$OS; do
+for f in "$DOTFILES"/shell/*.$(basename $SHELL) "$DOTFILES"/shell/*.sh "$DOTFILES"/shell/*.$ID "$DOTFILES"/shell/*.$OS; do
   source "$f" >/dev/null
 done
 
