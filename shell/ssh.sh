@@ -23,7 +23,7 @@ ssh_servers() {
   chmod 0600 $HOME/.ssh/*
   
   # Optional SERVERS string array
-  test -f $HOME/.ssh/ssh_servers && source $HOME/.ssh/ssh_servers || return
+  test -f $HOME/.ssh/ssh_servers && source $HOME/.ssh/ssh_servers || return 1
   
   for i in ${SERVERS[@]}; do
     unset srv
