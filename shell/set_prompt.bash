@@ -13,7 +13,7 @@ color_word () {
 
 # Relies on otherwise sourced environment variables and functions sourced in distro-specific profile for 'git-prompt.sh'.
 download_git_functions () {
-  source /tmp/git-completion.bash /tmp/git-prompt.sh && continue
+  source /tmp/git-completion.bash /tmp/git-prompt.sh && return
   
   echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
   curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >/tmp/git-completion.bash
