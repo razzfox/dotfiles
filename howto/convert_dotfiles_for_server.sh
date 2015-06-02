@@ -1,4 +1,4 @@
-head -n 15 "$DOTFILES"/shell/bashrc
+head -n 10 "$DOTFILES"/shell/bashrc
 
 cat "$DOTFILES"/shell/*.sh \
   "$DOTFILES"/shell/*.bash \
