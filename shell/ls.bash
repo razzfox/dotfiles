@@ -107,4 +107,4 @@ lr() { # List files in random order
 }
 
 
-test "$#" = 0 || lr "$@"
+#lr "$@"
