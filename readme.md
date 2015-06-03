@@ -9,6 +9,9 @@ To Do
  - consider set -u/+u (unbound variable) and set -x/+x (print all commands) for testing scripts
  - Is this still needed in hosts.linux? # nscd --invalidate=hosts || true
  - Create a './configure, make, make install' process to learn how that works. Replace install.sh.
+ - Remove # from same line as functions
+ - Add space after function ()
+ - tmux send to inside tmux first
 
 
 ACHTUNG!
