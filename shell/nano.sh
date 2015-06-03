@@ -1,3 +1,5 @@
+mkdir -p $HOME/.nanorc_backups
+
 nanosource() {
   nano "$@" && source "$@"
 }
