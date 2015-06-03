@@ -12,6 +12,11 @@ To Do
  - Remove # from same line as functions
  - Add space after function ()
  - tmux send to inside tmux first
+ - Look into saving bash env with the following code:
+unset _monotone _python _tar _xz
+for i in $(declare -f | grep '^\<.*\> ()'); do
+  declare -fx $i
+done
 
 
 ACHTUNG!
