@@ -22,15 +22,19 @@ fi
 export DOTFILES
 
 
-# Detect OS (kernel) and ID (distro)
-source $DOTFILES/shell/profile
+# Detect ID (distro) and OS (kernel)
+test -n "$ID" -o -n "$OS" || source $DOTFILES/shell/profile
 
 
 # Links
 test -d dotfiles || ln --force --relative --symbolic --verbose "$DOTFILES" dotfiles
-ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .bashrc
-ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .bash_profile
-ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .profile
+
+ln --force --relative --symbolic --verbose "$DOTFILES"/shell/profile .profile
+
+if test $SHELL = /bin/bash; then
+  ln --force --relative --symbolic --verbose "$DOTFILES"/shell/profile .bash_profile
+  ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .bashrc
+fi
 
 if test $EUID = 0; then # root
   cd "$DOTFILES"/config/$ID
