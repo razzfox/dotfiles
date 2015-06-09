@@ -12,6 +12,15 @@ git_filehistory() {
   git log -p
 }
 
+git_restore_deleted_file () {
+  test -r "$1" && return 1
+  git checkout $(git rev-list -n 1 HEAD -- "$1")^ -- "$1"
+}
+
+git_search_source_history () {
+  git grep "$1" $(git rev-list --all)
+}
+
 gg() {
   # Test if gitconfig is set up
   grep -F name $HOME/.gitconfig && grep -F email $HOME/.gitconfig

@@ -8,8 +8,7 @@ test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
 # Path
 test -z "$BIN_HOME" && test -d $HOME/bin && export BIN_HOME="$HOME/bin" && export PATH="$BIN_HOME:$PATH"
 test -z "$GEM_HOME" && export GEM_HOME="$HOME/.gem" && export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-test -z "$GOPATH" && export GOPATH="$HOME/.gocode" && PATH="$GOPATH/bin:$PATH"
-export PATH
+test -z "$GOPATH" && export GOPATH="$HOME/.gocode" && export PATH="$GOPATH/bin:$PATH"
 
 
 # History
@@ -30,14 +29,16 @@ export LC_ALL="C"
 
 
 # Detect OS (kernel) and ID (distro)
-test -z "$OS" && export OS="$(uname | tr '[:upper:]' '[:lower:]')"
+test -z "$OS" && OS="$(uname | tr '[:upper:]' '[:lower:]')"
 case "$OS" in
 linux)
   source /etc/os-release
   test "$ID" = "archarm" && export ID="arch"
+  export OS
+  export ID
   ;;
 darwin)
-  ID="osx"
+  export ID="osx"
   test -z "$HOME" && export HOME=/Users/$(whoami)
   ;;
 Windows_NT)
@@ -54,8 +55,10 @@ esac
 # Source OS-specific profile
 source "$DOTFILES/shell/profile_$OS"
 
-# Source color variables
+# Source generic color variables
 source "$DOTFILES/shell/profile_colors"
 
-# Shell functions and settings (if interactive)
+echo profile: $SHELL , $ID , $OS
+
+# Source shell functions and settings (if interactive)
 source "$DOTFILES/shell/$(basename $SHELL)rc"
