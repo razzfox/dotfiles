@@ -17,6 +17,10 @@ unset _monotone _python _tar _xz
 for i in $(declare -f | grep '^\<.*\> ()'); do
   declare -fx $i
 done
+ - Look into using more HERE documents:
+ yum install $1 << CONFIRM
+y
+CONFIRM
 
 
 ACHTUNG!
