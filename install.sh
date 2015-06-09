@@ -34,18 +34,16 @@ ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .profile
 
 if test $EUID = 0; then # root
   cd "$DOTFILES"/config/$ID
-  #cp --interactive --parents --recursive --symbolic-link --update --verbose * /
+  echo cp --interactive --parents --recursive --symbolic-link --update --verbose * /
   cd
 
 else # user
-  for FILE in "$DOTFILES"/config/$ID/$HOME/*; do
+  for FILE in "$DOTFILES"/config/$ID/$HOME/* "$DOTFILES"/config/$ID/$HOME/.??*; do
     if test -d "$FILE"; then
-      # name with a dot
-      mkdir --parents --verbose ".${FILE##*/}"
-      cp --interactive --recursive --symbolic-link --update --verbose "$FILE"/* ".${FILE##*/}"
+      #mkdir --parents --verbose "$(basename "$FILE")"
+      cp --interactive --recursive --symbolic-link --update --verbose "$FILE" ./
     else
-      # name with a dot
-      ln --force --relative --symbolic --verbose "$FILE" ".${FILE##*/}"
+      ln --force --relative --symbolic --verbose "$FILE"
     fi
   done
 
