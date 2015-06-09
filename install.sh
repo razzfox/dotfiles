@@ -33,9 +33,9 @@ ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .bash_profil
 ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .profile
 
 if test $EUID = 0; then # root
-  #cd "$DOTFILES"/linux
+  cd "$DOTFILES"/config/$ID
   #cp --interactive --parents --recursive --symbolic-link --update --verbose * /
-  #cd
+  cd
 
 else # user
   for FILE in "$DOTFILES"/config/$ID/$HOME/*; do
