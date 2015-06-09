@@ -1,0 +1,25 @@
+#
+# Mac specific hacks
+#
+
+# OS X fallback for differently-named commands
+md5sum() {
+  md5
+}
+sha1sum() {
+  shasum
+}
+
+# Merge PDF files
+mergepdf() {
+  echo "Usage: 'mergepdf -o output.pdf input{1,2,3}.pdf'"
+  /System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py
+}
+
+# View HTTP traffic
+sniff() {
+  sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+}
+httpdump() {
+  sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+}
