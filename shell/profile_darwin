@@ -1,4 +1,4 @@
-export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:$PATH
+export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:$PATH
 
 source /usr/local/opt/bash-completion/etc/bash_completion
 source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh
