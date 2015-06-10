@@ -6,6 +6,7 @@ set suspend
 set quickblank
 set backup
 set backupdir ~/.nanobackups
+include ~/.nanorc_bash
 
 include /usr/share/nano/c.nanorc
 include /usr/share/nano/cmake.nanorc
