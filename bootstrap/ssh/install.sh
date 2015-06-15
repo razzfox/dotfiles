@@ -7,4 +7,5 @@ test -f $HOME/.ssh/ssh_servers || echo 'SERVERS=(user@example.university.edu use
 GH_WWW="https://github.com"
 GH_SSH="git@github.com"
 ' >> $HOME/.ssh/ssh_servers
+
 chmod 600 $HOME/.ssh/ssh_servers
