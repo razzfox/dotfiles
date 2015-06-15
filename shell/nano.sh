@@ -1,5 +1,5 @@
 mkdir -p $HOME/.nanobackups
-chmod 0700 $HOME/.nanobackups
+chmod 700 $HOME/.nanobackups
 
 if test ! -f $HOME/.nanorc; then
   bash "DOTFILES"/bootstrap/nano/install.sh
