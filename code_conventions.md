@@ -1,13 +1,24 @@
 ####
+
+# Keep a directory empty in git (and ignore new files)
+echo '# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
+' >> EMPTY_DIRECTORY/.gitignore
+
+# Keep an empty directory in git (but allow files later)
+touch EMPTY_DIRECTORY/.gitignore
+
 ####
 
 # Aliases are passe. Use functions instead!
-# This is how to include args in an alias
-#alias cd 'cd \!*; ls'
+#alias cd 'cd \!*; ls' # This is how to include args in an alias
+
 # A function:
-# buzz() {
-#   echo "buzz"
-# }
+buzz() {
+  echo "buzz"
+}
 
 ####
 # Escape UTF-8 characters into their 3-byte format
@@ -30,10 +41,10 @@ data_url() {
 ####
 
 # Dotfiles should stay as terminal settings, not full-blown portable programs.
-# The difference between a shell function and a script is that a shell function is an atomic action typed by hand and returned to the terminal immediately.
-# A script takes more time or is usually executed as/by another process.
-# A shell function should be merely a modified way to start another program.
-# A script is defined by the programming logic it is written in, and is a program in itself.
+The difference between a shell function and a script is that a shell function is an atomic action typed by hand and returned to the terminal immediately.
+A script takes more time or is usually executed as/by another process.
+A shell function should be merely a modified way to start another program.
+A script is defined by the programming logic it is written in, and is a program in itself.
 
 ####
 
@@ -62,7 +73,7 @@ test -z "$location" && location=/ || printf -v location '%b' "${location//%/\\x}
 ####
 
 # A shell's functions are to assist in executing files, managing files, managing processes, and serving files+pipes to processes, to aid in browsing/displaying/editing.
-# It excells at doing this locally and remotely because it is a text interface, but smart command+file completion, suggestion, and highlighting is paramount.
+It excells at doing this locally and remotely because it is a text interface, but smart command+file completion, suggestion, and highlighting is paramount.
 
 ####
 
@@ -74,14 +85,13 @@ test -z "$location" && location=/ || printf -v location '%b' "${location//%/\\x}
 
 ####
 
-# Shell script naming priority should try to be as specific as possible (shell name whenever possible):
-# Does it work only in your SHELL?
-# or is it important for any tty or shell (SH)?
-# Does it work only on your distro (ID)?
-# or is it important for any of the same kernel (OS)?
-# SHELL (program) > SH (any shell) > ID (distro) > OS (kernel)
-# example: .bash > .sh > .arch > .linux
-# Scripts are sourced in the same order.
+# Shell script naming priority should try to be as specific as possible (shell name whenever possible). Scripts are sourced in this order:
+Does it work only in your SHELL?
+  or is it important for any tty or shell (SH)?
+Does it work only on your distro (ID)?
+  or is it important for any of the same kernel (OS)?
+SHELL (program) > SH (any shell) > ID (distro) > OS (kernel)
+  example: .bash > .sh > .arch > .linux
 
 ####
 
