@@ -55,7 +55,7 @@ fi
 
 
 # Enable 'git push' synchronization from other servers
-test ! -f "$DOTFILES"/.git/hooks/post-receive && echo "#\!/bin/sh
+echo "#\!/bin/sh
 GIT_WORK_TREE=$HOME/dotfiles git checkout -f" > "$DOTFILES"/.git/hooks/post-receive && chmod +x "$DOTFILES"/.git/hooks/post-receive
 test ! -f $HOME/.gitconfig && echo "[receive]
 	denyCurrentBranch = ignore" >> $HOME/.gitconfig
