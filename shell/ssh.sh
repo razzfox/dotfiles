@@ -1,7 +1,7 @@
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
-  bash "DOTFILES"/bootstrap/ssh/install.sh
+  bash "DOTFILES"/bootstrap/ssh/settings.sh
 fi
 
 # Protect ~/.ssh from other users and own group
