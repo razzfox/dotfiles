@@ -1,4 +1,7 @@
 mkdir -p $HOME/.nanobackups
+chmod 0700 $HOME/.ssh
+chmod 0600 $HOME/.ssh/*
+
 if test ! -f $HOME/.nanorc; then
   test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/* >> $HOME/.nanorc
   test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/* >> $HOME/.nanorc
