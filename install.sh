@@ -60,6 +60,9 @@ GIT_WORK_TREE=$HOME/dotfiles git checkout -f" > "$DOTFILES"/.git/hooks/post-rece
 test ! -f $HOME/.gitconfig && echo "[receive]
 	denyCurrentBranch = ignore" >> $HOME/.gitconfig
 
+# Squelsh "adopt current behavior" message
+git config --global push.default simple
+
 
 # Other settings
 echo
