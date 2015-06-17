@@ -55,8 +55,7 @@ fi
 
 
 # Enable 'git push' synchronization from other servers
-echo "#\!/bin/sh
-GIT_WORK_TREE='$DOTFILES' git checkout -f" > "$DOTFILES"/.git/hooks/post-receive
+echo "#\!/bin/env GIT_WORK_TREE='$DOTFILES' git checkout -f" > "$DOTFILES"/.git/hooks/post-receive
 chmod +x "$DOTFILES"/.git/hooks/post-receive
 
 # Allow receiving a push to this repo
