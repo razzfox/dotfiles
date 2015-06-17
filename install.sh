@@ -56,11 +56,11 @@ fi
 
 # Enable 'git push' synchronization from other servers
 echo "#\!/bin/sh
-GIT_WORK_TREE=$HOME/dotfiles git checkout -f" > "$DOTFILES"/.git/hooks/post-receive
+GIT_WORK_TREE='$DOTFILES' git checkout -f" > "$DOTFILES"/.git/hooks/post-receive
 chmod +x "$DOTFILES"/.git/hooks/post-receive
 
 # Allow receiving a push to this repo
-git config receive.denyCurrentBranch = ignore
+git config receive.denyCurrentBranch ignore
 
 # Squelsh "adopt current behavior" message for global
 git config --global push.default simple
