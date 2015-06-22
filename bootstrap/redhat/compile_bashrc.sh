@@ -3,6 +3,7 @@
 # bind r source-file ~/.USER_tmux.conf
 
 
+# Output:
 echo "TMUX_CONF=.${USER}_tmux.conf"
 
 head -n 15 "$DOTFILES"/shell/bashrc
