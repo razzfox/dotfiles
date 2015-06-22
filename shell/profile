@@ -55,10 +55,8 @@ esac
 # Source OS-specific profile
 source "$DOTFILES/shell/profile_$OS"
 
-# Source generic color variables
+# Source variables for terminal color codes
 source "$DOTFILES/shell/profile_colors"
-
-echo profile: $SHELL , $ID , $OS
 
 # Source shell functions and settings (if interactive)
 source "$DOTFILES/shell/$(basename $SHELL)rc"
