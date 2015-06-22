@@ -1,11 +1,10 @@
-# Tmux: copy .tmux.conf as separate file. Rename NEWUSER and TMUX_CONF as necessary below
-echo 'NEWUSER=razz
-TMUX_CONF=".${NEWUSER}_tmux.conf"
-if tmux list-sessions | cut -d: -f1 | grep -q $NEWUSER 2>/dev/null; then
-    exec tmux -f $TMUX_CONF new-session -s "${NEWUSER}-$(date +%N | tr -d 0 | tail -c 4)" -t $NEWUSER
-  else
-    exec tmux -f $TMUX_CONF new-session -A -s $NEWUSER
-fi
+# Copy your ''.USER_tmux.conf' separately and change these variables:
+# set -g default-command "${SHELL} --rcfile ~/.USER"
+# bind r source-file ~/.USER_tmux.conf
+
+
+echo '
+TMUX_CONF=".${USER}_tmux.conf"
 '
 
 cat "$DOTFILES"/shell/profile \
