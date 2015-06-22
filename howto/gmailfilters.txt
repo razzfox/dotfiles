@@ -1,5 +1,0 @@
-from:(
-employer@email.arizona.edu OR osfa-su@email.arizona.edu OR employer@email.arizona.edu OR crsc-survey@email.arizona.edu OR crsv-survey@email.arizona.edu OR info@baseline.mail.campuslabs.com OR chs-insurance@distribution.arizona.edu OR chs-insurance@ditribution.arizona.edu OR chsinsurance@health.arizona.edu OR prust@al.arizona.edu OR sls-thinktank@email.arizona.edu OR crsv-career@email.arizona.edu OR webmaster@www.bookstore.arizona.edu OR webmaster@uapd.arizona.edu OR pts-parkinginformation@email.arizona.edu OR cssurvey@email.arizona.edu OR notification@email.studentvoice.com
-)
-
-Delete it, Never mark it as important
