@@ -1,3 +1,7 @@
+# Upgrade fails. Usually because it's been a while since last upgrade.
+# Try upgrading important packages by themselves: arch-linux-keyring pgp linux
+# Perhaps write a scriptc that searches for "base" upgrades, and runs that first, then runs upgrade again.
+
 ####
 
 # Keep a directory empty in git (and ignore new files)
