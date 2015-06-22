@@ -5,17 +5,16 @@ test -z ${-##*i*} || return
 # If not inside a tmux session, start a new session or join one
 if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -f .notmux; then
   if tmux list-sessions | cut -d: -f1 | grep -q $USER 2>/dev/null; then
-    exec tmux new-session -s "$USER-$(date +%N | tr -d 0 | tail -c 4)" -t "$USER"
+    exec tmux -f ${TMUX_CONF:-$HOME/.tmux.conf} new-session -s "${USER}-$(date +%N | tr -d 0 | tail -c 4)" -t "$USER"
   else
-    exec tmux new-session -A -s "$USER"
+    exec tmux -f ${TMUX_CONF:-$HOME/.tmux.conf} new-session -A -s "$USER"
   fi
 fi
 
 
 # Dotfiles
-test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
-for f in "$DOTFILES"/shell/{*.$(basename $SHELL),*.sh,*.$ID,*.$OS}; do
-  source "$f" >/dev/null
+for file in "${DOTFILES:-dotfiles}"/shell/{*.$(basename ${SHELL:-bash}),*.sh,*.${ID:-arch},*.${OS:-linux}}; do
+  source "$file" >/dev/null
 done
 
 
