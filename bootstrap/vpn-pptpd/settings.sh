@@ -1,5 +1,3 @@
-pacman -S pptpd
-
 echo "option /etc/ppp/pptpd-options
 localip 172.16.36.1
 remoteip 172.16.36.2-254" > /etc/pptpd.conf
