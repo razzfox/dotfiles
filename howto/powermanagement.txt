@@ -1,7 +1,0 @@
-#watch grep \"cpu MHz\" /proc/cpuinfo
-cpupower frequency-set -g powersave
-aura -A phc-intel
-phc-intel setup
-
-aura -A mprime-bin
-dotfiles/root/root/mprime-phc-setup.sh
