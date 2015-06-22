@@ -54,3 +54,6 @@ sudo ln -s /Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home /Syst
 
 # Create .gitignore for Macs
 echo ".DS_Store" >> ~/.gitignore
+
+# App Store Debug Menu
+defaults write com.apple.appstore ShowDebugMenu -bool true
