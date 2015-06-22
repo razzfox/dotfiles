@@ -2,8 +2,8 @@
 # set -g default-command "$SHELL --rcfile ~/.${TMUX_SESSION}"
 
 # Output:
-echo "TMUX_CONF=.${USER}_tmux.conf
-TMUX_SESSION=$USER"
+echo "export TMUX_CONF=.${USER}_tmux.conf
+export TMUX_SESSION=$USER"
 
 head -n 15 "$DOTFILES"/shell/bashrc
 
