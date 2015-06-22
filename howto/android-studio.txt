@@ -1,1 +1,0 @@
-#root must adb start-server before USB Debugging will work on user.
