@@ -1,4 +1,10 @@
-# Upgrade fails. Usually because it's been a while since last upgrade.
+####
+
+# Mac OS X: Darwin refers to the underlying kernel and terminal utilities put together by Apple, which has slightly different (BSD?) implementations than Arch Linux (GNU?). Shell scripts are called OSX when they refer more to the OS X userspace.
+
+####
+
+# Arch Linux: Upgrade fails. Usually because it's been a while since last upgrade.
 # Try upgrading important packages by themselves: arch-linux-keyring pgp linux
 # Perhaps write a scriptc that searches for "base" upgrades, and runs that first, then runs upgrade again.
 
