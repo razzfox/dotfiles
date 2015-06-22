@@ -3,7 +3,7 @@
 
 # Output:
 echo "TMUX_CONF=.${USER}_tmux.conf
-TMUX_SESSION=.${USER}"
+TMUX_SESSION=$USER"
 
 head -n 15 "$DOTFILES"/shell/bashrc
 
