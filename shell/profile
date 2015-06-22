@@ -53,10 +53,10 @@ esac
 
 
 # Source OS-specific profile
-source "$DOTFILES/shell/profile_$OS"
+source "$DOTFILES"/shell/profile_$OS
 
 # Source variables for terminal color codes
-source "$DOTFILES/shell/profile_colors"
+source "$DOTFILES"/shell/profile_colors
 
 # Source shell functions and settings (if interactive)
-source "$DOTFILES/shell/$(basename $SHELL)rc"
+source "$DOTFILES"/shell/$(basename $SHELL)rc
