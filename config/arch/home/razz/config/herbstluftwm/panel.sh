@@ -24,9 +24,9 @@ textcolor='#909090'
 flashcolor='#ff0675' #'#ef9090'
 
 # Variables
-getbat="bash $HOME/dotfiles/shell/bat.arch"
-getvol="bash $HOME/dotfiles/shell/vl.arch"
-getbr="bash $HOME/dotfiles/shell/br.arch"
+getbat="bash $DOTFILES/shell/bat.arch"
+getvol="bash $DOTFILES/shell/vl.arch"
+getbr="bash $DOTFILES/shell/br.arch"
 
 # Initialize vars
 battery='00.0%'
