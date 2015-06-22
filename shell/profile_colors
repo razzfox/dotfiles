@@ -1,4 +1,4 @@
-### functions that use color: commacd, dotfiles-sync, gg, lsgit, set_prompt (PS1 var requires '\[...\]' characters)
+### functions that use these colors: git.sh and set_prompt.bash
 
 ## Reset Color
 C_F='\033[0m'         # Color OFF (ternimal FG color)
