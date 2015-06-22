@@ -33,7 +33,7 @@ export LC_ALL="C"
 
 
 # Detect OS (kernel) and ID (distro)
-test -z "$OS" && OS="$(uname | tr '[:upper:]' '[:lower:]')"
+test -z "$OS" && export OS="$(uname | tr '[:upper:]' '[:lower:]')"
 case "$OS" in
 linux)
   source /etc/os-release
