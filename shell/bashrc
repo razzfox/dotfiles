@@ -11,7 +11,7 @@ if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != 
   fi
 fi
 
-echo bashrc: $SHELL , $ID , $OS
+
 # Dotfiles
 test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
 for f in "$DOTFILES"/shell/{*.$(basename $SHELL),*.sh,*.$ID,*.$OS}; do
