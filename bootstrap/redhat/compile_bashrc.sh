@@ -6,14 +6,13 @@ if tmux list-sessions | cut -d: -f1 | grep -q $NEWUSER 2>/dev/null; then
   else
     exec tmux -f $TMUX_CONF new-session -A -s $NEWUSER
 fi
-' > compile_bashrc.out
+'
 
 cat "$DOTFILES"/shell/profile \
-  "$DOTFILES"/shell/profile_$OS \
+  "$DOTFILES"/shell/profile_linux \
   "$DOTFILES"/shell/profile_colors \
-  "$DOTFILES"/shell/{*.$(basename $SHELL),*.sh,*.$ID,*.$OS} \
+  "$DOTFILES"/shell/{*.bash,*.sh,*.redhat,*.linux} \
 | grep -v "^source.*" \
 | grep -v "^which.*return.*" \
 | grep -v "^test.*return.*" \
-| grep -v "^pulse.*return.*" \
->> compile_bashrc.out
+| grep -v "^pulse.*return.*"
