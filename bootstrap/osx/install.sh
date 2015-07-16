@@ -57,3 +57,5 @@ echo ".DS_Store" >> ~/.gitignore
 
 # App Store Debug Menu
 defaults write com.apple.appstore ShowDebugMenu -bool true
+defaults write com.apple.screencapture location $HOME;killall SystemUIServer
+defaults write com.apple.screencapture type png
