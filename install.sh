@@ -52,7 +52,7 @@ echo "#\!/bin/env GIT_WORK_TREE='$DOTFILES' git checkout -f" > "$DOTFILES"/.git/
 chmod +x "$DOTFILES"/.git/hooks/post-receive
 
 # Allow receiving a push to this repo
-git config receive.denyCurrentBranch ignore
+git config --global receive.denyCurrentBranch ignore
 
 # Squelsh "adopt current behavior" message for global
 git config --global push.default simple
