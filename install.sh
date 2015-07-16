@@ -16,7 +16,9 @@ export DOTFILES
 
 
 # Detect ID (distro) and OS (kernel)
+touch .notmux
 test -n "$ID" || source $DOTFILES/shell/profile
+rm .notmux
 
 
 # Links
