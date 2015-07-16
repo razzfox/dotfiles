@@ -5,25 +5,19 @@
 
 # Locate dotfiles
 cd
-
-test -z "$DOTFILES" && if test $# = 1; then
-  DOTFILES="$1"
+test -z "$DOTFILES" -a $# = 1 && DOTFILES="$1" || DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DOTFILES="$(readlink -f "$DOTFILES")"
+if test ! -d "$DOTFILES" -a -d dotfiles; then
+  DOTFILES="$PWD/dotfiles"
 else
-  test -d "$(dirname "$0")" && DOTFILES="$(dirname "$0")" || DOTFILES="$HOME/dotfiles"
-fi
-
-if test ! -d "$DOTFILES"; then
   echo "Error: '$DOTFILES' does not exist." >/dev/stderr
   return 1
-else
-  DOTFILES="$(readlink -f "$DOTFILES")"
 fi
-
 export DOTFILES
 
 
 # Detect ID (distro) and OS (kernel)
-test -n "$ID" -o -n "$OS" || source $DOTFILES/shell/profile
+test -n "$ID" || source $DOTFILES/shell/profile
 
 
 # Links
@@ -47,7 +41,7 @@ else # user
       #mkdir --parents --verbose "$(basename "$FILE")"
       cp --interactive --recursive --symbolic-link --update --verbose "$FILE" ./
     else
-      ln --force --relative --symbolic --verbose "$FILE"
+      test -e "$FILE" && ln --force --relative --symbolic --verbose "$FILE"
     fi
   done
 
