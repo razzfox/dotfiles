@@ -7,9 +7,8 @@
 cd
 test -z "$DOTFILES" -a $# = 1 && DOTFILES="$1" || DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DOTFILES="$(readlink -f "$DOTFILES")"
-if test ! -d "$DOTFILES" -a -d dotfiles; then
-  DOTFILES="$PWD/dotfiles"
-else
+test ! -d "$DOTFILES" -a -d dotfiles && DOTFILES="$PWD/dotfiles"
+if test ! -d "$DOTFILES"; then
   echo "Error: '$DOTFILES' does not exist." >/dev/stderr
   return 1
 fi
@@ -22,9 +21,7 @@ test -n "$ID" || source $DOTFILES/shell/profile
 
 # Links
 test -d dotfiles || ln --force --relative --symbolic --verbose "$DOTFILES" dotfiles
-
 ln --force --relative --symbolic --verbose "$DOTFILES"/shell/profile .profile
-
 if test $SHELL = /bin/bash; then
   ln --force --relative --symbolic --verbose "$DOTFILES"/shell/profile .bash_profile
   ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .bashrc
