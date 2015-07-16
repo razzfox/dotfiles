@@ -1,7 +1,3 @@
-# If not running interactively, don't do anything
-test -z ${-##*i*} || return
-
-
 # If not inside a tmux session, start a new session or join one
 if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -e .notmux; then
   if tmux list-sessions | cut -d: -f1 | grep -q "${TMUX_SESSION:-$USER}" 2>/dev/null; then
