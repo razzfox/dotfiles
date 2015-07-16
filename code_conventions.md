@@ -1,3 +1,18 @@
+
+####
+
+####
+
+# Put these lines at the top and bootom of your bashrc
+PS4='+ $(date "+%s.%N")\011 '
+exec 3>&2 2>/tmp/bashstart.$$.log
+set -x
+
+# code
+
+set +x
+exec 2>&3 3>&-
+
 ####
 
 # Mac OS X: Darwin refers to the underlying kernel and terminal utilities put together by Apple, which has slightly different (BSD?) implementations than Arch Linux (GNU?). Shell scripts are called OSX when they refer more to the OS X userspace.
