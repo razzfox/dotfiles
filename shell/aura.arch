@@ -15,6 +15,22 @@ done
 '
 }
 
+sudo_enable() {
+  # Add 'nobody' to '/etc/sudoers'
+  $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
+
+  # user where=(who) NOPASSWD: what
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers || return 1
+
+# I cant find out what programs make this work! pacman must be running another program that I have not listed.
+#  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which sudo) $(which pacman) $aur" >>/etc/sudoers || return 1
+}
+
+sudo_disable() {
+  # Remove 'nobody' from '/etc/sudoers'
+  $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
+}
+
 aura() {
   pushd .
   cd "${BUILDDIR:-/tmp}"
@@ -25,16 +41,11 @@ aura() {
     chmod +x "$aur"
   fi
 
-  # Add 'nobody' to '/etc/sudoers'
-  $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
-  # user where=(who) NOPASSWD: what
-#  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers || return 1
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which pacman) $aur" >>/etc/sudoers || return 1
+  sudo_enable || return 1
 
-  sudo --user ${BUILDUSER:-nobody} $aur "$@"
+  sudo --user ${BUILDUSER:-nobody} sudo $aur "$@"
 
-  # Remove 'nobody' from '/etc/sudoers'
-  $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
+  sudo_disable
 
   popd
 }
