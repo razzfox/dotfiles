@@ -2,3 +2,5 @@ source /usr/local/opt/bash-completion/etc/bash_completion
 
 source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh
 source /usr/local/opt/git/etc/bash_completion.d/git-completion.bash
+
+__git_ps1 || git_download_functions
