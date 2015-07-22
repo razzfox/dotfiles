@@ -18,11 +18,11 @@ ssh_servers() {
     unset srv
     unset nameup
     unset namelow
-  
+
     srv="${i#*@}" # get substring after '@'
     namelow="$( echo ${srv} | cut -d'.' -f1 | tr '[:upper:]' '[:lower:]' )"
     nameup="$( echo ${namelow} | tr '[:lower:]' '[:upper:]' )"
-  
+
     if test "${srv##*.}" = "local"; then
       declare ${nameup}LOCAL="${i}"
       eval "ssh${namelow}local() { ssh ${i}; }"
@@ -49,3 +49,6 @@ interact
 EOF
   ) "$@"
 }
+
+
+ssh_servers "$@"
