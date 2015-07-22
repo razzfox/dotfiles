@@ -1,9 +1,9 @@
-mkdir -p $HOME/.nanobackups
-chmod 700 $HOME/.nanobackups
-
 if test ! -f $HOME/.nanorc; then
   bash "$DOTFILES"/bootstrap/nano/settings.sh
 fi
+
+mkdir -p $HOME/.config/nano/backups
+chmod 700 $HOME/.config/nano/backups
 
 nanosource() {
   nano "$@" && source "$@"

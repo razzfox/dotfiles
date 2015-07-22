@@ -1,6 +1,6 @@
 # Sort files one level deep based on extension in filename
 
-searchhere_extension_list() {
+sorthere_extension_list() {
   test $# != 0 || return
   unset type
   if test "$1" = "-d"; then
@@ -66,8 +66,8 @@ searchhere_extension_list() {
 sorthere_extension_echo() {
   test $# != 0 || return
 
-  FILE_FOUND="$(searchhere_extension_list -f $@)"
-  DIRECTORY_FOUND="$(searchhere_extension_list -d $@)"
+  FILE_FOUND="$(sorthere_extension_list -f $@)"
+  DIRECTORY_FOUND="$(sorthere_extension_list -d $@)"
 
   test -n "$FILE_FOUND" && while read file; do
     echo mv -v "$file" ./
@@ -83,8 +83,8 @@ sorthere_extension_echo() {
 sorthere_extension_mv() {
   test $# != 0 || return
 
-  FILE_FOUND="$(searchhere_extension_list -f $@)"
-  DIRECTORY_FOUND="$(searchhere_extension_list -d $@)"
+  FILE_FOUND="$(sorthere_extension_list -f $@)"
+  DIRECTORY_FOUND="$(sorthere_extension_list -d $@)"
 
   test -n "$FILE_FOUND" && while read file; do
     mv -v "$file" ./
