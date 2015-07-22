@@ -1,5 +1,5 @@
-#Modifier Key: Alt/Option
-#               + Shift         + Control       + Super         [none]
+#Modifier: Alt/Option (Mod1)
+#               + Shift         + Control       + Super (Mod4)  [none]
 #             ---------------------------------------------------------------
 # /\,\/,<-,-> | (move-window)   (resize-frame)  (create-frame)  (focus-window)
 # Backspace   |                                 (remove-frame)  (remove-frame)
@@ -11,14 +11,17 @@
 # x key       | (remove-tag)                                    (close-window)
 # c key       | (create-tag)
 # t key       | (terminal)
-# p key       | (dmenu_run)                                     (dmenu.sh)
+#
+# No Modifier:
+# spacebar    | (dmenu_run)                     (dmenu.sh)
+# e key       |                                 (dmenu_explore.sh)
 
 hc() {
   COMMANDS="$COMMANDS , $@"
 }
 
-#Mod=Mod4 # use the super key
-Mod=Mod1 # use alt/option
+Super=Mod4 # super key
+Mod=Mod1 # alt/option key
 SCREENSAVER="xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="xset s off -dpms"
 TERMINAL="${TERMINAL:-$(which st)}"
@@ -36,9 +39,9 @@ hc keybind $Mod-r reload
 hc keybind $Mod-t spawn $TERMINAL
 hc keybind $Mod-Shift-t spawn $TERMINAL
 hc keybind $Mod-Shift-Return spawn $TERMINAL
-hc keybind $Mod-p spawn $DMENU_LAUNCH
-hc keybind $Mod-Shift-p spawn dmenu_run
-hc keybind $Mod-e spawn $DMENU_EXPLORE
+hc keybind $Super-space spawn $DMENU_LAUNCH
+hc keybind $Super-Shift-space spawn dmenu_run
+hc keybind $Super-e spawn $DMENU_EXPLORE
 
 
 # Media Keys
@@ -89,8 +92,8 @@ hc keybind $Mod-Shift-x spawn $TAG create
 # Focus Tags
 tag_names=( $(herbstclient tag_status 0) )
 for i in $(seq --separator=' ' ${#tag_names[@]}); do
-  hc keybind Mod1-${i:(-1)} use_index $(($i-1))
-  hc keybind Mod1-Shift-${i:(-1)} move_index $(($i-1))
+  hc keybind $Mod-${i:(-1)} use_index $(($i-1))
+  hc keybind $Mod-Shift-${i:(-1)} move_index $(($i-1))
 done
 
 hc keybind $Mod-period use_index +1 --skip-visible
@@ -123,21 +126,21 @@ hc keybind $Mod-Right focus right
 
 hc keybind $Mod-Tab cycle_all +1
 hc keybind $Mod-Shift-Tab cycle_all -1
-hc keybind $Mod-grave cycle_monitor
+hc keybind $Mod-quote cycle_monitor # Shift-comma
 
 
 # Manage Frames
-hc keybind $Mod-Mod4-Left split left 0.5
-hc keybind $Mod-Mod4-Down split bottom 0.5
-hc keybind $Mod-Mod4-Up split top 0.5
-hc keybind $Mod-Mod4-Right split right 0.5
+hc keybind $Mod-$Super-Left split left 0.5
+hc keybind $Mod-$Super-Down split bottom 0.5
+hc keybind $Mod-$Super-Up split top 0.5
+hc keybind $Mod-$Super-Right split right 0.5
 
 hc keybind $Mod-x remove
 
 hc keybind $Mod-f cycle_layout 1
 hc keybind $Mod-Shift-f floating toggle
 hc keybind $Mod-Control-f fullscreen toggle
-hc keybind $Mod-Mod4-f pseudotile toggle
+hc keybind $Mod-$Super-f pseudotile toggle
 
 
 # Mouse

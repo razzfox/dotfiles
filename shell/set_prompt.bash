@@ -22,7 +22,7 @@ download_git_functions () {
   source /tmp/git-prompt.sh
 }
 
-__git_ps1 >/dev/null 2>/dev/null || download_git_functions
+__git_ps1 || download_git_functions
 
 set_prompt() {
   # NOTE: PS1 var requires '\[...\]' characters around color codes
