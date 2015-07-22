@@ -1,5 +1,6 @@
-# Login environment (exports all variables for subsequent shells to use)
-# This file sources the shell settings at the end (if interactive)
+# Login environment (exports all variables for subshells to use)
+# Beware: do not source functions here as it will not export to subshells, as this file is only called for login shells.
+# Subsequent shells read shellrc directly, and this file sources it at the end (if interactive).
 
 # Dotfiles
 test -z "$DOTFILES" && export DOTFILES="$HOME/dotfiles" # default location
@@ -42,6 +43,7 @@ linux)
   export ID
   ;;
 darwin)
+  export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:$PATH
   export ID="osx"
   test -z "$HOME" && export HOME=/Users/$(whoami)
   ;;
@@ -55,12 +57,6 @@ CYGWIN_NT-*)
   ;;
 esac
 
-
-# Source OS-specific profile
-source "$DOTFILES"/shell/profile_$OS
-
-# Source variables for terminal color codes
-source "$DOTFILES"/shell/profile_colors
 
 # Source shell functions and settings (if interactive)
 source "$DOTFILES"/shell/$(basename $SHELL)rc
