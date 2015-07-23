@@ -1,0 +1,14 @@
+case "$OSTYPE" in
+  *'linux'*   )
+    true
+    ;;
+  *'darwin'*  )
+    true
+    ;;
+  *'freebsd'* )
+    true
+    ;;
+  *'cygwin'*  )
+    true
+    ;;
+esac

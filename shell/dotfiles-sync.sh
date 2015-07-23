@@ -1,7 +1,7 @@
 # Uses optional env var '$SERVERS' array from '.ssh/ssh_servers'
 dotfiles-sync() {
   pushd .
-  cd $DOTFILES
+  cd "$DOTFILES"
 
   # Check status, do not proceed unless repo is clean
   if ! gg; then
@@ -23,7 +23,7 @@ dotfiles-sync() {
 
   for i in ${SERVERS[*]}; do
     echo -e "${C_EMP}git push $i$C_F"
-    if test "${i##*.}" = "local"; then
+    if test "${i##*\.}" = "local"; then
       ping -c 1 ${i#*@} >/dev/null 2>/dev/null && git push --force $i:~/dotfiles master || echo -e "${C_EMR}dotfiles-sync: Error: git push $i failed!$C_F" >/dev/stderr &
     else
       git push --force $i:~/dotfiles master || echo -e "${C_EMR}dotfiles-sync: Error: git push $i failed!$C_F" >/dev/stderr &
