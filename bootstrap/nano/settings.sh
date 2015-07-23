@@ -1,7 +1,12 @@
-mkdir -p $HOME/.nanobackups
-chmod 700 $HOME/.nanobackups
+mkdir -p $HOME/.config/nano/backups
+chmod 700 $HOME/.config/nano/backups
 
-if test ! -f $HOME/.nanorc; then
+if test ! -e $HOME/.config/nano/bash.nanorc; then
+  echo 'syntax "bash" "\.(bash|zsh|fish|arch|linux|osx|darwin|cygwin|windows)$"' >$HOME/.config/nano/bash.nanorc
+  cat /usr/local/share/nano/sh.nanorc /usr/share/nano/sh.nanorc 2>/dev/null | tail -n +4 >>$HOME/.config/nano/bash.nanorc
+fi
+
+if test ! -e $HOME/.nanorc; then
   echo "set autoindent
 set morespace
 set nohelp
@@ -9,10 +14,10 @@ set nowrap
 set suspend
 set quickblank
 set backup
-set backupdir $HOME/.nanobackups
-" >> $HOME/.nanorc
+set backupdir $HOME/.config/nano/backups
+include $HOME/.config/nano/bash.nanorc
+" >$HOME/.nanorc
 
-  test -f $HOME/.nanorc_bash && echo "include $HOME/.nanorc_bash" >> $HOME/.nanorc
-  test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/* >> $HOME/.nanorc
-  test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/* >> $HOME/.nanorc
+  test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/* >>$HOME/.nanorc
+  test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/* >>$HOME/.nanorc
 fi

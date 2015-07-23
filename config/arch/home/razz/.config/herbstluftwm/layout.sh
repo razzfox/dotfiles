@@ -12,23 +12,28 @@ hc() {
   COMMANDS="$COMMANDS , $@"
 }
 
-#unset tag_names
-#tag_names=( TERM DEV WEB MEDIA CHAT )
+unset tag_names
+tag_names=( WEB TERM DEV )
+tag_names+=( $@ )
 
 
 ## Tag actions must be atomic, not chained together
+herbstclient lock
+
 # Remove Tags (on config reload)
-#for tag in $(herbstclient tag_status $monitor); do
-#  herbstclient remove_monitor $monitor $tag # this is not tested...
-#done
+for tag in $(herbstclient tag_status $monitor); do
+  herbstclient remove_monitor $monitor $tag # this is not tested...
+done
 
 # Create Tags
-#tag_names+=( $@ )
-#for i in ${!tag_names[@]} ; do
-#  herbstclient add "${tag_names[$i]}"
-#done
-#herbstclient use "${tag_names[0]}" # move to the first created tag
-#herbstclient merge_tag default # remove the initial tag
+for i in ${!tag_names[@]}; do
+  herbstclient add "${tag_names[$i]}"
+done
+herbstclient use "${tag_names[0]}" # move to the first created tag
+herbstclient merge_tag default # remove the initial tag
+
+## End atomic tag actions
+herbstclient unlock
 
 
 # Rules

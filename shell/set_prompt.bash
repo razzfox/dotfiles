@@ -11,19 +11,6 @@ color_word () {
   echo -e "\033[$(( $HASH % 2 ));3${HASH}m$1\033[m" # print color codes
 }
 
-# Relies on otherwise sourced environment variables and functions sourced in distro-specific profile for 'git-prompt.sh'.
-download_git_functions () {
-  source /tmp/git-completion.bash && source /tmp/git-prompt.sh && return
-
-  echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
-  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >/tmp/git-completion.bash
-  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh >/tmp/git-prompt.sh
-  source /tmp/git-completion.bash
-  source /tmp/git-prompt.sh
-}
-
-__git_ps1 >/dev/null 2>/dev/null || download_git_functions
-
 set_prompt() {
   # NOTE: PS1 var requires '\[...\]' characters around color codes
   GIT_PS1="\$(__git_ps1 \" on \[${C_EMP}\]%s\[${C_F}\]\")"

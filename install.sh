@@ -31,14 +31,13 @@ fi
 
 if test $EUID = 0; then # root
   cd "$DOTFILES"/config/$ID
-  echo cp --interactive --parents --recursive --symbolic-link --update --verbose * /
+  echo cp --force --interactive --parents --recursive --symbolic-link --verbose * /
   cd
 
-else # user
-  for FILE in "$DOTFILES"/config/$ID/$HOME/* "$DOTFILES"/config/$ID/$HOME/.??*; do
+else # user (runs twice if bash is set to glob .files by default)
+  for FILE in "$DOTFILES"/config/$ID$HOME/{*,.??*}; do
     if test -d "$FILE"; then
-      #mkdir --parents --verbose "$(basename "$FILE")"
-      cp --interactive --recursive --symbolic-link --update --verbose "$FILE" ./
+      cp --force --recursive --symbolic-link --verbose "$FILE" ./
     else
       test -e "$FILE" && ln --force --relative --symbolic --verbose "$FILE"
     fi
