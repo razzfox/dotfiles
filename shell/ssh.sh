@@ -23,7 +23,7 @@ ssh_servers() {
     namelow="$( echo ${srv} | cut -d'.' -f1 | tr '[:upper:]' '[:lower:]' )"
     nameup="$( echo ${namelow} | tr '[:lower:]' '[:upper:]' )"
 
-    if test "${srv##*.}" = "local"; then
+    if test "${srv##*\.}" = "local"; then
       declare ${nameup}LOCAL="${i}"
       eval "ssh${namelow}local() { ssh ${i}; }"
     else
