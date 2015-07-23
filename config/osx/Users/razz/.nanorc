@@ -5,8 +5,8 @@ set nowrap
 set suspend
 set quickblank
 set backup
-set backupdir ~/.nanobackups
-include ~/.nanorc_bash
+set backupdir /Users/razz/.config/nano/backups
+include /Users/razz/.config/nano/bash.nanorc
 
 include /usr/local/share/nano/asm.nanorc
 include /usr/local/share/nano/awk.nanorc
