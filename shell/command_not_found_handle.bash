@@ -1,4 +1,4 @@
 command_not_found_handle() {
-  echo "That isn't a real command. Jesus Christ, $1."
+  echo "$0: command_not_found_handle: command not found '$1'" >/dev/stderr
   return 127
 }
