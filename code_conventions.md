@@ -1,6 +1,9 @@
 
 ####
 
+# Find file extension
+ext="${file##*\.}" # string after last '.'
+
 ####
 
 # Put these lines at the top and bootom of your bashrc
