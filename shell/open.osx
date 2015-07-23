@@ -1,0 +1,25 @@
+open_echo () {
+  front="$1"
+  shift
+
+  for i in $@; do
+    echo open "$front$i"
+  done
+}
+
+open_do () {
+  front="$1"
+  shift
+
+  for i in $@; do
+    echo open "$front$i"
+  done
+}
+
+open_google () {
+  open_do "https://www.google.com/search?q=" "$@"
+}
+
+open_google_echo () {
+  open_echo "https://www.google.com/search?q=" "$@"
+}
