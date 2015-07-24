@@ -54,7 +54,6 @@ Windows_NT)
 CYGWIN_NT-*)
   export OS='windows'
   export ID='cygwin'
-  export TERM='xterm-256color'
   ;;
 esac
 
