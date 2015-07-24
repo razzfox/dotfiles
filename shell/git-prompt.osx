@@ -1,6 +1,6 @@
-source /usr/local/opt/bash-completion/etc/bash_completion
+source /usr/local/opt/bash-completion/etc/bash_completion 2>/dev/null
 
-source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh
-source /usr/local/opt/git/etc/bash_completion.d/git-completion.bash
+source /usr/local/opt/git/etc/bash_completion.d/git-prompt.sh 2>/dev/null
+source /usr/local/opt/git/etc/bash_completion.d/git-completion.bash 2>/dev/null
 
-__git_ps1 || git_download_functions
+__git_ps1 2>/dev/null || git_download_functions
