@@ -17,6 +17,12 @@ set backupdir $HOME/.config/nano/backups
 include $HOME/.config/nano/bash.nanorc
 " >$HOME/.nanorc
 
-  test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/**\.nanorc >>$HOME/.nanorc
-  test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/**\.nanorc >>$HOME/.nanorc
+  test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/*.nanorc >>$HOME/.nanorc
+  test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/*.nanorc >>$HOME/.nanorc
+fi
+
+if test ! -d $HOME/.config/nano/scopatz_nanorc; then
+  git clone https://github.com/scopatz/nanorc.git $HOME/.config/nano/scopatz_nanorc
+  echo >>$HOME/.nanorc
+  printf 'include %s\n' $HOME/.config/nano/scopatz_nanorc/*.nanorc >>$HOME/.nanorc
 fi
