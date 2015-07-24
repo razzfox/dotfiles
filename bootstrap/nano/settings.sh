@@ -17,6 +17,6 @@ set backupdir $HOME/.config/nano/backups
 include $HOME/.config/nano/bash.nanorc
 " >$HOME/.nanorc
 
-  test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/* >>$HOME/.nanorc
-  test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/* >>$HOME/.nanorc
+  test -d /usr/local/share/nano && printf 'include %s\n' /usr/local/share/nano/**\.nanorc >>$HOME/.nanorc
+  test -d /usr/share/nano && printf 'include %s\n' /usr/share/nano/**\.nanorc >>$HOME/.nanorc
 fi
