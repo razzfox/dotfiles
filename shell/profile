@@ -18,7 +18,7 @@ test -z "$GOPATH" -a -d $HOME/.gocode && export GOPATH="$HOME/.gocode" && export
 
 # History
 export HISTFILE="$HOME/.bash_history"
-export HISTFILESIZE=32768 # allow 32^3 entries; default is 500
+export HISTFILESIZE='32768' # allow 32^3 entries; default is 500
 export HISTSIZE="$HISTFILESIZE"
 export HISTTIMEFORMAT="[%F %T]: "
 export HISTCONTROL='ignoredups' # ignoredups or ignorespace or ignoreboth
@@ -30,7 +30,7 @@ export EDITOR="$(which nano)" # single line-based editor (the distinction is no 
 export VISUAL="$EDITOR" #  milti-line (whole screen) editor
 export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
 
-export LC_ALL="C"
+export LC_ALL='C'
 
 
 # Detect OS (kernel) and ID (distro)
@@ -38,22 +38,23 @@ test -z "$OS" && export OS="$(uname | tr '[:upper:]' '[:lower:]')"
 case "$OS" in
 linux)
   source /etc/os-release
-  test "$ID" = "archarm" && export ID="arch"
+  test "$ID" = "archarm" && export ID='arch'
   export OS
   export ID
   ;;
 darwin)
-  export PATH=/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:$PATH
-  export ID="osx"
-  test -z "$HOME" && export HOME=/Users/$(whoami)
+  export PATH="/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:$PATH"
+  export ID='osx'
+  test -z "$HOME" && export HOME="/Users/$(whoami)"
   ;;
 Windows_NT)
-  export OS="windows"
-  export ID="cygwin"
+  export OS='windows'
+  export ID='cygwin'
   ;;
 CYGWIN_NT-*)
-  export OS="windows"
-  export ID="cygwin"
+  export OS='windows'
+  export ID='cygwin'
+  export TERM='xterm-256color'
   ;;
 esac
 
