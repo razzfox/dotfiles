@@ -5,7 +5,7 @@ what_the_commit_message() {
 }
 
 git_download_functions () {
-  source /tmp/git-completion.bash && source /tmp/git-prompt.sh && return
+  source /tmp/git-completion.bash 2>/dev/null && source /tmp/git-prompt.sh 2>/dev/null && return
 
   echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
   curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >/tmp/git-completion.bash
