@@ -2,8 +2,7 @@ mkdir -p $HOME/.config/nano/backups
 chmod 700 $HOME/.config/nano/backups
 
 if test ! -e $HOME/.config/nano/bash.nanorc; then
-  cat $(echo 'syntax "bash" "\.(bash|zsh|fish|arch|linux|osx|darwin|cygwin|windows)$"') \
-  /usr/local/share/nano/sh.nanorc /usr/share/nano/sh.nanorc 2>/dev/null | tail -n +4 >$HOME/.config/nano/bash.nanorc
+  tail -q -n +4 <(printf "\n\n\n%s\n" 'syntax "bash" "\.(bash|zsh|fish|arch|linux|osx|darwin|cygwin|windows)$"') /usr/local/share/nano/sh.nanorc /usr/share/nano/sh.nanorc 2>/dev/null >$HOME/.config/nano/bash.nanorc
 fi
 
 if test ! -e $HOME/.nanorc; then
