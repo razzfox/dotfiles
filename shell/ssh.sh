@@ -1,13 +1,8 @@
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
-  bash "DOTFILES"/bootstrap/ssh/settings.sh
+  source "DOTFILES"/bootstrap/ssh/settings.sh
 fi
-
-# Protect ~/.ssh from other users and own group
-mkdir -p -m 700 $HOME/.ssh
-chmod 700 $HOME/.ssh
-chmod 600 $HOME/.ssh/*
 
 
 # Optional SERVERS string array
@@ -20,16 +15,13 @@ ssh_servers() {
     unset namelow
 
     srv="${i#*@}" # get substring after '@'
+    test "${srv##*\.}" = "local" && srv=${srv}LOCAL
     namelow="$( echo ${srv} | cut -d'.' -f1 | tr '[:upper:]' '[:lower:]' )"
     nameup="$( echo ${namelow} | tr '[:lower:]' '[:upper:]' )"
 
-    if test "${srv##*\.}" = "local"; then
-      declare ${nameup}LOCAL="${i}"
-      eval "ssh${namelow}local() { ssh ${i}; }"
-    else
-      declare ${nameup}="${i}"
-      eval "ssh${namelow}() { ssh ${i}; }"
-    fi
+    declare ${nameup}="${i}"
+    eval "ssh${namelow} () { ssh ${i}; }"
+    eval "ssh${namelow}rc () { ssh ${i} \"$SHELL --rcfile .$USER\"; }"
   done
 }
 
