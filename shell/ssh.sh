@@ -21,7 +21,7 @@ ssh_servers() {
 
     declare ${nameup}="${i}"
     eval "ssh${namelow} () { ssh ${i}; }"
-    eval "ssh${namelow}rc () { ssh ${i} \"$SHELL --rcfile .$USER\"; }"
+    eval "ssh${namelow}rc () { ssh ${i} $SHELL --rcfile .$USER; }"
   done
 }
 
