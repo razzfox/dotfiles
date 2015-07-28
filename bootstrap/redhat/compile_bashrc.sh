@@ -1,16 +1,16 @@
+# Copy your '.tmux_conf' as '.${USER}_tmux.conf'
+
 # Bashrc output
 echo "export TMUX_CONF=.${USER}_tmux.conf
 export TMUX_SESSION=$USER
-export SHELL=\"\$SHELL --rcfile ~/.\$TMUX_SESSION\"" >$HOME/.$USER
+export SHELL=\"\$SHELL --rcfile ~/.\$TMUX_SESSION\"
+
+" >$HOME/.$USER
 
 head -n 8 "$DOTFILES"/shell/bashrc >>$HOME/.$USER
 
-cat "$DOTFILES"/shell/profile "$DOTFILES"/shell/{*.bash,*.sh,*.redhat,*.linux} \
+cat "$DOTFILES"/shell/{profile,*.bash,*.sh,*.redhat,*.linux} \
 | grep -v "^source.*" \
 | grep -v "^which.*return.*" \
 | grep -v "^test.*return.*" \
 | grep -v "^pulse.*return.*"  >>$HOME/.$USER
-
-
-# Tmux_conf output
-cat "$DOTFILES"/config/arch/home/razz/.tmux.conf >$HOME/.${USER}_tmux.conf
