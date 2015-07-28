@@ -1,17 +1,16 @@
-# Copy your '.USER_tmux.conf' separately and add:
-# set -g default-command "$SHELL --rcfile ~/.${TMUX_SESSION}"
-
-# Output:
+# Bashrc output
 echo "export TMUX_CONF=.${USER}_tmux.conf
-export TMUX_SESSION=$USER"
+export TMUX_SESSION=$USER" >$HOME/.$USER
 
-head -n 15 "$DOTFILES"/shell/bashrc
+head -n 8 "$DOTFILES"/shell/bashrc >>$HOME/.$USER
 
-cat "$DOTFILES"/shell/profile \
-  "$DOTFILES"/shell/profile_linux \
-  "$DOTFILES"/shell/profile_colors \
-  "$DOTFILES"/shell/{*.bash,*.sh,*.redhat,*.linux} \
+cat "$DOTFILES"/shell/profile "$DOTFILES"/shell/{*.bash,*.sh,*.redhat,*.linux} \
 | grep -v "^source.*" \
 | grep -v "^which.*return.*" \
 | grep -v "^test.*return.*" \
-| grep -v "^pulse.*return.*"
+| grep -v "^pulse.*return.*"  >>$HOME/.$USER
+
+
+# Tmux_conf output
+echo "set -g default-command \"$SHELL --rcfile ~/.${TMUX_SESSION}\"" >$HOME/.$USER_tmux.conf
+cat "$DOTFILES"/config/arch/home/razz/.tmux_conf >>$HOME/.$USER_tmux.conf
