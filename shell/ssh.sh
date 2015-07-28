@@ -19,9 +19,9 @@ ssh_servers() {
     namelow="$( echo ${srv} | cut -d'.' -f1 | tr '[:upper:]' '[:lower:]' )"
     nameup="$( echo ${namelow} | tr '[:lower:]' '[:upper:]' )"
 
-    declare ${nameup}="${i}"
+    eval ${nameup}="${i}"
     eval "ssh${namelow} () { ssh \"\$@\" \$${nameup}; }"
-    eval "ssh${namelow}rc () { ssh -t \"\$@\" \$${nameup} $SHELL --rcfile .$USER; }"
+    eval "ssh${namelow}rc () { ssh -t \"\$@\" \$${nameup} \$SHELL --rcfile .\$USER; }"
   done
 }
 
