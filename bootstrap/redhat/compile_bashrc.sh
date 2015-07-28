@@ -12,5 +12,6 @@ cat "$DOTFILES"/shell/profile "$DOTFILES"/shell/{*.bash,*.sh,*.redhat,*.linux} \
 
 
 # Tmux_conf output
-echo "set -g default-command \"$SHELL --rcfile ~/.${TMUX_SESSION}\"" >$HOME/.${USER}_tmux.conf
-cat "$DOTFILES"/config/arch/home/razz/.tmux.conf >>$HOME/.${USER}_tmux.conf
+cat "$DOTFILES"/config/arch/home/razz/.tmux.conf >$HOME/.${USER}_tmux.conf
+
+echo "set -g default-command \"$SHELL --rcfile ~/.${TMUX_SESSION}\"" >>$HOME/.${USER}_tmux.conf
