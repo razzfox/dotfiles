@@ -1,6 +1,7 @@
 # Bashrc output
 echo "export TMUX_CONF=.${USER}_tmux.conf
-export TMUX_SESSION=$USER" >$HOME/.$USER
+export TMUX_SESSION=$USER
+export SHELL='\$SHELL --rcfile ~/.\$TMUX_SESSION'" >$HOME/.$USER
 
 head -n 8 "$DOTFILES"/shell/bashrc >>$HOME/.$USER
 
