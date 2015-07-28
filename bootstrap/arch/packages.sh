@@ -34,14 +34,14 @@ AUR="aura-bin zsh-history-substring-search-git lsx google-chrome google-talkplug
 
 
 for i in BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP DESKTOP SERVER AUDIO MEDIA FONTS AUR; do
-  eval echo \$$i
+  echo ${!i}
 
   unset ANSWER
   echo -n ":: Install $i packages? [y/N] "
   read ANSWER
   ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
   if ! test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-    eval $i=""
+    unset $i
   fi
 
   echo
