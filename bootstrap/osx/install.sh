@@ -4,6 +4,7 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || return; done 2>/dev/null &
 
+
 # Agree to xcode terminal
 xcode-select --install
 
@@ -14,17 +15,7 @@ sudo scutil --set LocalHostName "terminal"
 sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "terminal"
 
 # Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 1
-
-# Disable the sound effects on boot
-osascript -e 'set volume with output muted' || echo 7299 | sudo -S nvram SystemAudioVolume=%80
-# Option: run mute command on LogoutHook
-#sudo defaults write com.apple.loginwindow LogoutHook $HOME/dotfiles/mac/scripts/disable-startup-chime.sh
-
-# Allow changing Login Items
-#chflags nouchg $HOME/Library/Preferences/com.apple.loginitems.plist
-# Prevent changing Login Items
-#chflags uchg $HOME/Library/Preferences/com.apple.loginitems.plist
+#defaults write NSGlobalDomain KeyRepeat -int 1
 
 # Never go into computer sleep mode
 #systemsetup -setcomputersleep off
@@ -42,20 +33,18 @@ chflags nohidden ~/Library
 ln -s /System/Library/CoreServices /Applications/CoreServices
 
 # symlink old Java
-sudo ln -s /Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home /Library/Java/Home
-mkdir -p /System/Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents
-sudo ln -s /Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home /System/Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home
-
-# Remove all bloatware
-# sudo rm -r /Applications/Calendar.app /Applications/Chess.app /Applications/Contacts.app \
-# /Applications/Dashboard.app /Applications/FaceTime.app /Applications/Game\ Center.app \
-# /Applications/Mail.app /Applications/Mission\ Control.app /Applications/Notes.app \
-# /Applications/Stickies.app /Applications/Reminders.app /Applications/iTunes.app /Applications/Messages.app
+if test -d /Library/Java/JavaVirtualMachines/jdk*.jdk; then
+  sudo ln -s /Library/Java/JavaVirtualMachines/jdk*.jdk/Contents/Home /Library/Java/Home
+  mkdir -p /System/Library/Java/JavaVirtualMachines/jdk*.jdk/Contents
+  sudo ln -s /Library/Java/JavaVirtualMachines/jdk*.jdk/Contents/Home /System/Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home
+fi
 
 # Create .gitignore for Macs
 echo ".DS_Store" >> ~/.gitignore
 
 # App Store Debug Menu
 defaults write com.apple.appstore ShowDebugMenu -bool true
+
+# Screenshots location and type
 defaults write com.apple.screencapture location $HOME;killall SystemUIServer
 defaults write com.apple.screencapture type png
