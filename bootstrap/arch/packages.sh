@@ -48,10 +48,10 @@ for pkg in $PACKAGES AUR; do
   echo
 done
 
-echo pacstrap -i /mnt $(for pkg in $PACKAGES; do echo ${!pkg}; done)
+pacstrap -i /mnt $(for pkg in $PACKAGES; do echo ${!pkg}; done)
 
 if test -n "$AUR" -a -n "$DOTFILES"; then
   for pkg in $AUR; do
-echo    arch-chroot /mnt "$DOTFILES"/bootstrap/arch/aur-get.sh $pkg
+    arch-chroot /mnt "$DOTFILES"/bootstrap/arch/aur-get.sh $pkg
   done
 fi
