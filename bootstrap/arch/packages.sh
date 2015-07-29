@@ -33,26 +33,25 @@ FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf
 AUR="aura-bin zsh-history-substring-search-git lsx google-chrome google-talkplugin pulseaudio-ctl zeal-git stapler wiggle broadcom-wl macfanctl"
 
 
-for i in BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP DESKTOP SERVER AUDIO MEDIA FONTS AUR; do
-  echo ${!i}
+PACKAGES="BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP DESKTOP SERVER AUDIO MEDIA FONTS"
+for pkg in $PACKAGES AUR; do
+  echo ${!pkg}
 
   unset ANSWER
-  echo -n ":: Install $i packages? [y/N] "
+  echo -n ":: Install $pkg packages? [y/N] "
   read ANSWER
   ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
   if ! test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-    unset $i
+    unset $pkg
   fi
 
   echo
 done
 
-
-pacstrap -i /mnt $BASE $SHELLS $LANG $UTILS $FILESYS $NETWORK $BLUETOOTH $LAPTOP $DESKTOP $SERVER $AUDIO $MEDIA $FONTS
-
+echo pacstrap -i /mnt $(for pkg in $PACKAGES; do echo ${!pkg}; done)
 
 if test -n "$AUR" -a -n "$DOTFILES"; then
-  for A in $AUR; do
-    arch-chroot /mnt "$DOTFILES"/bootstrap/arch/aur-get.sh $A
+  for pkg in $AUR; do
+echo    arch-chroot /mnt "$DOTFILES"/bootstrap/arch/aur-get.sh $pkg
   done
 fi
