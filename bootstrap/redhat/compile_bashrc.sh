@@ -1,7 +1,9 @@
 # Copy your '.tmux_conf' as '.${USER}_tmux.conf'
 
 # Bashrc output
-echo "export TMUX_CONF=.${USER}_tmux.conf
+echo "source $HOME/.bash_profile
+
+export TMUX_CONF=.${USER}_tmux.conf
 export TMUX_SESSION=$USER
 export SHELL=\"\$SHELL --rcfile ~/.\$TMUX_SESSION\"
 
