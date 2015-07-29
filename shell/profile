@@ -26,11 +26,13 @@ export HISTIGNORE='clear:cl:exit' # hide some commands from history
 
 
 # Other vars
+export LC_ALL='C'
 export EDITOR="$(which nano)" # single line-based editor (the distinction is no longer recognized)
 export VISUAL="$EDITOR" #  milti-line (whole screen) editor
 export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
 
-export LC_ALL='C'
+# Fix conflicts from system settings
+unalias -a
 
 
 # Detect OS (kernel) and ID (distro)
