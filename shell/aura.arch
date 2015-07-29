@@ -2,17 +2,15 @@ break="-------------------------------------------------------------------------
 
 # aur.sh dc2f3fcaa9 taken Jan 7, 2014 from https://github.com/stuartpb/aur.sh/blob/master/aur.sh
 aur.sh() {
-echo '
-d=${BUILDDIR:-$PWD}
-for p in ${@##-*}
-do
-cd "$d"
-curl "https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz" |tar xz
-cd "$p"
-nano PKGBUILD
-makepkg --clean --install --syncdeps ${@##[^\-]*}
-done
-'
+  d=${BUILDDIR:-$PWD}
+  for p in ${@##-*}
+    do
+    cd "$d"
+    curl "https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz" |tar xz
+    cd "$p"
+    nano PKGBUILD
+    makepkg --clean --install --syncdeps ${@##[^\-]*}
+  done
 }
 
 sudo_enable() {
@@ -22,8 +20,10 @@ sudo_enable() {
   # user where=(who) NOPASSWD: what
   echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers || return 1
 
-# I cant find out what programs make this work! pacman must be running another program that I have not listed.
-#  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which sudo) $(which pacman) $aur" >>/etc/sudoers || return 1
+  # I cant find out what programs make this work!
+  # This is necessary to make aur.sh in the executable-allowed list for security.
+  # Maybe pacman is running another program that I have not listed.
+  #echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which sudo) $(which pacman) $aur" >>/etc/sudoers || return 1
 }
 
 sudo_disable() {
@@ -36,9 +36,12 @@ aura() {
   cd "${BUILDDIR:-/tmp}"
 
   if ! aur=$(which aura 2>/dev/null); then
-    aur="$BUILDDIR/aur.sh"
-    aur.sh > "$aur"
-    chmod +x "$aur"
+    #aur.sh >"$aur"
+    #chmod +x "$aur"
+    #aur="$BUILDDIR/aur.sh"
+
+    # This command is a shell function because I don't know how to enable only pacman + friends in the sudoers file.
+    aur=aur.sh
   fi
 
   sudo_enable || return 1
