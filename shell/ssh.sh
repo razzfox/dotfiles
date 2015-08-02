@@ -5,21 +5,24 @@ if test ! -d $HOME/.ssh; then
 fi
 
 
-# Optional SERVERS string array
-source $HOME/.ssh/ssh_servers
-
 ssh_servers() {
+  # Optional SERVERS string array
+  source $HOME/.ssh/ssh_servers
+
   for i in ${SERVERS[@]}; do
     unset srv
     unset nameup
     unset namelow
 
-    srv="${i#*@}" # get substring after '@'
-    test "${srv##*\.}" = "local" && srv=${srv}LOCAL
+    # get substring after '@'
+    srv="${i#*@}"
     namelow="$( echo ${srv} | cut -d'.' -f1 | tr '[:upper:]' '[:lower:]' )"
+    if test "${srv##*\.}" = "local"; then
+      namelow=${namelow}local
+    fi
     nameup="$( echo ${namelow} | tr '[:lower:]' '[:upper:]' )"
 
-    eval ${nameup}="${i}"
+    export ${nameup}="${i}"
     eval "ssh${namelow} () { ssh \"\$@\" \$${nameup}; }"
     eval "ssh${namelow}rc () { ssh -t \"\$@\" \$${nameup} \$SHELL --rcfile .\$USER; }"
   done
@@ -43,4 +46,4 @@ EOF
 }
 
 
-ssh_servers "$@"
+#ssh_servers "$@"
