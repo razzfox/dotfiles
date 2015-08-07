@@ -58,9 +58,9 @@ hc keybind XF86AudioNext emit_hook play	next # keycode:163
 hc keybind XF86AudioPlay emit_hook play # keycode:164
 hc keybind XF86AudioPrev emit_hook play	prev # keycode:165
 
-#hc keybind XF86KbdBrightnessUp
-#hc keybind XF86KbdBrightnessDown
-#hc keybind XF86KbdLightOnOff
+hc keybind XF86KbdBrightnessUp spawn true
+hc keybind XF86KbdBrightnessDown spawn true
+hc keybind XF86KbdLightOnOff spawn true
 
 hc keybind XF86LaunchA emit_hook expose # keycode:120 Apple Expose
 hc keybind XF86LaunchB emit_hook dashboard # keycode:204 Apple Dashboard
@@ -71,18 +71,22 @@ hc keybind XF86MonBrightnessDown emit_hook brightness	down # keycode:224
 hc keybind Shift-XF86MonBrightnessDown emit_hook brightness	1
 
 # Function Keys
-#hc keybind F1 spawn true
-#hc keybind F2 spawn true
-#hc keybind F3 spawn true
-#hc keybind F4 spawn true
-#hc keybind F5 spawn true # keycode:63
-#hc keybind F6 spawn true
-#hc keybind F7 spawn true
-#hc keybind F8 spawn true
-#hc keybind F9 spawn true
-#hc keybind F10 spawn true
-#hc keybind F11 spawn true
-#hc keybind F12 spawn true
+hc keybind F1 spawn true
+hc keybind F2 spawn true
+hc keybind F3 spawn true
+hc keybind F4 spawn true
+
+hc keybind F5 spawn true # keycode:63
+hc keybind F6 spawn true
+hc keybind F7 spawn true
+hc keybind F8 spawn true
+
+hc keybind F9 spawn emit_hook volume    down
+hc keybind Shift-F9 spawn emit_hook volume      mute
+hc keybind F10 spawn  emit_hook volume  up
+hc keybind F11 spawn $SCREENSAVER
+hc keybind Shift-F11 spawn $SCREENSAVEROFF
+hc keybind F12 spawn true
 
 
 # Manage Tags
