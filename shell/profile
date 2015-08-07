@@ -14,6 +14,7 @@ test -z "$TMUX_CONF" -a -f "$TMUX_CONF" && export TMUX_CONF="$HOME/.tmux.conf"
 test -z "$BIN_HOME" -a -d $HOME/bin && export BIN_HOME="$HOME/bin" && export PATH="$BIN_HOME:$PATH"
 test -z "$GEM_HOME" -a -d $HOME/.gem && export GEM_HOME="$HOME/.gem" && export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
 test -z "$GOPATH" -a -d $HOME/.gocode && export GOPATH="$HOME/.gocode" && export PATH="$GOPATH/bin:$PATH"
+test -z "$RUBYPATH" -a -d $HOME/.rubycode && export RUBYPATH="$HOME/.rubycode" && export PATH="$RUBYPATH/bin:$PATH"
 
 
 # History
@@ -26,7 +27,7 @@ export HISTIGNORE='clear:cl:exit' # hide some commands from history
 
 
 # Other vars
-export LC_ALL='C'
+export LC_ALL="en_US.UTF-8"
 export EDITOR="$(which nano)" # single line-based editor (the distinction is no longer recognized)
 export VISUAL="$EDITOR" #  milti-line (whole screen) editor
 export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
@@ -49,11 +50,7 @@ darwin)
   export ID='osx'
   test -z "$HOME" && export HOME="/Users/$(whoami)"
   ;;
-Windows_NT)
-  export OS='windows'
-  export ID='cygwin'
-  ;;
-CYGWIN_NT-*)
+Windows_NT|CYGWIN_NT-*)
   export OS='windows'
   export ID='cygwin'
   ;;
