@@ -46,4 +46,4 @@ EOF
 }
 
 
-#ssh_servers "$@"
+ssh_servers "$@"
