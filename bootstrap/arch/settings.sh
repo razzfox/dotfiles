@@ -252,3 +252,15 @@ else
     arch-chroot /mnt gummiboot install
   fi
 fi
+
+
+unset ANSWER
+echo -n ":: Disable root reserved space for all hard drives (10% space savings)? [y/N] "
+read ANSWER
+ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
+if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
+  for i in /dev/sd*; do
+    tune2fs -l $i | grep "Reserved block count:"
+    test $? = 0 && tune2fs -m 0 $i
+  done
+fi
