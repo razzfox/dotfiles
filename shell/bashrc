@@ -3,12 +3,9 @@ test -t 0 || return 1
 
 # If not inside a tmux session, start a new session or join one
 if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != linux -a "$TERM" != cygwin -a ! -e .notmux; then
-  if tmux list-sessions | cut -d: -f1 | grep -q "${TMUX_SESSION:-$USER}" 2>/dev/null; then
-    echo "Found session $(tmux list-sessions | cut -d: -f1 | grep -q "${TMUX_SESSION:-$USER}")"
-echo exec tmux -f "${TMUX_CONF:-$HOME/.tmux.conf}" new-session -s "${TMUX_SESSION:-$USER}@${HOSTNAME}-$(date +%N | tr -d 0 | tail -c 4)" -t "${TMUX_SESSION:-$USER}@${HOSTNAME}"
+  if tmux list-sessions | cut -d: -f1 | grep -q "${TMUX_SESSION:-$USER}@${HOSTNAME}" 2>/dev/null; then
     exec tmux -f "${TMUX_CONF:-$HOME/.tmux.conf}" new-session -s "${TMUX_SESSION:-$USER}@${HOSTNAME}-$(date +%N | tr -d 0 | tail -c 4)" -t "${TMUX_SESSION:-$USER}@${HOSTNAME}"
   else
-echo    exec tmux -f "${TMUX_CONF:-$HOME/.tmux.conf}" new-session -s "${TMUX_SESSION:-$USER}@${HOSTNAME}"
     exec tmux -f "${TMUX_CONF:-$HOME/.tmux.conf}" new-session -s "${TMUX_SESSION:-$USER}@${HOSTNAME}"
   fi
 fi
