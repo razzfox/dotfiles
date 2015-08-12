@@ -4,9 +4,8 @@ chmod 700 $HOME/.ssh
 chmod 600 $HOME/.ssh/*
 
 if test ! -f $HOME/.ssh/ssh_servers; then
-  echo 'SERVERS=(user@example.university.edu user@example.dhcp.io user@example.local)
-GH_WWW="https://github.com"
-GH_SSH="git@github.com"
+  echo 'SSH_SERVERS=(user@example.university.edu user@example.dhcp.io user@example.local)
+GH="https://github.com""
 ' >> $HOME/.ssh/ssh_servers
 fi
 
