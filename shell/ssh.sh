@@ -9,22 +9,54 @@ ssh_servers() {
   # Optional SERVERS string array
   source $HOME/.ssh/ssh_servers
 
-  for i in ${SERVERS[@]}; do
-    unset srv
-    unset nameup
-    unset namelow
+  for i in ${SSH_SERVERS[@]}; do
+    unset userpass
+    unset user
+    unset pass
+    unset servershare
+    unset server
+    unset share
+    unset name
+    unset namevar
 
-    # get substring after '@'
-    srv="${i#*@}"
-    namelow="$( echo ${srv} | cut -d'.' -f1 | tr '[:upper:]' '[:lower:]' )"
-    if test "${srv##*\.}" = "local"; then
-      namelow=${namelow}local
+    # substr: trim shortest string from back/suffix(%) after(x*) a '@' char
+    userpass="${i%@*}"
+    # substr: take out longest string from back(%%) after(x*) a ':' char
+    user="${userpass%%:*}"
+    # substr: take out shortest string from front(#) before(*x) a ':' char
+    pass="${userpass#*:}"
+    test "$pass" = "$userpass" && unset pass
+
+    # substr: trim longest string from the front/prefix(##) before(*x) a '@' char
+    servershare="${i##*@}"
+    server="${servershare%%:*}"
+    share="${servershare#*:}"
+    test "$share" = "$servershare" && unset share
+
+    name="${server%%.*}"
+    # substr: take out longest string from front(##) before(*x) a '.' char
+    test "${name##*.}" = "local" && name="${name}local"
+
+    # if variable already exists, and is not the same server
+    # take out the last domain and all periods
+    namevar="${name^^}"
+    if test -n "${!namevar}" -a "${!namevar}" != "${user}@$server"; then
+      # take out top level domain
+      name="${server%.*}"
+      # if no subdomain found, then revert to full domain name
+      test "${name%.*}" = "$name" && name="$server"
+      # take out all periods
+      name="${name//.}"
     fi
-    nameup="$( echo ${namelow} | tr '[:lower:]' '[:upper:]' )"
+    export ${name^^}="${user}@$server"
 
-    export ${nameup}="${i}"
-    eval "ssh${namelow} () { ssh \"\$@\" \$${nameup}; }"
-    eval "ssh${namelow}rc () { ssh -t \"\$@\" \$${nameup} \$SHELL --rcfile .\$USER; }"
+    if test -z "$pass"; then
+      eval "ssh${name,,} () { ssh \"\$@\" \$${name^^}; }"
+      eval "ssh${name,,}rc () { ssh -t \"\$@\" \$${name^^} \$SHELL --rcfile .\$USER; }"
+    else
+      eval "ssh${name,,} () { ssh_expect $pass \"\$@\" \$${name^^}; }"
+      eval "ssh${name,,}rc () { ssh_expect $pass \"\$@\" \$${name^^} \$SHELL --rcfile .\$USER; }"
+    fi
   done
 }
 
