@@ -4,6 +4,7 @@ dotfiles
 To Do
 ----
 
+ - Write a function creator like https://github.com/erichs/composure that displays ncurses history with selectable lines.
  - make a script that puts my name (and name of script, auto editing) on the top of all my dotfiles, and school files. (copies to /tmp for safety, readable by no other user). maybe use ascii art.
  - prevent clear screen when ssh ends
  - consider set -u/+u (unbound variable) and set -x/+x (print all commands) for testing scripts
