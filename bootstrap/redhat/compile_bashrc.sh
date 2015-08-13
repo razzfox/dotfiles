@@ -1,6 +1,4 @@
-# Copy your '.tmux_conf' as '.${USER}_tmux.conf'
-
-# Bashrc output
+compile_bashrc () {
 echo "source \$HOME/.bash_profile
 
 export TMUX_CONF=.${USER}_tmux.conf
@@ -16,3 +14,14 @@ cat "$DOTFILES"/shell/{profile,*.bash,*.sh,*.redhat,*.linux} \
 | grep -v "^which.*return.*" \
 | grep -v "^test.*return.*" \
 | grep -v "^pulse.*return.*"  >>$HOME/.$USER
+
+echo "test -e ~/settings.sh && source ~/settings.sh && rm -v ~/settings.sh
+test -e ~/htoprc && mkdir -p ~/.config/htop && mv -v htoprc ~/.config/htop/htoprc" >>$HOME/.$USER
+}
+
+
+compile_bashrc
+
+rsync --verbose --recursive --copy-links --perms --executability --progress .$USER "DOTFILES"/config/arch/home/razz/.tmux.conf "$DOTFILES"/bootstrap/nano/settings.sh "DOTFILES"/config/arch/home/razz/.config/htop/htoprc $1:~/
+
+rm .$USER
