@@ -1,0 +1,11 @@
+Admin: All
+Archive: bsdtar p7zip rsnapshot unzip xz zip
+Devel: autoconf2.5 autogen automake1.15 binutils cmake gcc-core gdb git git-completion libncurses-devel
+Editors: nano xxd
+Interpreters: dialog llvm perl php python python3 ruby
+Net: bind-utils ctorrent curl ii nc openssh ping rsync sic whois
+Shells: bash-completion
+Tcl: expect
+Text: ascii figlet highlight less tidy
+Utils: diffutils ncurses rlwrap tig tmux tree
+X11: All
