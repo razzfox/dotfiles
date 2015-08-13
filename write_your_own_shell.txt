@@ -1,0 +1,12 @@
+Write your own shell:
+features like: https://github.com/skx/sysadmin-util
+If globbing fails, it should output error and fail.
+Test char brackets should not exist. That's not scripting.
+get stuff from experimental
+Essentially a rewrite of a shell for how people expect a shell to work coming from a desktop experience. Eventually use fish-shell like history (displayed below) and bash-completion like selection. (Can it be scraped from man pages?)
+----
+alias l.='ls -d .*' 2>/dev/null
+----
+glob comes with echo and confirmation before running
+----
+built-in utilities for renaming (massren) and trash can behavior, safe renaming.
