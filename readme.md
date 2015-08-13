@@ -13,7 +13,7 @@ To Do
  - Create a './configure, make, make install' process to learn how that works. Replace install.sh.
  - Remove # from same line as functions
  - Add space after function ()
- - tmux send to inside tmux first
+ - tmux send control command to inside tmux first
  - Look into saving bash env with the following code:
 unset _monotone _python _tar _xz
 for i in $(declare -f | grep '^\<.*\> ()'); do
