@@ -60,7 +60,7 @@ ssh_servers() {
 
     eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
     eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
-    eval "rsync${name,,} () { $rsynccmd \$${name^^}:~/; }"
+    eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/}; }"
 
   done
 }
