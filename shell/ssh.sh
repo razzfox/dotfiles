@@ -55,7 +55,7 @@ ssh_servers() {
       rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress \"\$@\""
     else
       sshcmd="ssh_expect $pass"
-      rsynccmd="rsync_expect $pass '\"\$@\"'"
+      rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
     fi
 
     eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
