@@ -52,15 +52,15 @@ ssh_servers() {
 
     if test -z "$pass"; then
       sshcmd="ssh -t"
-      rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress"
+      rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress \"\$@\""
     else
       sshcmd="ssh_expect $pass"
-      rsynccmd="rsync_expect $pass"
+      rsynccmd="rsync_expect $pass '\"\$@\"'"
     fi
 
     eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
     eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
-    eval "rsync${name,,} () { $rsynccmd \$${name^^}:~/ \"\$@\"; }"
+    eval "rsync${name,,} () { $rsynccmd \$${name^^}:~/; }"
 
   done
 }
