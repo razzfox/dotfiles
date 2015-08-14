@@ -52,12 +52,12 @@ ssh_servers() {
 
     if test -z "$pass"; then
       eval "ssh${name,,} () { ssh \"\$@\" \$${name^^}; }"
-      eval "ssh${name,,}rc () { ssh -t \"\$@\" \$${name^^} \$SHELL --rcfile .\$USER; }"
+      eval "ssh${name,,}rc () { ssh -t \"\$@\" \$${name^^} '$SHELL --rcfile .$USER'; }"
 
       eval "rsync${name,,} () { rsync \"\$@\" \$${name^^}; }"
     else
       eval "ssh${name,,} () { ssh_expect $pass \$${name^^} \"\$@\"; }"
-      eval "ssh${name,,}rc () { ssh_expect $pass \$${name^^} \$SHELL --rcfile .\$USER; }"
+      eval "ssh${name,,}rc () { ssh_expect $pass \$${name^^} '$SHELL --rcfile .$USER'; }"
 
       eval "rsync${name,,} () { rsync_expect $pass \$${name^^}:~/ \"\$@\"; }"
     fi
