@@ -9,3 +9,5 @@ Tcl: expect
 Text: ascii figlet highlight less tidy
 Utils: diffutils ncurses rlwrap tig tmux tree
 X11: All
+
+gnupg
