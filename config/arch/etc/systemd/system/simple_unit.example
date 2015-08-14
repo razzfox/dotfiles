@@ -1,3 +1,7 @@
+# Manual at: http://www.freedesktop.org/software/systemd/man/systemd.unit.html
+# Arch Wiki: https://wiki.archlinux.org/index.php/Systemd#Writing_unit_files
+# Basic Tutorial: https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files
+
 [Unit]
 Description=Foo
 
