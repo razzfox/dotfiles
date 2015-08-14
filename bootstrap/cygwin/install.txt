@@ -11,3 +11,4 @@ Utils: diffutils ncurses rlwrap tig tmux tree
 X11: All
 
 gnupg
+dos2unix
