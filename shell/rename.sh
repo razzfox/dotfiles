@@ -1,5 +1,7 @@
 rename() {
-  mv -vi "$@"
+  test -e "$2" -o ! -e "$1" || return 2
+  test -d "$2" -a ! -d "$1" && return 3
+  mv -vi "$1" "$2"
 }
 
 rename_ext () {
