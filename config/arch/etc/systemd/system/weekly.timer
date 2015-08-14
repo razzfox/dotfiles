@@ -1,5 +1,5 @@
 [Unit]
-Description=weekly full backup
+Description=weekly timer
 
 [Timer]
 OnCalendar=weekly # see systemd.time(7) manual page for other scheduling options
