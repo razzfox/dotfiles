@@ -51,16 +51,16 @@ ssh_servers() {
     export ${name^^}="${user}@$server"
 
     if test -z "$pass"; then
-      eval "ssh${name,,} () { ssh \"\$@\" \$${name^^}; }"
-      eval "ssh${name,,}rc () { ssh -t \"\$@\" \$${name^^} '$SHELL --rcfile .$USER'; }"
-
-      eval "rsync${name,,} () { rsync \"\$@\" \$${name^^}; }"
+      sshcmd="ssh -t"
+      rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress"
     else
-      eval "ssh${name,,} () { ssh_expect $pass \$${name^^} \"\$@\"; }"
-      eval "ssh${name,,}rc () { ssh_expect $pass \$${name^^} '$SHELL --rcfile .$USER'; }"
-
-      eval "rsync${name,,} () { rsync_expect $pass \$${name^^}:~/ \"\$@\"; }"
+      sshcmd="ssh_expect $pass"
+      rsynccmd="rsync_expect $pass"
     fi
+
+    eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
+    eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
+    eval "rsync${name,,} () { $rsynccmd \$${name^^}:~/ \"\$@\"; }"
 
   done
 }
