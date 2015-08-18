@@ -12,5 +12,4 @@ tidy_home () {
   rmdir -v ~/Videos
 }
 
-
 tidy_home "$@"
