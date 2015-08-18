@@ -28,5 +28,4 @@ tidy_home() {
   true
 }
 
-
 tidy_home "$@"
