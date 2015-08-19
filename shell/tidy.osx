@@ -20,12 +20,12 @@ tidy_applibrary() {
 # Delete default home folders that recreate periodically
 tidy_home() {
   echo 7299 | sudo -S true
-  sudo rm ~/Applications/.localized ~/Desktop/.localized ~/Documents/.localized ~/Movies/.localized ~/Music/.localized ~/Pictures/.localized ~/Public/.localized 2>/dev/null
-  sudo rm ~/Applications/.DS_Store ~/Desktop/.DS_Store ~/Documents/.DS_Store ~/Movies/.DS_Store ~/Music/.DS_Store ~/Pictures/.DS_Store ~/Public/.DS_Store 2>/dev/null
-  sudo rm ~/Applications/._.DS_Store ~/Desktop/._.DS_Store ~/Documents/._.DS_Store ~/Movies/._.DS_Store ~/Music/._.DS_Store ~/Pictures/._.DS_Store ~/Public/._.DS_Store 2>/dev/null
-  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public 2>/dev/null
+  sudo rm ~/Applications/.localized ~/Desktop/.localized ~/Documents/.localized ~/Movies/.localized ~/Music/.localized ~/Pictures/.localized ~/Public/.localized
+  sudo rm ~/Applications/.DS_Store ~/Desktop/.DS_Store ~/Documents/.DS_Store ~/Movies/.DS_Store ~/Music/.DS_Store ~/Pictures/.DS_Store ~/Public/.DS_Store
+  sudo rm ~/Applications/._.DS_Store ~/Desktop/._.DS_Store ~/Documents/._.DS_Store ~/Movies/._.DS_Store ~/Music/._.DS_Store ~/Pictures/._.DS_Store ~/Public/._.DS_Store
+  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public
 
   true
 }
 
-tidy_home "$@"
+tidy_home "$@" 2>/dev/null
