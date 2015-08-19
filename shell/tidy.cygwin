@@ -1,15 +1,9 @@
 tidy_home () {
-  rm -v ~/*/desktop.ini
-  rm -v ~/*/Thumbs.db
+  rm -v ~/*/desktop.ini ~/*/Thumbs.db
   
-  rm -vr ~/Links
-  rm -vr ~/Searches
+  rm -vr ~/Links ~/Searches
   
-  rmdir -v ~/Contacts
-  rmdir -v ~/Desktop
-  rmdir -v ~/Favorites
-  rmdir -v ~/Pictures
-  rmdir -v ~/Videos
+  rmdir -v ~/Contacts ~/Desktop ~/Favorites ~/Pictures ~/Videos
 }
 
-tidy_home "$@"
+tidy_home "$@" 2>/dev/null
