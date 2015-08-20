@@ -22,8 +22,8 @@ pulseaudio --start &
 xsetroot -cursor_name left_ptr #-solid '#000000'
 
 # Screen size and DPI
-dimensions="$(echo $( xdpyinfo | grep dimension ) | cut -d ' ' -f 2)"
-density="$(echo $( xdpyinfo | grep resolution ) | cut -d ' ' -f 2 | cut -d 'x' -f 1)"
+export dimensions="$(echo $( xdpyinfo | grep dimension ) | cut -d ' ' -f 2)"
+export density="$(echo $( xdpyinfo | grep resolution ) | cut -d ' ' -f 2 | cut -d 'x' -f 1)"
 
 # Background (display from imagemagick)
 test -f dotfiles/shell/ls.bash && display -size $dimensions -density $density -window root "$(bash $HOME/dotfiles/shell/ls.bash $HOME/.walls | head -n 1)" &
@@ -33,7 +33,7 @@ xset s off -dpms
 which cmatrix >/dev/null 2>/dev/null && screensaver="$(which cmatrix) -a -u 6 -b"
 
 # Terminal
-export TERMINAL="$(which st || which guake || which xfce-terminal || which xterm || which dmenu_run)"
+export TERMINAL="$(which st || which tilda || which xfce-terminal || which xterm || which dmenu_run)"
 
 # Window Manager
 exec herbstluftwm
