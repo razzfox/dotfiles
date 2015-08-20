@@ -2,7 +2,8 @@ break="-------------------------------------------------------------------------
 
 # aur.sh dc2f3fcaa9 taken Jan 7, 2014 from https://github.com/stuartpb/aur.sh/blob/master/aur.sh
 aur.sh() {
-  d=${BUILDDIR:-$PWD}
+  echo '
+  d=${BUILDDIR:-/tmp}
   for p in ${@##-*}
     do
     cd "$d"
@@ -10,7 +11,7 @@ aur.sh() {
     cd "$p"
     nano PKGBUILD
     makepkg --clean --install --syncdeps ${@##[^\-]*}
-  done
+  done' >"$aur"
 }
 
 sudo_enable() {
@@ -35,18 +36,18 @@ aura() {
   pushd .
   cd "${BUILDDIR:-/tmp}"
 
-  if ! aur=$(which aura 2>/dev/null); then
-    #aur.sh >"$aur"
-    #chmod +x "$aur"
-    #aur="$BUILDDIR/aur.sh"
-
-    # This command is a shell function because I don't know how to enable only pacman + friends in the sudoers file.
-    aur=aur.sh
+  if aur=$(which aura 2>/dev/null); then
+    aur="sudo aura"
+  else
+    aur="${BUILDDIR:-/tmp}/aur.sh"
+    aur.sh >"$aur"
+    chmod +x "$aur"
   fi
 
   sudo_enable || return 1
 
-  sudo --user ${BUILDUSER:-nobody} sudo $aur "$@"
+  echo sudo --user ${BUILDUSER:-nobody} $aur "$@"
+  sudo --user ${BUILDUSER:-nobody} $aur "$@"
 
   sudo_disable
 
