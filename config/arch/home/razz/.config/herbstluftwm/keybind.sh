@@ -24,7 +24,7 @@ Super=Mod4 # super key
 Mod=Mod1 # alt/option key
 SCREENSAVER="xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="xset s off -dpms"
-TERMINAL="${TERMINAL:-$(which st)}"
+TERMINAL="${TERMINAL:-$(which xterm)}"
 TAG="bash $HOME/.config/herbstluftwm/tags.sh"
 DMENU_LAUNCH="bash $HOME/.config/herbstluftwm/dmenu_launch.sh"
 DMENU_EXPLORE="bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
@@ -90,7 +90,7 @@ hc keybind Shift-F11 spawn $SCREENSAVEROFF
 
 # Manage Tags
 hc keybind $Mod-c spawn $TAG create
-hc keybind $Mod-Shift-x spawn $TAG create
+hc keybind $Mod-Shift-x spawn $TAG delete
 
 # Focus Tags
 tag_names=( $(herbstclient tag_status 0) )
