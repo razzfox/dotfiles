@@ -1,6 +1,6 @@
 Admin: All
 Archive: bsdtar p7zip rsnapshot unzip xz zip
-Devel: autoconf2.5 autogen automake1.15 binutils cmake gcc-core gdb git git-completion libncurses-devel
+Devel: autoconf2.5 autogen automake1.15 binutils cmake gcc-core gdb git git-completion libncurses-devel libcaca-devel
 Editors: nano xxd
 Interpreters: dialog llvm perl php python python3 ruby
 Net: bind-utils ctorrent curl ii nc openssh ping rsync sic whois
