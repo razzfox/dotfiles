@@ -15,3 +15,4 @@ dos2unix
 catdoc
 w3m
 atool
+pkg-config
