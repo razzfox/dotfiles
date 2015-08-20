@@ -131,9 +131,25 @@ test ! connected && echo "Error: No internet connectivity." >/dev/stderr && retu
 
 ####
 
+# This automatically passes the last command's return value
 test $EUID = 0 || return
 
+# This allows you to print an error and then return a nonzero value
 test $EUID != 0 && echo "Error: You must be root to do this." >/dev/stderr && return 1
+
+####
+
+# Always use '&&' and '||' together in that order!
+(if) true  && (then) <running> || <not run>
+(if) false && <not run> || (else) <running>
+
+# Put another way:
+true  && <running> || <not run>
+false && <not run> || <running>
+
+# Remember that this only works if the second term CAN NOT FAIL
+# This would be very bad, because all three commands are run:
+true:<run> && false:<run> || <running>
 
 ####
 
