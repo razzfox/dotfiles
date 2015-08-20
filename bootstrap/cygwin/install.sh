@@ -3,11 +3,12 @@ cd /opt
 git clone https://github.com/transcode-open/apt-cyg.git
 cp -v apt-cyg/apt-cyg /usr/local/bin/
 
-# git clone https://github.com/cacalabs/libcaca.git
-# Libcaca from here instead:
-#http://caca.zoy.org/wiki/libcaca
-# ./bootstrap && ./configure && make && make install
+git clone https://github.com/wofr06/lesspipe
 
+git clone https://github.com/hut/ranger.git
+cd ranger*
+make install
+cd ..
 
 
 # Also install:
