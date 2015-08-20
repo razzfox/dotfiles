@@ -12,3 +12,6 @@ X11: All
 
 gnupg
 dos2unix
+catdoc
+w3m
+atool
