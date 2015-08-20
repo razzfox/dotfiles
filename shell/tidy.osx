@@ -1,15 +1,3 @@
-# Delete default home folders that recreate periodically
-tidy_home() {
-  echo 7299 | sudo -S true
-  sudo rm ~/Applications/.localized ~/Desktop/.localized ~/Documents/.localized ~/Movies/.localized ~/Music/.localized ~/Pictures/.localized ~/Public/.localized 2>/dev/null || true
-  sudo rm ~/Applications/.DS_Store ~/Desktop/.DS_Store ~/Documents/.DS_Store ~/Movies/.DS_Store ~/Music/.DS_Store ~/Pictures/.DS_Store ~/Public/.DS_Store 2>/dev/null || true
-  sudo rm ~/Applications/._.DS_Store ~/Desktop/._.DS_Store ~/Documents/._.DS_Store ~/Movies/._.DS_Store ~/Music/._.DS_Store ~/Pictures/._.DS_Store ~/Public/._.DS_Store 2>/dev/null || true
-  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public 2>/dev/null || true
-}
-
-tidy_home "$@"
-
-
 # Reset LaunchServices (aka Open With menu)
 tidy_launchservices() {
   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user;
@@ -27,3 +15,14 @@ tidy_launchpad() {
 tidy_applibrary() {
   echo rm -rf $(for f in ~/Library/Containers/*; do osascript -e "app id \"${f##*/}\"" &> /dev/null || echo $f; done)
 }
+
+
+# Delete default home folders that recreate periodically
+tidy_home() {
+  echo 7299 | sudo -S true
+  sudo rm -v ~/*/.localized ~/*/.DS_Store ~/*/._.DS_Store
+
+  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public
+}
+
+tidy_home "$@" 2>/dev/null || true

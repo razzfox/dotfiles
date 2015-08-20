@@ -5,6 +5,38 @@ if test ! -d $HOME/.ssh; then
 fi
 
 
+# ssh_expect <password> <name@host> ["<options/commands>"]
+ssh_expect() {
+  expect -f <(cat <<'EOF'
+set pass [lindex $argv 0]
+set server [lindex $argv 1]
+set ops [lindex $argv 2]
+
+spawn ssh -t $server $ops
+match_max 100000
+expect "*?assword:*"
+send -- "$pass\r"
+interact
+EOF
+  ) "$@"
+}
+
+rsync_expect() {
+  expect -f <(cat <<'EOF'
+set pass [lindex $argv 0]
+set server [lindex $argv 1]
+set ops [lindex $argv 2]
+
+spawn rsync --verbose --recursive --copy-links --perms --executability --progress $ops $server
+match_max 100000
+expect "*?assword:*"
+send -- "$pass\r"
+interact
+EOF
+  ) "$@"
+}
+
+
 ssh_servers() {
   # Optional SERVERS string array
   source $HOME/.ssh/ssh_servers
@@ -64,38 +96,5 @@ ssh_servers() {
 
   done
 }
-
-
-# ssh_expect <password> <name@host> ["<options/commands>"]
-ssh_expect() {
-  expect -f <(cat <<'EOF'
-set pass [lindex $argv 0]
-set server [lindex $argv 1]
-set ops [lindex $argv 2]
-
-spawn ssh -t $server $ops
-match_max 100000
-expect "*?assword:*"
-send -- "$pass\r"
-interact
-EOF
-  ) "$@"
-}
-
-rsync_expect() {
-  expect -f <(cat <<'EOF'
-set pass [lindex $argv 0]
-set server [lindex $argv 1]
-set ops [lindex $argv 2]
-
-spawn rsync --verbose --recursive --copy-links --perms --executability --progress $ops $server
-match_max 100000
-expect "*?assword:*"
-send -- "$pass\r"
-interact
-EOF
-  ) "$@"
-}
-
 
 ssh_servers "$@"
