@@ -7,7 +7,7 @@ fi
 
 # ssh_expect <password> <name@host> ["<options/commands>"]
 ssh_expect() {
-  expect -f <(cat <<'EOF'
+  echo 'log_user 0
 set pass [lindex $argv 0]
 set server [lindex $argv 1]
 set ops [lindex $argv 2]
@@ -16,24 +16,24 @@ spawn ssh -t $server $ops
 match_max 100000
 expect "*?assword:*"
 send -- "$pass\r"
+log_user 1
 interact
-EOF
-  ) "$@"
+' | expect -f - "$@"
 }
 
 rsync_expect() {
-  expect -f <(cat <<'EOF'
+  echo 'log_user 0
 set pass [lindex $argv 0]
 set server [lindex $argv 1]
 set ops [lindex $argv 2]
 
-spawn rsync --verbose --recursive --copy-links --perms --executability --progress $ops $server
+spawn rsync --verbose --recursive --copy-links --perms --executability --progress $server $ops
 match_max 100000
 expect "*?assword:*"
 send -- "$pass\r"
+log_user 1
 interact
-EOF
-  ) "$@"
+' | expect -f - "$@"
 }
 
 
