@@ -69,29 +69,28 @@ ssh_servers() {
     share="${servershare#*:}"
     test "$share" = "$servershare" && unset share
 
+    # get subdomain or at least remove tld
     name="${server%%.*}"
     # substr: take out longest string from front(##) before(*x) a '.' char
     test "${name##*.}" = "local" && name="${name}local"
 
-# THIS IS INCORRECT FOR A DIFFERENT USER ON THE SAME SERVER
     # if variable already exists, and is not the same server
     # take out the last domain and all periods
     namevar="${name^^}"
     if test -n "${!namevar}"; then
       previous="${!namevar}"
+      if test "${previous%@*}" != "$user"; then
+        # different user on same server
+        name="${user}_${server%%.*}"
+      fi
       if test "${previous##*@}" != "$server"; then
-        if test "${previous%@*}" != "$user"; then
-          # different user on same server
-          name="${user}_${server%%.*}"
-        else
-          # different server
-          # take out top level domain
-          name="${server%.*}"
-          # if no subdomain found, then revert to full domain name
-          test "${name%.*}" = "$name" && name="$server"
-          # take out all periods
-          name="${name//.}"
-        fi
+        # different server
+        # take out top level domain
+        name="${server%.*}"
+        # if no subdomain found, then revert to full domain name
+        test "${name%.*}" = "$name" && name="$server"
+        # take out all periods
+        name="${name//.}"
       fi
     fi
 
