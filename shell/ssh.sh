@@ -7,7 +7,8 @@ fi
 
 # ssh_expect <password> <name@host> ["<options/commands>"]
 ssh_expect() {
-  echo 'log_user 0
+  expect -f <(cat <<'EOF'
+log_user 0
 set pass [lindex $argv 0]
 set server [lindex $argv 1]
 set ops [lindex $argv 2]
@@ -18,11 +19,13 @@ expect "*?assword:*"
 send -- "$pass\r"
 log_user 1
 interact
-' | expect -f - "$@"
+EOF
+  ) "$@"
 }
 
 rsync_expect() {
-  echo 'log_user 0
+  expect -f <(cat <<'EOF'
+log_user 0
 set pass [lindex $argv 0]
 set server [lindex $argv 1]
 set ops [lindex $argv 2]
@@ -33,7 +36,8 @@ expect "*?assword:*"
 send -- "$pass\r"
 log_user 1
 interact
-' | expect -f - "$@"
+EOF
+  ) "$@"
 }
 
 
@@ -69,16 +73,26 @@ ssh_servers() {
     # substr: take out longest string from front(##) before(*x) a '.' char
     test "${name##*.}" = "local" && name="${name}local"
 
+# THIS IS INCORRECT FOR A DIFFERENT USER ON THE SAME SERVER
     # if variable already exists, and is not the same server
     # take out the last domain and all periods
     namevar="${name^^}"
-    if test -n "${!namevar}" -a "${!namevar}" != "${user}@$server"; then
-      # take out top level domain
-      name="${server%.*}"
-      # if no subdomain found, then revert to full domain name
-      test "${name%.*}" = "$name" && name="$server"
-      # take out all periods
-      name="${name//.}"
+    if test -n "${!namevar}"; then
+      previous="${!namevar}"
+      if test "${previous##*@}" != "$server"; then
+        if test "${previous%@*}" != "$user"; then
+          # different user on same server
+          name="${user}_${server}"
+        else
+          # different server
+          # take out top level domain
+          name="${server%.*}"
+          # if no subdomain found, then revert to full domain name
+          test "${name%.*}" = "$name" && name="$server"
+          # take out all periods
+          name="${name//.}"
+        fi
+      fi
     fi
     export ${name^^}="${user}@$server"
 
