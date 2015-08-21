@@ -82,7 +82,7 @@ ssh_servers() {
       if test "${previous##*@}" != "$server"; then
         if test "${previous%@*}" != "$user"; then
           # different user on same server
-          name="${user}_${server}"
+          name="${user}_${server%%.*}"
         else
           # different server
           # take out top level domain
@@ -94,6 +94,9 @@ ssh_servers() {
         fi
       fi
     fi
+
+    # take out all periods
+    name="${name//.}"
     export ${name^^}="${user}@$server"
 
     if test -z "$pass"; then
