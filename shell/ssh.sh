@@ -8,6 +8,7 @@ fi
 # ssh_expect <password> <name@host> ["<options/commands>"]
 ssh_expect() {
   expect -f <(cat <<'EOF'
+log_user 0
 set pass [lindex $argv 0]
 set server [lindex $argv 1]
 set ops [lindex $argv 2]
@@ -16,6 +17,7 @@ spawn ssh -t $server $ops
 match_max 100000
 expect "*?assword:*"
 send -- "$pass\r"
+log_user 1
 interact
 EOF
   ) "$@"
@@ -23,14 +25,16 @@ EOF
 
 rsync_expect() {
   expect -f <(cat <<'EOF'
+log_user 0
 set pass [lindex $argv 0]
 set server [lindex $argv 1]
 set ops [lindex $argv 2]
 
-spawn rsync --verbose --recursive --copy-links --perms --executability --progress $ops $server
+spawn rsync --verbose --recursive --copy-links --perms --executability --progress $server $ops
 match_max 100000
 expect "*?assword:*"
 send -- "$pass\r"
+log_user 1
 interact
 EOF
   ) "$@"
@@ -65,6 +69,7 @@ ssh_servers() {
     share="${servershare#*:}"
     test "$share" = "$servershare" && unset share
 
+    # get subdomain or at least remove tld
     name="${server%%.*}"
     # substr: take out longest string from front(##) before(*x) a '.' char
     test "${name##*.}" = "local" && name="${name}local"
@@ -72,14 +77,25 @@ ssh_servers() {
     # if variable already exists, and is not the same server
     # take out the last domain and all periods
     namevar="${name^^}"
-    if test -n "${!namevar}" -a "${!namevar}" != "${user}@$server"; then
-      # take out top level domain
-      name="${server%.*}"
-      # if no subdomain found, then revert to full domain name
-      test "${name%.*}" = "$name" && name="$server"
-      # take out all periods
-      name="${name//.}"
+    if test -n "${!namevar}"; then
+      previous="${!namevar}"
+      if test "${previous%@*}" != "$user"; then
+        # different user on same server
+        name="${user}_${server%%.*}"
+      fi
+      if test "${previous##*@}" != "$server"; then
+        # different server
+        # take out top level domain
+        name="${server%.*}"
+        # if no subdomain found, then revert to full domain name
+        test "${name%.*}" = "$name" && name="$server"
+        # take out all periods
+        name="${name//.}"
+      fi
     fi
+
+    # take out all periods
+    name="${name//.}"
     export ${name^^}="${user}@$server"
 
     if test -z "$pass"; then
