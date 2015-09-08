@@ -54,6 +54,9 @@ ssh_servers() {
     unset share
     unset name
     unset namevar
+    unset sshcmd
+    unset rsynccmd
+    unset tmuxcmd
 
     # substr: trim shortest string from back/suffix(%) after(x*) a '@' char
     userpass="${i%@*}"
@@ -106,9 +109,14 @@ ssh_servers() {
       rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
     fi
 
-    eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
-    eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
-    eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/}; }"
+    if test -n "$TMUX"; then
+      sshcmd="tmux set -g prefix C-b ; $sshcmd"
+      tmuxcmd="tmux set -g prefix C-a"
+    fi
+
+    eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; $tmuxcmd ; }"
+    eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; $tmuxcmd ; }"
+    eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
 
   done
 }
