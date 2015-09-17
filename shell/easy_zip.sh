@@ -37,20 +37,20 @@ return $e
 
 
 easy_zip() {
-	$(which zip) -r "${1}.zip" "$1"
+  $(which zip) -r "${1%/}.zip" "${1}"
 }
 
 zip() {
-	easy_zip
+  easy_zip "$@"
 }
 
 
 easy_7z() {
-	$(which 7z) a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on "${1}.7z" "$1"
+  $(which 7z) a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on "${1%/}.7z" "${1}"
 }
 
 7z() {
-	easy_7z
+  easy_7z "$@"
 }
 
 
@@ -60,8 +60,10 @@ easy_targz() {
     tar -cvf "${tmpFile}" --exclude=".DS_Store" "${@}" || return 1
 
     size=$(
-        stat -f"%z" "${tmpFile}" 2>/dev/null; # OSX `stat`
-        stat -c"%s" "${tmpFile}" 2>/dev/null # GNU `stat`
+        # OSX
+        stat -f"%z" "${tmpFile}" 2>/dev/null
+        # GNU
+        stat -c"%s" "${tmpFile}" 2>/dev/null
     )
 
     local cmd=""
@@ -83,18 +85,17 @@ easy_targz() {
 }
 
 targz() {
-  easy_targz
+  easy_targz "$@"
 }
 
 tar_list() {
-	tar tzvf "$@"
+  tar vtzf "$@"
 }
 
-
 easy_undeb() {
-  ar p $1 data.tar.gz | tar zx
-  mv ./usr/bin/* ./
-  rm -r ./usr
+  mkdir "${1}"
+  cd "${1}"
+  ar p "${1}" data.tar.gz | tar vxzf
 }
 
 
