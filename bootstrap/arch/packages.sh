@@ -1,3 +1,8 @@
+if ! which pacstrap 2>/dev/null; then
+  pacstrap () { shift 2; pacman -Syu $@; }
+fi
+
+
 BASE="base"
 
 SHELLS="bash-completion tmux"
@@ -14,7 +19,7 @@ NETWORK="avahi nss-mdns dnsutils openssh rsync curl gnu-netcat"
 
 BLUETOOTH="bluez-utils"
 
-LAPTOP="iw wpa_supplicant wpa_actiond dialog xf86-input-synaptics xf86-video-nouveau mesa efibootmgr gummiboot"
+LAPTOP="iw wpa_supplicant wpa_actiond dialog xf86-input-synaptics xf86-video-nouveau mesa efibootmgr"
 #wireless_tools linux-tools hdparm ethtool
 
 DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg-xinit mesa xsel xclip xdg-utils cmatrix"
