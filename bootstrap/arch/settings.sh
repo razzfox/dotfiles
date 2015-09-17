@@ -6,16 +6,19 @@
 #   true
 # fi
 
-unset ANSWER
-echo ":: These commands consider '/mnt' as root and run commands using arch-chroot."
-echo ":: Try 'mount bind / /mnt'"
-echo -n ":: Do this thing? [y/N] "
-read ANSWER
-ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
-if test "$ANSWER" = "n" || test "$ANSWER" = "no"; then
-  return 1
+if ! which arch-chroot 2>/dev/null; then
+  arch-chroot () { shift 1; $@; }
 fi
 
+unset ROOT
+unset ANSWER
+echo -n ":: Set root to some directory (/mnt)? [y/N] "
+read ANSWER
+ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
+if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
+  echo -n ":: Enter a new root directory: [0-9A-z] "
+  read ROOT
+fi
 
 unset ANSWER
 echo -n ":: Set hostname? [y/N] "
@@ -26,7 +29,7 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
   echo -n ":: Enter a new hostname: [0-9A-z] "
   read HOSTNAME
   if test -n "$HOSTNAME"; then
-    echo $1 > /mnt/etc/hostname
+    echo $1 > $ROOT/etc/hostname
   else
     echo "Error: Bad hostname" >/dev/stderr
     return 1
@@ -39,8 +42,8 @@ read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
   echo "genfstab -U -p /mnt > /mnt/etc/fstab"
-  genfstab -U -p /mnt > /mnt/etc/fstab
-  nano /mnt/etc/fstab
+  genfstab -U -p /$ROOT > $ROOT/etc/fstab
+  nano $ROOT/etc/fstab
 fi
 
 unset ANSWER
@@ -48,11 +51,11 @@ echo -n ":: Generate US locale? [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  echo "en_US.UTF-8 UTF-8" > /mnt/etc/locale.gen
+  echo "en_US.UTF-8 UTF-8" > $ROOT/etc/locale.gen
   echo "LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
-LC_ALL=en_US.UTF-8" > /mnt/etc/locale.conf
-  arch-chroot /mnt locale-gen
+LC_ALL=en_US.UTF-8" > $ROOT/etc/locale.conf
+  arch-chroot $ROOT/ locale-gen
 fi
 
 unset ANSWER
@@ -60,7 +63,7 @@ echo -n ":: Set AZ timezone? [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  ln -s /usr/share/zoneinfo/US/Arizona /mnt/etc/localtime && echo ":: Timezone set to US/Arizona (MST -0700)"
+  ln -s /usr/share/zoneinfo/US/Arizona $ROOT/etc/localtime && echo ":: Timezone set to US/Arizona (MST -0700)"
 fi
 
 unset ANSWER
@@ -84,7 +87,7 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
   if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
     echo -n ":: Type your email for ssh-keygen comment: "
     read MESSAGE
-    pacman-key --init && pacman-key --populate archlinux && ssh-keygen -t rsa -C "$MESSAGE"
+    arch-chroot $ROOT/ pacman-key --init && arch-chroot $ROOT/ pacman-key --populate archlinux && arch-chroot $ROOT/ ssh-keygen -t rsa -C "$MESSAGE"
   fi
 fi
 
@@ -93,7 +96,7 @@ echo -n ":: Use Dvorak keyboard layout? [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  echo 'KEYMAP=dvorak' >> /mnt/etc/vconsole.conf
+  echo 'KEYMAP=dvorak' >> $ROOT/etc/vconsole.conf
 fi
 
 unset ANSWER
@@ -101,7 +104,7 @@ echo -n ":: Set POWER BUTTON and LID CLOSE actions? (manually) [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  nano /mnt/etc/systemd/logind.conf
+  nano $ROOT/etc/systemd/logind.conf
 fi
 
 unset ANSWER
@@ -109,10 +112,8 @@ echo -n ":: Enable pacman multilib? [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  cat >> /mnt/etc/pacman.conf << MARK
-[multilib]
-Include = /etc/pacman.d/mirrorlist
-MARK
+echo '[multilib]
+Include = /etc/pacman.d/mirrorlist' >> $ROOT/etc/pacman.conf
 fi
 
 unset ANSWER
@@ -120,7 +121,7 @@ echo -n ":: Set the root password? [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  arch-chroot /mnt passwd
+  arch-chroot $ROOT/ passwd
 fi
 
 unset ANSWER
@@ -137,20 +138,19 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
 
   #GROUP_LIST=audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,uucp,video,wheel
   # Add groups later: usermod -aG disk USER OR gpasswd --add USER disk
-  GROUP_LIST=disk,btsync,transmission,vboxusers,android
   echo "useradd -m -d /home/$NAME -g users -s /bin/bash $NAME"
-  arch-chroot /mnt useradd -m -d /home/$NAME -g users -s /bin/bash $NAME
+  arch-chroot $ROOT/ useradd -m -d /home/$NAME -g users -s /bin/bash $NAME
 
   echo ":: Set $NAME's password:"
-  echo "arch-chroot /mnt passwd $NAME"
-  arch-chroot /mnt passwd $NAME
+  echo "passwd $NAME"
+  arch-chroot $ROOT/ passwd $NAME
 
   unset ANSWER
   echo -n ":: Add $NAME to the sudoers file? [y/N] "
   read ANSWER
   ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
   if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-    echo "$NAME ALL=(ALL) ALL" >> /mnt/etc/sudoers
+    echo "$NAME ALL=(ALL) NOPASSWD: ALL" >> $ROOT/etc/sudoers
   fi
 fi
 
@@ -166,8 +166,24 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
     echo "Error: Bad device input" >/dev/stderr
     return 1
   fi
-  echo "arch-chroot /mnt systemctl enable dhcpcd@$DEV"
-  arch-chroot /mnt systemctl enable dhcpcd@$DEV
+  echo "arch-chroot $ROOT/ systemctl enable dhcpcd@$DEV"
+  arch-chroot $ROOT/ systemctl enable dhcpcd@$DEV
+fi
+
+unset ANSWER
+echo -n ":: Enable wifi networking? [y/N] "
+read ANSWER
+ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
+if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
+  ip link
+  echo -n ":: Enter the network device to enable: "
+  read DEV
+  if test -n "$DEV"; then
+    echo "Error: Bad device input" >/dev/stderr
+    return 1
+  fi
+  echo "arch-chroot $ROOT/ systemctl enable netctl-auto@$DEV"
+  arch-chroot $ROOT/ systemctl enable netctl-auto@$DEV
 fi
 
 unset ANSWER
@@ -177,7 +193,7 @@ ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
   for i in /etc/netctl/*; do
     if test -f "$i"; then
-      cp "$i" /mnt/etc/netctl/
+      cp "$i" $ROOT/etc/netctl/
     fi
   done
 fi
@@ -187,16 +203,21 @@ echo -n ":: Enable sshd? [y/N] "
 read ANSWER
 ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-  echo "arch-chroot /mnt systemctl enable sshd"
-  arch-chroot /mnt systemctl enable sshd
+  echo "arch-chroot $ROOT/ systemctl enable sshd"
+  arch-chroot $ROOT/ systemctl enable sshd
+fi
 
+unset ANSWER
+echo -n ":: Enable avahi mDNS? [y/N] "
+read ANSWER
+ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
+if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
   echo ":: Set up avahi and nss-mdns." && sleep 3
   echo "--> You must move 'mdns [NOTFOUND=return]' to 'hosts:' inside file: /etc/nsswitch.conf"
-  echo "\"mdns [NOTFOUND=return]\" >> /mnt/etc/nsswitch.conf"
   sleep 4
-  echo "mdns [NOTFOUND=return]" >> /mnt/etc/nsswitch.conf
-  nano /mnt/etc/nsswitch.conf
-  arch-chroot /mnt systemctl enable avahi-daemon.service
+  echo "mdns [NOTFOUND=return]" >> $ROOT/etc/nsswitch.conf
+  nano $ROOT/etc/nsswitch.conf
+  arch-chroot $ROOT/ systemctl enable avahi-daemon.service
 fi
 
 unset ANSWER
@@ -212,47 +233,36 @@ if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
     return 1
   fi
 
-  echo "pacstrap -i /mnt syslinux mtools"
-  pacstrap -i /mnt syslinux mtools
-
-  efivars -l
-  if test $? = 0; then
-    echo efibootmgr -c -L "Arch" -l /vmlinuz-linux -u "root=$DEV rw initrd=/initramfs-linux.img"
-    efibootmgr -c -L "Arch" -l /vmlinuz-linux -u "root=$DEV rw initrd=/initramfs-linux.img"
-  fi
+  echo efibootmgr -c -L "Arch" -l /vmlinuz-linux -u "root=$DEV rw initrd=/initramfs-linux.img"
+  efibootmgr -c -L "Arch" -l /vmlinuz-linux -u "root=$DEV rw initrd=/initramfs-linux.img"
 
   echo ":: You must add the root partition to /boot/syslinux/syslinux.cfg..." && sleep 3
-  nano /mnt/boot/syslinux/syslinux.cfg
+  nano $ROOT/boot/syslinux/syslinux.cfg
 
-  echo "arch-chroot /mnt syslinux-install_update -i -a -m"
-  arch-chroot /mnt syslinux-install_update -i -a -m
+  echo "syslinux-install_update -i -a -m"
+  arch-chroot $ROOT/ syslinux-install_update -i -a -m
 else
   unset ANSWER
-  echo -n ":: Enable gummiboot EFI? [y/N] "
+  echo -n ":: Enable systemd-boot (prev gummiboot)? [y/N] "
   read ANSWER
   ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
   if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
-    echo "pacstrap -i /mnt gummiboot"
-    pacstrap -i /mnt gummiboot
-
-    efivars -l
-    if test $? = 0; then
-      echo efibootmgr -c -L "Gummiboot" -l /EFI/gummiboot/gummibootx64.efi
-      efibootmgr -c -L "Gummiboot" -l /EFI/gummiboot/gummibootx64.efi
+    lsblk
+    echo -n ":: Enter the root partition: [sd#] "
+    read DEV
+    if test -n "$DEV"; then
+      echo "Error: Bad device input" >/dev/stderr
+      return 1
     fi
 
-    cat >> /mnt/boot/loader/entries/arch.conf << MARK
-    title Arch Linux
+    echo "title Arch Linux
     linux /vmlinuz-linux
     initrd /initramfs-linux.img
-    MARK
-    echo "options root=$DEV rw" >> /mnt/boot/loader/entries/arch.conf
+    options root=$DEV rw" >> $ROOT/boot/loader/entries/arch.conf
 
-    echo "arch-chroot /mnt gummiboot install"
-    arch-chroot /mnt gummiboot install
+    arch-chroot $ROOT/ bootctl install
   fi
 fi
-
 
 unset ANSWER
 echo -n ":: Disable root reserved space for all hard drives (10% space savings)? [y/N] "
