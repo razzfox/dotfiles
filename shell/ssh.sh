@@ -1,7 +1,7 @@
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
-  source "DOTFILES"/bootstrap/ssh/settings.sh
+  source "$DOTFILES"/bootstrap/ssh/settings.sh
 fi
 
 
@@ -54,6 +54,9 @@ ssh_servers() {
     unset share
     unset name
     unset namevar
+    unset sshcmd
+    unset rsynccmd
+    unset tmuxcmd
 
     # substr: trim shortest string from back/suffix(%) after(x*) a '@' char
     userpass="${i%@*}"
@@ -108,7 +111,7 @@ ssh_servers() {
 
     eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
     eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
-    eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/}; }"
+    eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
 
   done
 }

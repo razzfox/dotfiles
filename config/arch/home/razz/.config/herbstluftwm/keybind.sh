@@ -90,7 +90,7 @@ hc keybind Shift-F11 spawn $SCREENSAVEROFF
 
 # Manage Tags
 hc keybind $Mod-c spawn $TAG create
-hc keybind $Mod-Shift-x spawn $TAG create
+hc keybind $Mod-Shift-x spawn $TAG delete
 
 # Focus Tags
 tag_names=( $(herbstclient tag_status 0) )
