@@ -42,10 +42,6 @@ EOF
 
 
 ssh_servers() {
-  # Optional SERVERS string array
-  source $HOME/.ssh/ssh_servers
-
-  for i in ${SSH_SERVERS[@]}; do
     unset userpass
     unset user
     unset pass
@@ -117,8 +113,11 @@ ssh_servers() {
     eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; $tmuxcmd ; }"
     eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; $tmuxcmd ; }"
     eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
-
-  done
 }
 
-ssh_servers "$@"
+# Optional SERVERS string array
+source $HOME/.ssh/ssh_servers
+
+for i in ${SSH_SERVERS[@]}; do
+  ssh_servers "$@"
+done
