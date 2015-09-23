@@ -2,7 +2,7 @@
 #dhcpcd
 #systemctl start sshd
 #passwd
-# (type a password followed by enter, each time)
+# type password twice followed by enter, each time
 
 # Dvorak keyboard
 #loadkeys dvorak
@@ -15,6 +15,8 @@
 #mkfs.vfat -F32 -n boot -i HEX /dev/sdX#
 #mkfs.ext4 -L root -U UUID /dev/sdX#
 #mkswap -L swap -U UUID /dev/sdX#
+# Remove reserved blocks
+#tune2fs -m 0 /dev/sdX#
 
 # Mount
 #swapon /dev/sd##
@@ -23,6 +25,9 @@
 #mkdir /mnt/boot
 #mount /dev/sd## /mnt/home
 #mount /dev/sd## /mnt/boot
+
+# Network
+wifi-menu
 
 # Locate dotfiles
 cd
@@ -35,19 +40,15 @@ if test ! -d "$DOTFILES"; then
 fi
 export DOTFILES
 
-
-# Network
-wifi-menu
-
 # Repo Mirrorlist (will be copied to installation)
-source $DOTFILES/dotfiles/shell/pacman.arch && pacmrr
+source $DOTFILES/shell/pacman.arch && pacmrr
 #nano /etc/pacman.d/mirrorlist
 
 # Install
-source $DOTFILES/dotfiles/bootstrap/arch/packages.arch
+source $DOTFILES/bootstrap/arch/packages.arch
 
 # Setup (fstab, locale, time, hostname, keyboard layout and buttons, users, network settings, and bootloader/efivars)
-source $DOTFILES/dotfiles/bootstrap/arch/settings.arch
+source $DOTFILES/bootstrap/arch/settings.arch
 
 # Login (customize anything else)
 arch-chroot /mnt /bin/bash
