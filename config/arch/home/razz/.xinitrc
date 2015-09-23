@@ -33,7 +33,7 @@ xset s off -dpms
 which cmatrix >/dev/null 2>/dev/null && screensaver="$(which cmatrix) -a -u 6 -b"
 
 # Terminal
-export TERMINAL="$(which st || which tilda || which xfce-terminal || which xterm || which dmenu_run)"
+export TERMINAL="$(which tilda || which guake || which xfce-terminal || which xterm)"
 
 # Window Manager
 exec herbstluftwm

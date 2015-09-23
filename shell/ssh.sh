@@ -1,7 +1,7 @@
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
-  source "DOTFILES"/bootstrap/ssh/settings.sh
+  source "$DOTFILES"/bootstrap/ssh/settings.sh
 fi
 
 
@@ -105,13 +105,8 @@ ssh_servers() {
       rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
     fi
 
-    if test -n "$TMUX"; then
-      sshcmd="tmux set -g prefix C-b ; $sshcmd"
-      tmuxcmd="tmux set -g prefix C-a"
-    fi
-
-    eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; $tmuxcmd ; }"
-    eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; $tmuxcmd ; }"
+    eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
+    eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
     eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
 }
 
