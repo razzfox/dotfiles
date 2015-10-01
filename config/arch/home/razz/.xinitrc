@@ -24,6 +24,8 @@ xsetroot -cursor_name left_ptr #-solid '#000000'
 # Screen size and DPI
 export dimensions="$(echo $( xdpyinfo | grep dimension ) | cut -d ' ' -f 2)"
 export density="$(echo $( xdpyinfo | grep resolution ) | cut -d ' ' -f 2 | cut -d 'x' -f 1)"
+#To determine your optimal resolutions and display names, simply run: xrandr -q
+#xrandr --auto --output LVDS --primary --mode 1366x768 --left-of VGA-0 --output VGA-0 --mode 1280x1024
 
 # Background (display from imagemagick)
 test -f dotfiles/shell/ls.bash && display -size $dimensions -density $density -window root "$(bash $HOME/dotfiles/shell/ls.bash $HOME/.walls | head -n 1)" &
