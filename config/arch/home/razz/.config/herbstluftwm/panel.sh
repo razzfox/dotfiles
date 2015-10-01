@@ -25,6 +25,7 @@ flashcolor='#ff0675' #'#ef9090'
 
 # Variables
 getbat="bash $DOTFILES/shell/bat.arch"
+# Possible commands: up down mute mute_source <num>
 getvol="bash $DOTFILES/shell/vl.arch"
 getbr="bash $DOTFILES/shell/br.arch"
 
@@ -124,6 +125,7 @@ herbstclient --idle | while true; do
   draw_tags
 
   # Panel text
+#  right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
   right=" $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
   right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
   echo -n "$separator$flash ^bg()^fg()${windowtitle//^/^^}" # print left-aligned text
