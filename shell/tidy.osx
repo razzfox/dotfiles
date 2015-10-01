@@ -22,7 +22,9 @@ tidy_home() {
   echo 7299 | sudo -S true
   sudo rm -v ~/*/.localized ~/*/.DS_Store ~/*/._.DS_Store
 
-  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public
+  sudo rm -v ~/Public/Drop\ Box/.localized ~/Public/.com.apple.timemachine.supported
+
+  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public/Drop\ Box ~/Public
 }
 
 tidy_home "$@" 2>/dev/null || true
