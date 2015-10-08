@@ -17,6 +17,12 @@ tidy_applibrary() {
 }
 
 
+# Delete runtime caches
+tidy_osxcache() {
+  sudo rm -v /private/var/vm/sleepimage /private/var/vm/swapfile0 /private/var/vm/swapfile1 /Users/razz/Library/Caches
+}
+
+
 # Delete default home folders that recreate periodically
 tidy_home() {
   echo 7299 | sudo -S true
