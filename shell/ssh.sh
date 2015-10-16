@@ -75,7 +75,8 @@ ssh_servers() {
 
     # if variable already exists, and is not the same server
     # take out the last domain and all periods
-    namevar="${name^^}"
+    #namevar="${name^^}"
+    namevar="$(echo $name | tr '[:lower:]' '[:upper:]')"
     if test -n "${!namevar}"; then
       previous="${!namevar}"
       if test "${previous%@*}" != "$user"; then
@@ -95,7 +96,8 @@ ssh_servers() {
 
     # take out all periods
     name="${name//.}"
-    export ${name^^}="${user}@$server"
+    #export ${name^^}="${user}@$server"
+    export $(echo $name | tr '[:lower:]' '[:upper:]')="${user}@$server"
 
     if test -z "$pass"; then
       sshcmd="ssh -t"
@@ -105,9 +107,12 @@ ssh_servers() {
       rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
     fi
 
-    eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
-    eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
-    eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
+    #eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
+    #eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
+    #eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
+    eval "ssh$(echo $name | tr '[:upper:]' '[:lower:]') () { $sshcmd \$$(echo $name | tr '[:lower:]' '[:upper:]') \"\$@\"; }"
+    eval "ssh$(echo $name | tr '[:upper:]' '[:lower:]')rc () { $sshcmd \$$(echo $name | tr '[:lower:]' '[:upper:]') '$SHELL --rcfile .$USER'; }"
+    eval "rsync$(echo $name | tr '[:upper:]' '[:lower:]') () { $rsynccmd \$$(echo $name | tr '[:lower:]' '[:upper:]'):${share:-\~/} ; }"
 }
 
 # Optional SERVERS string array
