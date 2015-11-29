@@ -33,7 +33,7 @@ DMENU_EXPLORE="bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
 # General Keys
 hc keyunbind --all
 
-hc keybind $Mod-Shift-q chain : emit_hook quit_panel : close all : quit # can not use comma delimeter in the hc() chain already using comma.
+hc keybind $Mod-Shift-q chain : emit_hook quit_panel : quit # can not use comma delimeter in the hc() chain already using comma.
 hc keybind $Mod-r reload
 
 hc keybind $Mod-t spawn $TERMINAL
