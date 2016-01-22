@@ -11,25 +11,7 @@ aur.sh() {
     cd "$p"
     nano PKGBUILD
     makepkg --clean --install --syncdeps ${@##[^\-]*}
-  done' >"$aur"
-}
-
-sudo_enable() {
-  # Add 'nobody' to '/etc/sudoers'
-  $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
-
-  # user where=(who) NOPASSWD: what
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers || return 1
-
-  # I cant find out what programs make this work!
-  # This is necessary to make aur.sh in the executable-allowed list for security.
-  # Maybe pacman is running another program that I have not listed.
-  #echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which sudo) $(which pacman) $aur" >>/etc/sudoers || return 1
-}
-
-sudo_disable() {
-  # Remove 'nobody' from '/etc/sudoers'
-  $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
+  done'
 }
 
 aura() {
@@ -37,19 +19,26 @@ aura() {
   cd "${BUILDDIR:-/tmp}"
 
   if aur=$(which aura 2>/dev/null); then
-    aur="sudo aura"
+    aur="sudo $aur"
   else
     aur="${BUILDDIR:-/tmp}/aur.sh"
     aur.sh >"$aur"
     chmod +x "$aur"
   fi
 
-  sudo_enable || return 1
+  echo "Backup sudoers file:"
+  $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
 
-  echo sudo --user ${BUILDUSER:-nobody} $aur "$@"
-  sudo --user ${BUILDUSER:-nobody} $aur "$@"
+  # user where=(who) NOPASSWD: what
+  echo "Add '${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL' to '/etc/sudoers'"
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers
+  #echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which sudo) $(which pacman) $aur" >>/etc/sudoers
 
-  sudo_disable
+  echo sudo -u ${BUILDUSER:-nobody} $aur "$@"
+  sudo -u ${BUILDUSER:-nobody} $aur "$@"
+
+  echo "Revert sudoers file:"
+  $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
 
   popd
 }
