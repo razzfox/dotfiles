@@ -46,7 +46,7 @@ linux)
   export ID
   ;;
 darwin)
-  export PATH="/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:$PATH"
+  export PATH="/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:/usr/local/sbin:$PATH"
   export ID='osx'
   test -z "$HOME" && export HOME="/Users/$(whoami)"
   ;;

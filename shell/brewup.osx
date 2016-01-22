@@ -1,5 +1,11 @@
-brewup() {
+brewup () {
   brew update
   brew upgrade
+  brew cleanup
+  brew prune
   brew doctor
+}
+
+brewfix () {
+  sudo chown -R "$USER":admin /usr/local /Library/Caches/Homebrew /opt/homebrew-cask
 }
