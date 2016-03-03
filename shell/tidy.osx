@@ -23,6 +23,12 @@ tidy_osxcache() {
 }
 
 
+# Delete automatic program updaters
+tidy_javaupdate() {
+  sudo rm -rf '/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Resources/Java Updater.app'
+}
+
+
 # Delete default home folders that recreate periodically
 tidy_home() {
   echo 7299 | sudo -S true
