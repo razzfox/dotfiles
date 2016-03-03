@@ -8,7 +8,7 @@ BASE="base"
 SHELLS="bash-completion tmux"
 #zsh zsh-completions zsh-syntax-highlighting zshdb
 
-UTILS="base-devel htop iotop lsof powertop tree bc git tig mercurial subversion p7zip unzip unrar autogen lesspipe patch jshon unrtf ranger html2text libcaca mediainfo highlight"
+UTILS="base-devel cmake htop iotop lsof powertop tree bc git tig mercurial subversion p7zip unzip unrar autogen lesspipe patch jshon unrtf ranger html2text libcaca mediainfo highlight"
 
 LANG="ruby nodejs go llvm glibc"
 

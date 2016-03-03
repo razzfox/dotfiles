@@ -15,11 +15,11 @@ aur.sh() {
 }
 
 aura() {
-  pushd .
-  cd "${BUILDDIR:-/tmp}"
+#  pushd .
+#  cd "${BUILDDIR:-/tmp}"
 
-  if aur=$(which aura 2>/dev/null); then
-    aur="sudo $aur"
+  if test -f /opt/wrapaur; then
+    aur="/opt/wrapaur -a"
   else
     aur="${BUILDDIR:-/tmp}/aur.sh"
     aur.sh >"$aur"
@@ -40,7 +40,7 @@ aura() {
   echo "Revert sudoers file:"
   $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
 
-  popd
+#  popd
 }
 
 aura_edit_pkgbuild() {
