@@ -1,3 +1,16 @@
+####
+
+  echo x${output}x
+
+  # Trim leading whitespaces
+  output="${output##*( )}"
+
+  echo x${output}x
+
+  # trim trailing whitespaces
+  output="${output%%*( )}"
+
+  echo x${output}x
 
 ####
 
