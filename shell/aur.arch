@@ -2,6 +2,14 @@ break="-------------------------------------------------------------------------
 
 # aur.sh dc2f3fcaa9 taken Jan 7, 2014 from https://github.com/stuartpb/aur.sh/blob/master/aur.sh
 aur.sh() {
+  if aur=$(which wrapaur 2>/dev/null); then
+    aur="sudo $aur"
+  else
+    aur="${BUILDDIR:-/tmp}/aur.sh"
+    aur.sh >"$aur"
+    chmod +x "$aur"
+  fi
+
   echo '
   d=${BUILDDIR:-/tmp}
   for p in ${@##-*}
@@ -14,39 +22,24 @@ aur.sh() {
   done'
 }
 
-aura() {
-  pushd .
-  cd "${BUILDDIR:-/tmp}"
-
-  if aur=$(which aura 2>/dev/null); then
-    aur="sudo $aur"
-  else
-    aur="${BUILDDIR:-/tmp}/aur.sh"
-    aur.sh >"$aur"
-    chmod +x "$aur"
-  fi
-
+aur() {
   echo "Backup sudoers file:"
   $(which cp) --verbose /etc/sudoers /etc/sudoers.orig
 
   # user where=(who) NOPASSWD: what
-  echo "Add '${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL' to '/etc/sudoers'"
-  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers
   #echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: $(which sudo) $(which pacman) $aur" >>/etc/sudoers
+  echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers
 
-  echo sudo -u ${BUILDUSER:-nobody} $aur "$@"
-  sudo -u ${BUILDUSER:-nobody} $aur "$@"
+  pushd .
+  cd "${BUILDDIR:-/tmp}"
+  pwd
+  sudo -u ${BUILDUSER:-nobody} env HOME="${BUILDDIR:-/tmp}" wrapaur "$@"
+  popd
 
   echo "Revert sudoers file:"
   $(which mv) --verbose /etc/sudoers.orig /etc/sudoers
-
-  popd
 }
 
-aura_edit_pkgbuild() {
-  aura --hotedit "$@"
-}
-
-auras() {
-  less --quit-if-one-screen --LONG-PROMPT --force --RAW-CONTROL-CHARS <(echo -e "${break}\nArch Official:\n$break"; aura -Ss --color=always "$@"; echo -e "${break}\nAUR Unofficial:\n$break"; aura -As "$@")
+aurs() {
+  wrapaur -s "$@" | less --quit-if-one-screen --LONG-PROMPT --force --RAW-CONTROL-CHARS
 }
