@@ -1,0 +1,22 @@
+## Run Linux partition inside OSX
+# Setup in Linux
+pacstrap -i /mnt linux-headers dkms dkms virtualbox-host-dkms virtualbox qt4
+#arch-chroot /mnt dkms install vboxhost/4.3.14
+arch-chroot /mnt dkms install vboxhost/\$(pacman -Q virtualbox|awk {'print $2'}|sed 's/\-.\+//') -k \$(uname -rm|sed 's/\ /\//')
+arch-chroot /mnt systemctl enable dkms
+echo "vboxdrv" > /etc/modules-load.d/virtualbox.conf
+#usermod -aG vboxusers USER OR gpasswd --add USER vboxusers
+
+
+## Setup in OSX
+# Enable user access to disks (because VirtualBox is run as the current user)
+sudo chmod 0777 /dev/disk0* 2>/dev/null
+
+# For a whole disk (you should not use a whole disk mounted by OSX)
+#VBoxManage internalcommands createrawvmdk -filename /path/to/file.vmdk -rawdisk /dev/disk1
+
+# For partitions on same disk as OSX (you can not use disk0s1 format directly)
+VBoxManage internalcommands createrawvmdk -filename /path/to/file.vmdk -rawdisk /dev/disk0 -partitions 1,4
+
+# Enable user access to disks at boot (disk permissions are reset)
+echo 'echo PASSWORD | sudo -S chmod 0777 /dev/disk0* 2>/dev/null' >> ~/.bashrc

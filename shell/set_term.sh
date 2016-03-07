@@ -7,9 +7,12 @@ if test ! -f "$TERMINFO/${TERM::1}/$TERM"; then
 #  rm $HOME/.terminfo-noaltscreen-$TERM
 fi
 
-# Terminal sleep settings
 case "$TERM" in
   linux)
+    # Num lock on
+    setleds -D +num
+
+    # Terminal sleep settings
     # do not blank the screen on linux framebuffer
     setterm -powersave off
     ;;
