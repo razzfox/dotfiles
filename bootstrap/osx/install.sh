@@ -2,7 +2,7 @@
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || return; done 2>/dev/null &
+while true; do sudo -n true; sleep 60; kill -0 "$$" || return; done &>/dev/null &
 
 
 # Agree to xcode terminal
