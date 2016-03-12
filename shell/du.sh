@@ -5,7 +5,7 @@ du() {
 
 # Filesize including dotfiles
 du_all() {
-  $(which du) --dereference-args --human-readable --all "$@"
+  du --all "$@"
 }
 
 # Filesize sorted decreasing
@@ -13,7 +13,6 @@ du_sort() {
   du "$@" | sort -hr
 }
 
-which tree >/dev/null 2>/dev/null || return 1
 du_tree() {
   $(which tree) -axhF --du -I '.git|.npm|.gem|.android|.atom|.local|Library' "$@"
 }

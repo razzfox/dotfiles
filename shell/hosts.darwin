@@ -17,7 +17,7 @@ hosts_disable() {
   sudo mv -v /private/etc/hosts /private/etc/hosts.edit
 
   # Revert original
-  sudo mv -v /private/etc/hosts.orig /private/etc/hosts 2>/dev/null
+  sudo mv -v /private/etc/hosts.orig /private/etc/hosts
 }
 
 hosts_exception() {
