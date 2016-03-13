@@ -6,8 +6,8 @@ set_walls() {
 
   mkdir -p ~/Pictures
 
-  if test ! -f ~/Pictures/date.txt -o "$(cat ~/Pictures/date.txt 2>/dev/null)" != "$(date +%F)"; then
-    rm ~/Pictures/* 2>/dev/null
+  if test "$( cat ~/Pictures/date.txt 2>/dev/null )" != "$(date +%F)" -o -e "$( find ~/walls/ -maxdepth 1 -type f | tail -n 1 )"; then
+    rm ~/Pictures/*.jpg ~/Pictures/*.png 2>/dev/null
     cp $(lr $WALLPAPERS | tail) ~/Pictures/ 2>/dev/null
     date +%F > ~/Pictures/date.txt
   fi
