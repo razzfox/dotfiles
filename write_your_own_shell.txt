@@ -4,14 +4,15 @@ If globbing fails, it should output error and fail.
 Test char brackets should not exist. That's not scripting.
 get stuff from experimental
 Essentially a rewrite of a shell for how people expect a shell to work coming from a desktop experience. Eventually use fish-shell like history (displayed below) and bash-completion like selection. (Can it be scraped from man pages?)
----
+
 always save logs, including from scripts, except functions go into function files.
 variables go into variable file and always update environment. 
 always append, no limit, ignore dups.
 create a command for turinng the last command(s) into a function and create an ncurses screen to select history.
 Enable globbing that adds whole filename to args, based on cwd.----
-alias l.='ls -d .*' 2>/dev/null
-----
+
+alias l.='ls -d .*' &>/dev/null
+
 glob comes with echo and confirmation before running
-----
+
 built-in utilities for renaming (massren) and trash can behavior, safe renaming.

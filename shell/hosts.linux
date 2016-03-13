@@ -19,7 +19,7 @@ hosts_disable() {
   mv -v /etc/hosts /etc/hosts.edit
 
   # Revert original
-  mv -v /etc/hosts.orig /etc/hosts 2>/dev/null
+  mv -v /etc/hosts.orig /etc/hosts
 }
 
 hosts_exception() {

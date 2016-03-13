@@ -149,7 +149,7 @@ gg() {
 
 
 lsgit() {
-  if git status >/dev/null 2>/dev/null; then
+  if git status &>/dev/null; then
     git status
     return $?
   fi
@@ -172,7 +172,7 @@ lsgit() {
       pushd .
       cd "$DIR"
 
-      if git status >/dev/null 2>/dev/null; then
+      if git status &>/dev/null; then
         echo -e "$C_EMP$PWD$C_F"
         git $GIT_COMMAND
 
@@ -181,7 +181,7 @@ lsgit() {
           #test -d "$INNER" && lsgit "$INNER" # Recursion causes crash! Only go one level deep now
           if test -d "$INNER"; then
              cd "$INNER"
-             if git status >/dev/null 2>/dev/null; then
+             if git status &>/dev/null; then
                echo -e "$C_EMP$PWD$C_F"
                git $GIT_COMMAND
              fi

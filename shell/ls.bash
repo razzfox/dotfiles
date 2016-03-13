@@ -1,4 +1,4 @@
-if $(which ls) --color >/dev/null 2>/dev/null # Detect which ls flavor is in use
+if $(which ls) --color &>/dev/null # Detect which ls flavor is in use
   then # GNU
     colorflag='--color'
   else # OSX
@@ -105,6 +105,3 @@ lr() { # List files in random order
     echo "$i"
   done
 }
-
-
-#lr "$@"

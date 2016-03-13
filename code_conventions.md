@@ -118,7 +118,7 @@ It excells at doing this locally and remotely because it is a text interface, bu
 
 ####
 
-# Currently I use '>/dev/null' and '2>/dev/null' (and other '>file') without a space in the name. The shortcuts '&2' and '&1' are not often used, and it is not clear.
+# Currently I use '&>/dev/null' and '>file' without a space in the name. The shortcuts '&2' and '&1' are not very clear, but are sometimes unavoidable.
 
 ####
 
