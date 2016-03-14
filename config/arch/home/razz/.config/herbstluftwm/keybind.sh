@@ -93,10 +93,17 @@ hc keybind $Mod-c spawn $TAG create
 hc keybind $Mod-Shift-x spawn $TAG delete
 
 # Focus Tags
-tag_names=( $(herbstclient tag_status 0) )
-for i in $(seq --separator=' ' ${#tag_names[@]}); do
-  hc keybind $Mod-${i:(-1)} use_index $(($i-1))
-  hc keybind $Mod-Shift-${i:(-1)} move_index $(($i-1))
+tag_names=( $(herbstclient tag_status {monitor:-0}) )
+tag_keys=( $(seq ${#tag_names[@]}) 0 )
+
+hc rename default "${tag_names[0]}" || true
+for i in ${!tag_names[@]} ; do
+    hc add "${tag_names[$i]}"
+    key="${tag_keys[$i]}"
+    if ! [ -z "$key" ] ; then
+        hc keybind "$Mod-$key" use_index "$i"
+        hc keybind "$Mod-Shift-$key" move_index "$i"
+    fi
 done
 
 hc keybind $Mod-period use_index +1 --skip-visible
@@ -106,7 +113,7 @@ hc keybind $Mod-Home use_index -1 --skip-visible # fn-LeftArrow
 
 
 # Manage Windows
-hc keybind $Mod-x close # close window
+hc keybind $Mod-w close # close window
 
 # Move Window
 hc keybind $Mod-Shift-Left shift left
@@ -137,6 +144,7 @@ hc keybind $Mod-$Super-Left split left 0.5
 hc keybind $Mod-$Super-Down split bottom 0.5
 hc keybind $Mod-$Super-Up split top 0.5
 hc keybind $Mod-$Super-Right split right 0.5
+hc keybind $Mod-$Super-space split explode
 
 hc keybind $Mod-x remove
 
