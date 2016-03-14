@@ -21,16 +21,11 @@ tag_names=( {1..9} )
 ## Tag actions must be atomic, not chained together
 herbstclient lock
 
-# Remove Tags (on config reload)
-for i in $(herbstclient tag_status ${monitor:-0}); do
-  herbstclient remove_monitor ${monitor:-0} $i # this is not tested...
-done
-
 # Create Tags
+herbstclient rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
   herbstclient add "${tag_names[$i]}"
 done
-herbstclient rename default "${tag_names[0]}" || true
 
 ## End atomic tag actions
 herbstclient unlock

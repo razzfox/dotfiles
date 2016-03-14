@@ -93,12 +93,12 @@ hc keybind $Mod-c spawn $TAG create
 hc keybind $Mod-Shift-x spawn $TAG delete
 
 # Focus Tags
-tag_names=( $(herbstclient tag_status {monitor:-0}) )
-tag_keys=( $(seq ${#tag_names[@]}) 0 )
+tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d [:punct:] ) )
+tag_keys=( $( seq ${#tag_names[@]} ) )
 
 hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
-    hc add "${tag_names[$i]}"
+#    hc add "${tag_names[$i]}"
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
         hc keybind "$Mod-$key" use_index "$i"
