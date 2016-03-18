@@ -21,6 +21,12 @@ case "$TERM" in
     echo -n $(tput smkx) >/dev/tty # enable delete key on st-terminal
     setterm -blank 0 -powerdown 0 -powersave off
     ;;
+ tmux-256color)
+    echo -n $(tput smkx) >/dev/tty # enable delete key on st-terminal
+    setterm -blank 0 -powerdown 0 -powersave off
+    tmux set -g window-status-current-format "#[fg=colour234,bg=colour$(color_number $HOSTNAME),noreverse,bold] #I #W "
+    tmux set -g status-right "#[fg=colour234,bg=colour$(color_number $HOSTNAME),bold] #h #[bg=black] #[fg=colour245,bg=colour234,nobold] %R #[bg=black] #[fg=colour245,bg=colour234] %d %b #[bg=black] "
+    ;;
   *)
     setterm -blank 0 -powerdown 0 -powersave off
     ;;
