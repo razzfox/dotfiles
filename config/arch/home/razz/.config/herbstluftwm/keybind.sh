@@ -1,6 +1,5 @@
-#Modifier: Alt/Option (Mod1)
-#               + Shift         + Control       + Super (Mod4)  [none]
-#             ---------------------------------------------------------------
+# Alt/Option  | + Shift         + Control       + Super (Mod4)  [none]
+#-------------|---------------------------------------------------------------
 # /\,\/,<-,-> | (move-window)   (resize-frame)  (create-frame)  (focus-window)
 # Backspace   |                                 (remove-frame)  (remove-frame)
 # Tab         | (cycle-window)                                  (cycle-window)
@@ -8,13 +7,11 @@
 # f key       | (floating)      (pseudo-tile)   (cycle-layout)  (fullscreen)
 # q key       | (quit)
 # r key       | (reload)
-# x key       | (remove-tag)                                    (close-window)
+# x key       | (delete-tag)                                    (close-window)
 # c key       | (create-tag)
-# t key       | (terminal)
-#
-# No Modifier:
-# spacebar    | (dmenu_run)                     (dmenu.sh)
-# e key       |                                 (dmenu_explore.sh)
+# t / Enter   | (terminal)
+# space       | (dmenu_run)     (dmenu_explore.sh)  (dmenu.sh)
+# e key       |
 
 hc() {
   COMMANDS="$COMMANDS , $@"
@@ -35,13 +32,14 @@ hc keyunbind --all
 
 hc keybind $Mod-Shift-q chain : emit_hook quit_panel : quit # can not use comma delimeter in the hc() chain already using comma.
 hc keybind $Mod-r reload
+hc keybind $Mod-Shift-r detect_monitors
 
 hc keybind $Mod-t spawn $TERMINAL
 hc keybind $Mod-Shift-t spawn $TERMINAL
-hc keybind $Mod-Shift-Return spawn $TERMINAL
+hc keybind $Mod-Shift-Return spawn $TERMINAL # Enter key
 hc keybind $Super-space spawn $DMENU_LAUNCH
 hc keybind $Super-Shift-space spawn dmenu_run
-hc keybind $Super-e spawn $DMENU_EXPLORE
+hc keybind $Super-Control-space spawn $DMENU_EXPLORE
 
 
 # Media Keys
@@ -140,13 +138,13 @@ hc keybind $Mod-quote cycle_monitor # Shift-comma
 
 
 # Manage Frames
+hc keybind $Mod-x remove
+
 hc keybind $Mod-$Super-Left split left 0.5
 hc keybind $Mod-$Super-Down split bottom 0.5
 hc keybind $Mod-$Super-Up split top 0.5
 hc keybind $Mod-$Super-Right split right 0.5
 hc keybind $Mod-$Super-space split explode
-
-hc keybind $Mod-x remove
 
 hc keybind $Mod-f cycle_layout 1
 hc keybind $Mod-Shift-f floating toggle
