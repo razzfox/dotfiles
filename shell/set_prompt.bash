@@ -5,10 +5,35 @@
 # GIT_PS1_SHOWUPSTREAM="auto git"
 GIT_PS1_SHOWDIRTYSTATE=0
 
+#if test "${TERM##*-}" = "256color"; then
+#  fullcolor=256
+#fi
+
+color_number () {
+#  HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
+#  HASH=$(echo $1 | tr -cd '[:alnum:].' | cksum | cut -c1-4)
+#  echo $(( 0x${HASH:0:2} % 13 + 1 ))
+  HASH=$(echo $1 | tr -cd '[:alnum:].' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 )
+  echo $(( ${HASH} % 6 + 1 ))
+  # mod a 3 digit number to get 1..13 for 1..6 and 0..6 (ignoring light gray and white)
+  # or just 1..6
+}
+
 color_word () {
-  HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
-  HASH=$(( 0x${HASH:1:3} % 7 + 1 )) # avoid negative sign and convert to decimal, mod a 3 digit number to get 1..7
-  echo -e "\033[$(( $HASH % 2 ));3${HASH}m$1\033[m" # print color codes
+  HASH=$(color_number ${1})
+#  echo -e "\033[0;9$(( ${HASH} - 7 ))m${1}\033[m"
+  echo -e "\033[0;3${HASH}m${1}\033[m"
+}
+
+color_number256 () {
+#  HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
+#  echo $(( 0x${HASH:1:5} % 256 )) # avoid negative sign and convert to decimal, mod a 3 digit number to get 0..255
+  HASH=$(echo $1 | tr -cd '[:alnum:].' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 | cut -c1-3)
+  echo $(( ${HASH} % 256 ))
+}
+
+color_word256 () {
+  echo $(tput setaf $(color_number256 ${1}))${1}$(tput sgr 0)
 }
 
 set_prompt() {
@@ -17,9 +42,9 @@ set_prompt() {
   JOBS_PS1="\$(test \$? != 0 && echo -ne ' \[${C_Y}\](X)\[${C_F}\]')\$(test \j != 0 && echo -ne ' \[${C_B}\](\j)\[${C_F}\]')"
 
   if test $EUID = 0; then # root
-    PS1=":: r00t $(color_word [$HOSTNAME])${JOBS_PS1} \[${C_EMG}\]\$PWD/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]-------->\[${C_F}\] "
+    PS1=":: r00t $(color_word$fullcolor [$HOSTNAME])${JOBS_PS1} \[${C_EMG}\]\$PWD/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]-------->\[${C_F}\] "
   else # user
-    PS1="$(color_word $USER) via $(color_word $HOSTNAME)${JOBS_PS1} in \[${C_EMG}\]\w/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]\$\[${C_F}\] "
+    PS1="$(color_word$fullcolor $USER) via $(color_word$fullcolor $HOSTNAME)${JOBS_PS1} in \[${C_EMG}\]\w/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]\$\[${C_F}\] "
   fi
 }
 
