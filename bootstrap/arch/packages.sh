@@ -1,9 +1,8 @@
 BASE="base"
 
 SHELLS="bash-completion tmux"
-#zsh zsh-completions zsh-syntax-highlighting zshdb
 
-UTILS="base-devel cmake htop iotop lsof powertop tree bc git tig mercurial subversion p7zip unzip unrar autogen lesspipe patch jshon unrtf ranger html2text libcaca mediainfo highlight"
+UTILS="base-devel cmake htop iotop lsof inotify-tools powertop tree bc git tig mercurial subversion p7zip unzip unrar autogen lesspipe patch jshon unrtf ranger html2text libcaca mediainfo highlight"
 
 LANG="ruby nodejs go llvm glibc"
 
@@ -14,25 +13,40 @@ NETWORK="avahi nss-mdns dnsutils openssh rsync curl gnu-netcat"
 
 BLUETOOTH="bluez-utils"
 
-LAPTOP="iw wpa_supplicant wpa_actiond dialog xf86-input-synaptics xf86-video-nouveau mesa efibootmgr"
+LAPTOP="xf86-input-synaptics"
+
+VIDEO="xf86-video-nouveau"
+VIDEONV="xf86-video-nv"
+VIDEOATI="xf86-video-ati"
+
+EFIBOOT="efibootmgr"
+
+WIRELESS="iw wpa_supplicant wpa_actiond dialog"
 #wireless_tools linux-tools hdparm ethtool
 
-DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg-xinit mesa xsel xclip xdg-utils cmatrix"
+DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg-xinit mesa xsel xclip xdg-utils"
+
+TERM="st"
+
+OTHER="cmatrix"
 
 AUDIO="pulseaudio"
 
 MEDIA="mplayer vorbis-tools mpg123 ffmpeg imagemagick"
+
 #audacity
 
 FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf-symbola font-mathematica adobe-source-han-sans-otc-fonts ttf-freefont ttf-arphic-uming ttf-baekmuk"
 # terminus-font=englishmono adobe-source-code-pro-fonts=englishmono ttf-inconsolata=englishmono ttf-gentium=latingreekcyrillicphonetic ttf-symbola=emoji ttf-mathematica=math adobee-source-han-sans-otc-fonts=chinesejapanesekorean ttf-freefont=international ttf-arphic-uming=printedchinese ttf-baekmuk=korean
 # ttf-ms-fonts = andalemono couriernew arial impact lucidasans trebuche verdana comicsans georgia timesnewroman
 
-AUR="lsx pulseaudio-ctl zeal-git wiggle broadcom-wl macfanctl"
+AUR="lsx zeal-git wiggle broadcom-wl-dkms macfanctl"
 
 
-PACKAGES="BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP DESKTOP SERVER AUDIO MEDIA FONTS"
+PACKAGES="BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP VIDEO VIDEONV VIDEOATI EFIBOOT WIRELESS DESKTOP SERVER TERM OTHER AUDIO MEDIA FONTS"
 for pkg in $PACKAGES AUR; do
+  echo
+  echo
   echo ${!pkg}
 
   unset ANSWER
