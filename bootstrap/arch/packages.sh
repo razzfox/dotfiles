@@ -1,8 +1,3 @@
-if ! which pacstrap 2>/dev/null; then
-  pacstrap () { shift 2; pacman -Syu $@; }
-fi
-
-
 BASE="base"
 
 SHELLS="bash-completion tmux"
@@ -24,8 +19,6 @@ LAPTOP="iw wpa_supplicant wpa_actiond dialog xf86-input-synaptics xf86-video-nou
 
 DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg-xinit mesa xsel xclip xdg-utils cmatrix"
 
-SERVER="plexmediaserver bitcoin-daemon cgminer umurmur"
-
 AUDIO="pulseaudio"
 
 MEDIA="mplayer vorbis-tools mpg123 ffmpeg imagemagick"
@@ -35,7 +28,7 @@ FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf
 # terminus-font=englishmono adobe-source-code-pro-fonts=englishmono ttf-inconsolata=englishmono ttf-gentium=latingreekcyrillicphonetic ttf-symbola=emoji ttf-mathematica=math adobee-source-han-sans-otc-fonts=chinesejapanesekorean ttf-freefont=international ttf-arphic-uming=printedchinese ttf-baekmuk=korean
 # ttf-ms-fonts = andalemono couriernew arial impact lucidasans trebuche verdana comicsans georgia timesnewroman
 
-AUR="aura-bin zsh-history-substring-search-git lsx google-chrome google-talkplugin pulseaudio-ctl zeal-git stapler wiggle broadcom-wl macfanctl"
+AUR="lsx pulseaudio-ctl zeal-git wiggle broadcom-wl macfanctl"
 
 
 PACKAGES="BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP DESKTOP SERVER AUDIO MEDIA FONTS"
@@ -53,10 +46,26 @@ for pkg in $PACKAGES AUR; do
   echo
 done
 
-pacstrap -i /mnt $(for pkg in $PACKAGES; do echo ${!pkg}; done)
 
-if test -n "$AUR" -a -n "$DOTFILES"; then
-  for pkg in $AUR; do
-    arch-chroot /mnt "$DOTFILES"/bootstrap/arch/aur-get.sh $pkg
-  done
+unset ANSWER
+echo -n ":: Install to /mnt using pacstrap? [y/N] "
+read ANSWER
+ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
+if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
+  pacstrap -i /mnt $(for pkg in $PACKAGES; do echo ${!pkg}; done)
+
+  if test -n "$AUR" -a -n "$DOTFILES"; then
+    for pkg in $AUR; do
+      arch-chroot /mnt "$DOTFILES"/bootstrap/arch/aur-get.sh $pkg
+    done
+  fi
+
+else
+  pacman -Syu $(for pkg in $PACKAGES; do echo ${!pkg}; done)
+
+  if test -n "$AUR" -a -n "$DOTFILES"; then
+    for pkg in $AUR; do
+      bash "$DOTFILES"/bootstrap/arch/aur-get.sh $pkg
+    done
+  fi
 fi
