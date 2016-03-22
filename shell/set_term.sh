@@ -17,8 +17,17 @@ case "$TERM" in
   tmux-256color)
     echo -n $(tput smkx) >/dev/tty # enable delete key on st-terminal
     setterm -blank 0 -powerdown 0 -powersave off
-    tmux set -g window-status-current-format "#[fg=colour234,bg=colour$(color_number $HOSTNAME),noreverse,bold] #I #W "
-    tmux set -g status-right "#[fg=colour234,bg=colour$(color_number $HOSTNAME),bold] #h #[bg=black] #[fg=colour245,bg=colour234,nobold] %R #[bg=black] #[fg=colour245,bg=colour234] %d %b #[bg=black] "
+
+    # Impossible due to bash bug where it adds quotes around the subshell output, also tmux will not accept fd as source-file
+    #tmux $( grep " pane-active-border-fg " ~/.tmux.conf | sed "s/colour[0-9]*/colour$(color_number $HOSTNAME)/" )
+    #tmux $( grep " window-status-current-format " ~/.tmux.conf | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" )
+    #tmux $( grep " status-right " ~/.tmux.conf | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" )
+
+    grep " pane-active-border-fg " ~/.tmux.conf | sed "s/colour[0-9]*/colour$(color_number $HOSTNAME)/" >> /tmp/tmux.sh
+    grep " window-status-current-format " ~/.tmux.conf | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" >> /tmp/tmux.sh
+    grep " status-right " ~/.tmux.conf | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" | tr \" \' >> /tmp/tmux.sh
+    tmux source-file /tmp/tmux.sh
+    rm /tmp/tmux.sh
     ;;
   *)
     setterm -blank 0 -powerdown 0 -powersave off
