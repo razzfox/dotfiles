@@ -15,14 +15,14 @@ herbstclient detect_monitors #set_monitors 1280x1024+0+0 1280x1024+1280+0
 #hc use "${TAG_NAMES[0]}"
 #hc add_monitor 1440x900+1366+0 "${TAG_NAMES[1]}"
 
-# Panel based on: /etc/xdg/herbstluftwm/panel.sh
-# change for HiDPI monitors
-panel_height=15
-panel="bash $HOME/.config/herbstluftwm/panel.sh"
 # Icon Tray
-killall trayer
+pkill trayer
 herbstclient spawn trayer --edge top --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --expand true
+
+# Panel based on: /etc/xdg/herbstluftwm/panel.sh
+panel="bash $HOME/.config/herbstluftwm/panel.sh"
 for monitor in $(herbstclient list_monitors | cut -d':' -f1); do
+  # Inherits the current environment with style colors
   herbstclient spawn $panel $monitor $panel_height
 done
 

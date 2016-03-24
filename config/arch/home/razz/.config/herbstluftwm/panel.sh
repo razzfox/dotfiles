@@ -10,19 +10,24 @@ y=${geometry[1]}
 #panel_width=$(( ${geometry[2]} -25 ))
 panel_width=${geometry[2]}
 
-panel_height=$2
+# change for HiDPI monitors
+panel_height=${2:-15}
 herbstclient pad $monitor $panel_height
 
 # Theme
 font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
-bordercolor='#26221C'
-fgcolor='#efefef'
-bgcolor="$(herbstclient get frame_border_normal_color)" #bgcolor='#303030'
-selfg='#101010'
-selbg="$(herbstclient get window_border_active_color)" #selbg='#8080FF'
+# Not used
+#bordercolor="$(herbstclient get frame_bg_active_color)"
+# Main text
+fgcolor="$(herbstclient get frame_border_inner_color)"
+bgcolor="$(herbstclient get frame_bg_normal_color)"
+# Labels for right side
+textcolor="$(herbstclient get window_border_inner_color)"
+selfg="$bgcolor"
+selbg="$(herbstclient get window_border_active_color)"
 separator="^bg()^fg($selbg)|"
-textcolor='#909090'
-flashcolor='#ff0675' #'#ef9090'
+urgentcolor="$(herbstclient get window_border_urgent_color)"
+flashcolor="$urgentcolor"
 
 # Variables
 getbat="bash $DOTFILES/shell/bat.arch"
@@ -66,13 +71,13 @@ draw_tags() {
       echo -n "^bg(#9CA668)^fg(#141414)"
       ;;
       ':')
-      echo -n "^bg()^fg(#ffffff)"
+      echo -n "^bg()^fg()"
       ;;
       '!')
-      echo -n "^bg(#FF0675)^fg(#141414)"
+      echo -n "^bg($urgentcolor)^fg(#141414)"
       ;;
       *)
-      echo -n "^bg()^fg(#ababab)"
+      echo -n "^bg()^fg($textcolor)"
       ;;
     esac
     # clickable tags if using SVN dzen
