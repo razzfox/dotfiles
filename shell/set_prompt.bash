@@ -46,6 +46,12 @@ set_prompt() {
   else # user
     PS1="$(color_word$fullcolor $USER) via $(color_word$fullcolor $HOSTNAME)${JOBS_PS1} in \[${C_EMG}\]\w/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]\$\[${C_F}\] "
   fi
+
+#PS1L=$PWD
+#if [[ $PS1L/ = "$HOME"/* ]]; then PS1L=\~${PS1L#$HOME}; fi
+#PS1R=$USER@$HOSTNAME
+#printf "%s%$(($COLUMNS-${#PS1L}))s" "$PS1L" "$PS1R"
+
 }
 
 PROMPT_COMMAND="history -a;set_prompt;$PROMPT_COMMAND" # run 'set_prompt' before every command

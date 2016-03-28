@@ -28,7 +28,7 @@ DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg
 
 TERM="st"
 
-OTHER="cmatrix"
+OTHER="cmatrix lm_sensors"
 
 AUDIO="pulseaudio"
 
@@ -40,7 +40,8 @@ FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf
 # terminus-font=englishmono adobe-source-code-pro-fonts=englishmono ttf-inconsolata=englishmono ttf-gentium=latingreekcyrillicphonetic ttf-symbola=emoji ttf-mathematica=math adobee-source-han-sans-otc-fonts=chinesejapanesekorean ttf-freefont=international ttf-arphic-uming=printedchinese ttf-baekmuk=korean
 # ttf-ms-fonts = andalemono couriernew arial impact lucidasans trebuche verdana comicsans georgia timesnewroman
 
-AUR="lsx zeal-git wiggle broadcom-wl-dkms macfanctl"
+AUR="lsx zeal-git wiggle atom-editor android-studio mined sc-im"
+#broadcom-wl-dkms
 
 
 PACKAGES="BASE SHELLS UTILS LANG FILESYS NETWORK BLUETOOTH LAPTOP VIDEO VIDEONV VIDEOATI EFIBOOT WIRELESS DESKTOP SERVER TERM OTHER AUDIO MEDIA FONTS"

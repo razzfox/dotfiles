@@ -33,17 +33,20 @@ herbstclient unlock
 
 # Rules
 hc unrule --all
-hc rule focus=off # normally do not focus new clients
+# normally do not focus new clients
+hc rule focus=off
+
 
 # Popups
-hc rule windowtype~'_NET_WM_WINDOW_TYPE_(UTILITY|SPLASH)' pseudotile=on
+hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' pseudotile=on
 hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
-hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK)' manage=off
-hc rule windowtype~'_NET_WM_STATE_FULLSCREEN' fullscreen=on
+hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
+
 hc rule windowrole="pop-up" pseudotile=on
 hc rule windowrole="GtkFileChooserDialog" pseudotile=on
 
 # Applications
+hc rule windowtype~'_NET_WM_STATE_FULLSCREEN' fullscreen=on
 hc rule class~'(.*[Rr]xvt.*|.*[Tt]erm|Konsole)' focus=on # give focus to most common terminals
 hc rule instance="guake" focus=on
 hc rule instance="st-256color" focus=on
