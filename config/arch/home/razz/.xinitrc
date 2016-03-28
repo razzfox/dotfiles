@@ -39,4 +39,4 @@ which cmatrix &>/dev/null && export screensaver="$(which cmatrix) -a -u 6 -b"
 export TERMINAL="$(which tilda || which guake || which st || which xterm)"
 
 # Window Manager
-exec herbstluftwm &>hlwm.log$(date +%F:%H:%M:%S)
+exec herbstluftwm &>/tmp/hlwm.log$(date +%F:%H:%M:%S)
