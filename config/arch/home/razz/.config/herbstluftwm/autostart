@@ -4,20 +4,28 @@ herbstclient emit_hook reload # tell listeners reload (herbstclient --idle)
 
 # Settings
 source $HOME/.config/herbstluftwm/style.sh
-source $HOME/.config/herbstluftwm/layout.sh # must create tags before panel starts
-source $HOME/.config/herbstluftwm/keybind.sh # must come after layouts creates tags
+source $HOME/.config/herbstluftwm/layout.sh
+source $HOME/.config/herbstluftwm/keybind.sh
 
 # Multi Monitor Setup
 herbstclient detect_monitors #set_monitors 1280x1024+0+0 1280x1024+1280+0
+# dual monitor setup
+#hc remove monitor 1
+#hc move_monitor 0 1366x768+0+0
+#hc use "${TAG_NAMES[0]}"
+#hc add_monitor 1440x900+1366+0 "${TAG_NAMES[1]}"
 
-# Panels
-killall trayer
-panel_height=15 # change for HiDPI monitors
-panel="bash $HOME/.config/herbstluftwm/panel.sh" # Based on: /etc/xdg/herbstluftwm/panel.sh
+# Icon Tray
+pkill trayer
+herbstclient spawn trayer --edge top --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --expand true
+
+# Panel based on: /etc/xdg/herbstluftwm/panel.sh
+panel="bash $HOME/.config/herbstluftwm/panel.sh"
 for monitor in $(herbstclient list_monitors | cut -d':' -f1); do
-  herbstclient spawn trayer --edge top --align right --widthtype request --heighttype pixel --height $panel_height --transparent true --alpha 255 --expand true --monitor $monitor
+  # Inherits the current environment with style colors
   herbstclient spawn $panel $monitor $panel_height
 done
+
 
 # Unlock (allow repaint)
 herbstclient unlock

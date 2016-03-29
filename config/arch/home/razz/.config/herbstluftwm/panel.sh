@@ -7,21 +7,27 @@ geometry=( $(herbstclient monitor_rect "$monitor") ) # formatted W H X Y
 [ -z "$geometry" ] && echo "Invalid monitor $monitor" && exit 1
 x=${geometry[0]}
 y=${geometry[1]}
+#panel_width=$(( ${geometry[2]} -25 ))
 panel_width=${geometry[2]}
 
-panel_height=$2
+# change for HiDPI monitors
+panel_height=${2:-15}
 herbstclient pad $monitor $panel_height
 
 # Theme
 font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
-bordercolor='#26221C'
-fgcolor='#efefef'
-bgcolor="$(herbstclient get frame_border_normal_color)" #bgcolor='#303030'
-selfg='#101010'
-selbg="$(herbstclient get window_border_active_color)" #selbg='#8080FF'
+# Not used
+#bordercolor="$(herbstclient get frame_bg_active_color)"
+# Main text
+fgcolor="$(herbstclient get frame_border_inner_color)"
+bgcolor="$(herbstclient get frame_bg_normal_color)"
+# Labels for right side
+textcolor="$(herbstclient get window_border_inner_color)"
+selfg="$bgcolor"
+selbg="$(herbstclient get window_border_active_color)"
 separator="^bg()^fg($selbg)|"
-textcolor='#909090'
-flashcolor='#ff0675' #'#ef9090'
+urgentcolor="$(herbstclient get window_border_urgent_color)"
+flashcolor="$urgentcolor"
 
 # Variables
 getbat="bash $DOTFILES/shell/bat.arch"
@@ -65,13 +71,13 @@ draw_tags() {
       echo -n "^bg(#9CA668)^fg(#141414)"
       ;;
       ':')
-      echo -n "^bg()^fg(#ffffff)"
+      echo -n "^bg()^fg()"
       ;;
       '!')
-      echo -n "^bg(#FF0675)^fg(#141414)"
+      echo -n "^bg($urgentcolor)^fg(#141414)"
       ;;
       *)
-      echo -n "^bg()^fg(#ababab)"
+      echo -n "^bg()^fg($textcolor)"
       ;;
     esac
     # clickable tags if using SVN dzen
@@ -80,7 +86,7 @@ draw_tags() {
 }
 
 add_event() {
-  while pgrep --uid $USER herbstluftwm && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
+  while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 }
 
 
@@ -92,7 +98,7 @@ add_event() {
 #
 #
 
-while pgrep --uid $USER herbstclient >/dev/null; do
+while pgrep --uid $USER herbstluftwm &>/dev/null; do
   date="$(getdate)"
   if test "$dateprev" != "$date"; then
     dateprev="$date"
@@ -125,7 +131,7 @@ herbstclient --idle | while true; do
   draw_tags
 
   # Panel text
-#  right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
+# right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
   right=" $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
   right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
   echo -n "$separator$flash ^bg()^fg()${windowtitle//^/^^}" # print left-aligned text
@@ -141,46 +147,46 @@ herbstclient --idle | while true; do
   IFS=$'\t' read -ra cmd || break
   case "${cmd[0]}" in
     tag*)
-    IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
-    ;;
+      IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
+      ;;
     focus_changed|window_title_changed)
-    windowtitle="${cmd[@]:2}"
-    ;;
+      windowtitle="${cmd[@]:2}"
+      ;;
     date)
-    date="${cmd[@]:1}"
-    ;;
+      date="${cmd[@]:1}"
+      ;;
     battery)
-    battery="${cmd[@]:1}"
-    ;;
+      battery="${cmd[@]:1}"
+      ;;
     flash)
-    flash="${cmd[@]:1}"
-    ;;
+      flash="${cmd[@]:1}"
+      ;;
     volume)
-    volume="$($getvol ${cmd[@]:1})"
-    ;;
+      volume="$($getvol ${cmd[@]:1})"
+      ;;
     brightness)
-    brightness="$($getbr ${cmd[@]:1})"
-    ;;
+      brightness="$($getbr ${cmd[@]:1})"
+      ;;
     togglehidepanel)
-    currentmonidx=$(herbstclient list_monitors | sed -n '/\[FOCUS\]$/s/:.*//p')
-    if [ "${cmd[1]}" -ne "$monitor" ] ; then
-      continue
-    fi
-    if [ "${cmd[1]}" = "current" ] && [ "$currentmonidx" -ne "$monitor" ] ; then
-      continue
-    fi
-    if $visible; then
-      visible='false'
-      herbstclient pad $monitor 0
-    else
-      visible='true'
-      herbstclient pad $monitor $panel_height
-    fi
-    ;;
+      currentmonidx=$(herbstclient list_monitors | sed -n '/\[FOCUS\]$/s/:.*//p')
+      if [ "${cmd[1]}" -ne "$monitor" ] ; then
+        continue
+      fi
+      if [ "${cmd[1]}" = "current" ] && [ "$currentmonidx" -ne "$monitor" ] ; then
+        continue
+      fi
+      if $visible; then
+        visible='false'
+        herbstclient pad $monitor 0
+      else
+        visible='true'
+        herbstclient pad $monitor $panel_height
+      fi
+      ;;
     reload|quit_panel)
-    kill ${PID[@]} & disown
-    exit
-    ;;
+      kill ${PID[@]} & disown
+      exit
+      ;;
   esac
 
   ### dzen2 ###

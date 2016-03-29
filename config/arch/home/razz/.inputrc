@@ -29,10 +29,10 @@ set completion-query-items -1
 set page-completions off
 
 # Case-insensitive completion
-set completion-ignore-case on
+set completion-ignore-case off
 
 # Hyphen_underscore-insensitive completion
-set completion-map-case on
+set completion-map-case off
 
 # Show extra file information when completing, like `ls -F` does
 set visible-stats on
@@ -53,8 +53,16 @@ set history-size -1
 # commands (i.e. more intelligent Up/Down behavior)
 "\e[A": history-search-backward
 "\e[B": history-search-forward
+"\e[OA": history-search-backward
+"\e[OB": history-search-forward
 "\e[C": forward-char
 "\e[D": backward-char
+
+# This actually worked on st terminal macbook air
+"\C-[OA": history-search-backward
+"\C-[[A": history-search-backward
+"\C-[OB": history-search-forward
+"\C-[[B": history-search-forward
 
 # Redraw the current line
 '\C-l':redraw-current-line
@@ -71,3 +79,6 @@ set output-meta on
 # allow iso-latin1 characters to be inserted rather
 # than converted to prefix-meta sequences
 set convert-meta off
+
+# Fix delete key on st terminal macbook air
+set enable-keypad on
