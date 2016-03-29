@@ -10,10 +10,10 @@ GIT_PS1_SHOWDIRTYSTATE=0
 #fi
 
 color_number () {
-#  HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
-#  HASH=$(echo $1 | tr -cd '[:alnum:].' | cksum | cut -c1-4)
+#  HASH=$(echo $1 | tr -cd '[:alnum:]' | md5sum) # hash input
+#  HASH=$(echo $1 | tr -cd '[:alnum:]' | cksum | cut -c1-4)
 #  echo $(( 0x${HASH:0:2} % 13 + 1 ))
-  HASH=$(echo $1 | tr -cd '[:alnum:].' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 )
+  HASH=$(echo $1 | tr -cd '[:alnum:]' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 )
   echo $(( ${HASH} % 6 + 1 ))
   # mod a 3 digit number to get 1..13 for 1..6 and 0..6 (ignoring light gray and white)
   # or just 1..6
