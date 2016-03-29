@@ -21,14 +21,18 @@ dotfiles-sync() {
   echo -e "${C_EMP}git push origin$C_F"
   git push origin master
 
-  for i in ${SSH_SERVERS[*]}; do
-    echo -e "${C_EMP}git push $i$C_F"
-    if test "${i##*\.}" = "local"; then
-      ping -c 1 ${i#*@} &>/dev/null && git push --force $i:~/dotfiles master || echo -e "${C_EMR}dotfiles-sync: Error: git push $i failed!$C_F" >/dev/stderr &
-    else
-      git push --force $i:~/dotfiles master || echo -e "${C_EMR}dotfiles-sync: Error: git push $i failed!$C_F" >/dev/stderr &
-    fi
-  done
+  OLDIFS="$IFS" ; IFS=$'\n' ; for i in $(git remote -v); do
+    git push $( echo ${i} | grep push | cut -f 1 )
+  done ; IFS="$OLDIFS"
+  
+#  for i in ${SSH_SERVERS[*]}; do
+#    echo -e "${C_EMP}git push $i$C_F"
+#    if test "${i##*\.}" = "local"; then
+#      ping -c 1 ${i#*@} &>/dev/null && git push --force $i:~/dotfiles master || echo -e "${C_EMR}dotfiles-sync: Error: git push $i failed!$C_F" >/dev/stderr &
+#    else
+#      git push --force $i:~/dotfiles master || echo -e "${C_EMR}dotfiles-sync: Error: git push $i failed!$C_F" >/dev/stderr &
+#    fi
+#  done
 
   popd
 }

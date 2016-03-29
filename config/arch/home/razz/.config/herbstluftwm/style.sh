@@ -2,6 +2,37 @@ hc() {
   COMMANDS="$COMMANDS , $@"
 }
 
+DGRAY="#484848"
+LGRAY="#909090"
+BLUE="#2488F0"
+GREEN="#02D645"
+YELLOW="#FFBF00"
+RED="#FF4645"
+
+DBLUE="#0063cd"
+LBLUE="#93cdff"
+DGOLD="#ffaf18"
+LGOLD="#ffe861"
+DGRAPHITE="#577287"
+LGRAPHITE="#b6c6d2"
+DGREEN="#00bd3a"
+LGREEN="#9afb80"
+DORANGE="#ff6c16"
+LORANGE="#ffc56e"
+DPURPLE="#8837a9"
+LPURPLE="#f5a5fe"
+DRED="#ff1935"
+LRED="#ff9b78"
+DSILVER="#6c6c6c"
+LSILVER="#bababa"
+
+#C0C0C0 is a good choice but blends into window-chrome too often
+#OLDACTIVE='#8080FF'
+#OLDNORMAL='#303030'
+#OLDURGENT='#FF8080'
+#OLDINNER='#80FF80'
+
+
 # General
 hc set auto_detect_monitors 1
 hc set_layout grid
@@ -13,40 +44,50 @@ hc set mouse_recenter_gap 0 # If the monitor is selected and the mouse position 
 #hc set wmname herbstluftwm
 
 
-# Windows
-hc set window_gap -4 # overlap window borders
-
-hc set window_border_width 2
-hc set window_border_active_color '#8080FF' # #C0C0C0 is a good choice but blends into window-chrome too often
-hc set window_border_normal_color '#303030'
-hc set window_border_urgent_color '#FF8080'
-
-hc set window_border_inner_width 0 # must be less than border_width
-hc set window_border_inner_color '#80FF80'
-
-
 # Frames
 hc set always_show_frame 1
 hc set frame_gap 4 # show wallpaper between frames
+# expand when only one frame exists, despite above two options
+hc set smart_frame_surroundings 1
 
-hc set frame_bg_active_color '#8080FF'
-hc set frame_bg_normal_color '#303030'
-hc set frame_bg_transparent 1 # show wallpaper inside frame box (noncompositing)
+# These are zero so that windows can overlap their frame
+# outer border color for FOCUS
+hc set frame_border_width 0
+hc set frame_border_active_color "$GREEN"
+hc set frame_border_normal_color "$GREEN"
+# inner is an always-on color for the border, despite active/normal/urgent settings
+# must be less than border_width
+hc set frame_border_inner_width 0
+hc set frame_border_inner_color "#FFFFFF"
+
+# Colors are shown in only an empty frame by its bg_color
+hc set frame_padding 5 # push window inside
+hc set frame_bg_transparent 1
+hc set frame_transparent_width 1 # color width inside frame
+hc set frame_bg_active_color "$YELLOW"
+hc set frame_bg_normal_color "$DGRAY"
+# show wallpaper inside frame box (noncompositing)
 #hc set frame_active_opacity ? # wallpaper inside frame box (compositing)
 #hc set frame_normal_opacity ? # wallpaper inside frame box (compositing)
-hc set frame_transparent_width 6 # color width inside frame
-hc set frame_padding 2 # push window inside
 
-hc set frame_border_width 2 # outer frame border
-hc set frame_border_active_color '#8080FF'
-hc set frame_border_normal_color '#303030'
 
+# Windows
+# space between windows in the same frame
+# negative to expand over each other and the frame
+# adds to or subtracts from frame_padding
+hc set window_gap -5
+# expand when only one window exists
+hc set smart_window_surroundings 1
+
+# outer border color for FOCUS
+hc set window_border_width 1
+hc set window_border_active_color "$BLUE"
+hc set window_border_normal_color "$DGRAY"
+hc set window_border_urgent_color "$RED"
 # inner is an always-on color for the border, despite active/normal/urgent settings
-hc set frame_border_inner_width 0 # must be less than border_width
-hc set frame_border_inner_color '#80FF80'
-
-hc set smart_frame_surroundings 1 # expand when only one frame exists
-hc set smart_window_surroundings 1 # expand when only one window exists
+# must be less than border_width
+hc set window_border_inner_width 0
+hc set window_border_inner_color "$LGRAY"
 
 
 # Float Mode

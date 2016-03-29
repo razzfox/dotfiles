@@ -22,21 +22,21 @@ pulseaudio --start &
 xsetroot -cursor_name left_ptr #-solid '#000000'
 
 # Screen size and DPI
-#To determine your optimal resolutions and display names, simply run: xrandr -q
-#xrandr --auto --output LVDS --primary --mode 1366x768 --left-of VGA-0 --output VGA-0 --mode 1280x1024
 export dimensions="$(echo $( xdpyinfo | grep dimension ) | cut -d ' ' -f 2)"
 export density="$(echo $( xdpyinfo | grep resolution ) | cut -d ' ' -f 2 | cut -d 'x' -f 1)"
+
+#To determine your optimal resolutions and display names, simply run: xrandr -q
+#xrandr --auto --output LVDS --primary --mode 1366x768 --left-of VGA-0 --output VGA-0 --mode 1280x1024
 
 # Background (display from imagemagick)
 source $HOME/dotfiles/shell/ls.bash && display -size $dimensions -density $density -window root "$(lr $HOME/walls | head -n 1)" &
 
 # Standby/Suspend, Screensaver, and Energy Star/DPMS
 xset s off -dpms
-which cmatrix &>/dev/null && screensaver="$(which cmatrix) -a -u 6 -b"
+which cmatrix &>/dev/null && export screensaver="$(which cmatrix) -a -u 6 -b"
 
 # Terminal
-export TERMINAL="$(which tilda || which guake || which xfce-terminal || which st || which xterm)"
+export TERMINAL="$(which tilda || which guake || which st || which xterm)"
 
 # Window Manager
-exec herbstluftwm
-#exec dwm
+exec herbstluftwm &>/tmp/hlwm.log$(date +%F:%H:%M:%S)
