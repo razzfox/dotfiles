@@ -3,11 +3,6 @@
 # Install dotfiles to home directory
 #
 
-if test $EUID = 0; then # root
-  return 1
-fi
-
-
 # Locate dotfiles
 cd
 test -z "$DOTFILES" -a $# = 1 && DOTFILES="$1"
@@ -26,6 +21,13 @@ fi
 touch .notmux
 test -n "$ID" || source dotfiles/config/shell/profile
 rm .notmux
+
+if test "$EUID" = 0; then
+  for FILE in "$DOTFILES"/userskel/root/{*,.??*}; do
+    # create directories and symlink files
+    test -e "$FILE" && cp --force --recursive --symbolic-link --verbose "$FILE" ./
+  done
+fi  
 
 
 # Links
