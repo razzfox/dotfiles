@@ -1,25 +1,23 @@
-test $EUID != 0 && SYSUSER="--user" || unset SYSUSER
-
 sysen() {
-  systemctl daemon-reload
-  systemctl $SYSUSER enable "$@"
-  systemctl $SYSUSER start "$@"
+  sudo systemctl daemon-reload
+  sudo systemctl enable "$@"
+  sudo systemctl start "$@"
 }
 
 sysdis() {
-  systemctl $SYSUSER disable "$@"
-  systemctl $SYSUSER stop "$@"
+  sudo systemctl disable "$@"
+  sudo systemctl stop "$@"
 }
 
-syst() {
-  systemctl $SYSUSER status "$@"
+systa() {
+  sudo systemctl status "$@"
 }
 
 sysre() {
-  systemctl daemon-reload
-  systemctl $SYSUSER restart "$@"
+  sudo systemctl daemon-reload
+  sudo systemctl restart "$@"
 }
 
 sysdr() {
-  systemctl daemon-reload
+  sudo systemctl daemon-reload
 }
