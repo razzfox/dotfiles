@@ -1,0 +1,18 @@
+bat() {
+  if test ! -d /sys/class/power_supply/BAT0; then
+    echo "100%"
+    return 0
+  fi
+
+  LEVEL=$( cat /sys/class/power_supply/BAT0/charge_now 2>/dev/null || cat /sys/class/power_supply/BAT0/energy_now )
+  FULL=$( cat /sys/class/power_supply/BAT0/charge_full 2>/dev/null || cat /sys/class/power_supply/BAT0/energy_full )
+
+  BAT=$(echo "scale=1; " $(echo "scale=3; $LEVEL / $FULL * 100" | bc -l) "/ 1" | bc -l | head -c -1)
+  CHARGING=$( cat /sys/class/power_supply/BAT0/status )
+  echo "${BAT}%,$CHARGING"
+
+  test "${BAT%%.*}" -ge 31 -o "$CHARGING" = "Charging"
+}
+
+
+bat "$@"

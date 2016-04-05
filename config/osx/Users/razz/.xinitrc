@@ -1,1 +1,0 @@
-../../../arch/home/razz/.xinitrc

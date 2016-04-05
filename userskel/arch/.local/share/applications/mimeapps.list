@@ -1,0 +1,9 @@
+[Added Associations]
+application/pdf=chromium.desktop;google-chrome.desktop;
+audio/x-riff=chromium.desktop;google-chrome.desktop;
+image/png=chromium.desktop;google-chrome.desktop;
+image/jpeg=google-chromium.desktop;chrome.desktop;
+text/html=atom-editor.desktop;chromium.desktop;google-chrome.desktop;
+application/octet-stream=chromium.desktop;google-chrome.desktop;
+text/x-csrc=atom-editor.desktop;chromium.desktop;google-chrome.desktop;
+text/plain=atom-editor.desktop;chromium.desktop;google-chrome.desktop;
