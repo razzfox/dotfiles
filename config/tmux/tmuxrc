@@ -1,0 +1,35 @@
+# setw = set-window-option
+# set = set-option
+# bind = bind-key
+# 'S-' 'Shift' is not a modifier key. Keys are case-sensitive
+
+# Settings
+
+# Shell
+set -g default-command "$SHELL"
+set -g default-terminal "screen-256color"
+
+# Default history is 2000
+set -g history-limit 100000
+
+# Allows for faster key repetition
+set -s escape-time 0
+
+# Disable alternate terminal screen
+set -g alternate-screen off
+#set -ga terminal-overrides ',xterm*:smcup@:rmcup@'
+
+# Limit size by window viewer, not session
+setw -g aggressive-resize on
+
+
+# Mouse
+# Unfortunately this is not comapatible with X.org selection or clipboard
+#setw -g mode-mouse on
+#set -g mouse-select-pane on
+#set -g mouse-resize-pane on
+#set -g mouse-select-window on
+
+
+source-file ~/.config/tmux/keybind
+source-file ~/.config/tmux/style
