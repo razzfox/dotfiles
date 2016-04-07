@@ -70,10 +70,15 @@ for i in ${!tag_names[@]} ; do
 done
 
 hc keybind $Super-period use_index +1 --skip-visible
+hc keybind $Super-Shift-period move_index +1 --skip-visible
 hc keybind $Super-End use_index +1 --skip-visible # fn-RightArrow
+hc keybind $Super-Shift-End move_index +1 --skip-visible # fn-RightArrow
 hc keybind $Super-comma use_index -1 --skip-visible
+hc keybind $Super-Shift-comma move_index -1 --skip-visible
 hc keybind $Super-Home use_index -1 --skip-visible # fn-LeftArrow
+hc keybind $Super-Shift-Home move_index -1 --skip-visible # fn-LeftArrow
 hc keybind $Super-apostrophe use_previous
+hc keybind $Super-Shift-apostrophe move_previous
 
 # Manage Windows
 hc keybind $Super-w close # close window
