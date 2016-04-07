@@ -22,10 +22,10 @@ tag_names=( {1..9} )
 herbstclient lock
 
 # Create Tags
-herbstclient rename default "${tag_names[0]}" || true
-for i in ${!tag_names[@]} ; do
-  herbstclient add "${tag_names[$i]}"
-done
+#herbstclient rename default "${tag_names[0]}" || true
+#for i in ${!tag_names[@]} ; do
+#  herbstclient add "${tag_names[$i]}"
+#done
 
 ## End atomic tag actions
 herbstclient unlock
