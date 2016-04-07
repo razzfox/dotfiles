@@ -17,6 +17,7 @@ In contrast, the whole contents of directories in 'config' are used for configur
 
 To Do
 ----
+ - Everything in set_term.sh needs to be reevaluated and redone. forget if none of it works on old debian.
  - What if tmux was simply an output-capture program that took shell commands directly, and then ran a shell. Not a windowing-plexer that just runs bash loops.
    It can have its own run loop. panels are kept in a history. they replace each other. they can be piped to each other. curses or live updating apps can be pinned.
    but the point is to keep with the linux philosophy, but resolve the issue that the terminal is only a character display.

@@ -7,5 +7,19 @@ pacman -Syu fuse gtkmm linux-headers
 
 sudo bash VMware-*.bundle --eulas-agreed --set-setting=vmware-workstation serialNumber $( grep "Product Key:" ~/data/data/install_keys/vmwarekey2015.txt | cut -d' ' -f3 )
 
+aur vmware-systemd-services
+
+systemctl enable vmware
+systemctl enable vmware-usbarbitrator
+
+systemctl start vmware
+systemctl start vmware-usbarbitrator
+
+# If you want to run the vm on another machine
+#systemctl enable vmware-workstation-server
+#systemctl start vmware-workstation-server
+
+
+
 #Tip: To (re)build the modules from terminal later on, use:
 # vmware-modconfig --console --install-all
