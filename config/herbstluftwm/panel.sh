@@ -119,8 +119,8 @@ while pgrep --uid $USER herbstluftwm &>/dev/null; do
   brightness="$($getbr)"
 
   sleep 29 # pause end of loop so that it runs through on first run
-done & PID+=( $! )
-
+done &>/dev/null & PID+=( $! )
+# output to null because it prints the entire block when terminated
 
 ### Output ###
 # This part prints dzen data based on the _previous_ data handling run,
