@@ -89,6 +89,12 @@ add_event() {
   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 }
 
+sighandler() {
+  echo "Exiting..."
+  exit
+}
+
+trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 
 ### Event generator ###
 # the goal is to use 'hc emit_hook',with inline dzen2 colors, formed like this:

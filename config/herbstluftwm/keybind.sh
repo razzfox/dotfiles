@@ -56,12 +56,11 @@ hc keybind $Super-Shift-c $TAG break_out
 hc keybind $Super-Shift-x $TAG delete
 
 # Focus Tags
-tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d [:punct:] ) )
+tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
 tag_keys=( $( seq ${#tag_names[@]} ) )
 
 hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
-    hc add "${tag_names[$i]}"
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
         hc keybind "$Super-$key" use_index "$i"
