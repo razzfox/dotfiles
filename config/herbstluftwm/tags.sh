@@ -24,34 +24,39 @@ case "$1" in
 #   ;;
 rename)
 # Use clients.focus.instance or class
-  # if test "$2" = "0x0"; then
-  #   herbstclient substitute TAG tags.focus.name substitute INDEX tags.focus.index rename TAG INDEX
-  # else
+  if test -n "$2"; then
+    # substitute INDEX tags.focus.index substitute NAME clients.focus.instance
+    INDEX=$( herbstclient get_attr tags."$2".index )
+    INDEX=$(( $INDEX + 1 ))
+    NAME=$( herbstclient get_attr clients."$2".instance )
+  else
     # substitute INDEX tags.focus.index substitute NAME clients.focus.instance
     INDEX=$( herbstclient get_attr tags.focus.index )
     INDEX=$(( $INDEX + 1 ))
     NAME=$( herbstclient get_attr clients.focus.instance )
-    test -n "$NAME" && NAME="-$NAME"
-    herbstclient substitute TAG tags.focus.name rename TAG ${INDEX}${NAME}
-  # fi
+  fi
+  test -n "$NAME" && NAME="-$NAME"
+  herbstclient substitute TAG tags.focus.name rename TAG ${INDEX}${NAME}
+  ;;
+update)
+  COUNT=$( herbstclient get_attr tags.count )
+  for i in $( seq 0 $(( $COUNT - 1 )) ); do
+    bash $0 rename $i
+  done
+
+  hc() {
+    COMMANDS="$COMMANDS , $@"
+  }
+  tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
+  tag_keys=( $( seq ${#tag_names[@]} ) )
+  for i in ${!tag_names[@]} ; do
+      key="${tag_keys[$i]}"
+      if ! [ -z "$key" ] ; then
+          hc keybind Super-$key use_index $i
+          hc keybind Super-Shift-$key move_index $i
+      fi
+  done
+  herbstclient chain $COMMANDS
+  unset COMMANDS
   ;;
 esac
-
-
-hc() {
-  COMMANDS="$COMMANDS , $@"
-}
-
-tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
-tag_keys=( $( seq ${#tag_names[@]} ) )
-
-for i in ${!tag_names[@]} ; do
-    key="${tag_keys[$i]}"
-    if ! [ -z "$key" ] ; then
-        hc keybind Super-$key use_index $i
-        hc keybind Super-Shift-$key move_index $i
-    fi
-done
-
-herbstclient chain $COMMANDS
-unset COMMANDS
