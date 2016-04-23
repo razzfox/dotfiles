@@ -13,16 +13,17 @@
 # space       | (dmenu_run)     (dmenu_explore.sh)  (dmenu.sh)
 # e key       |
 
+# The separator here must be separate from the separator used below, so it can run a chain inside a chain
 hc() {
   COMMANDS="$COMMANDS , $@"
 }
 
-Super=Mod4 # super key
-Mod=Mod1 # alt/option key
+Super=Mod4 # Super key
+Mod=Mod1 # Alt/Option key
 SCREENSAVER="spawn xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="spawn xset s off -dpms"
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
-TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
+#TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
 DMENU_LAUNCH="spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh"
 DMENU_RUN="spawn dmenu_run"
 DMENU_EXPLORE="spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
@@ -30,30 +31,30 @@ DMENU_EXPLORE="spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
 # General Keys
 hc keyunbind --all
 
-hc keybind $Super-Shift-q chain : emit_hook quit_panel : quit # can not use comma delimeter in the hc() chain already using comma.
-hc keybind $Super-r reload
-hc keybind $Super-Shift-r detect_monitors
+hc keybind Super-Shift-q chain : emit_hook quit_panel : quit # can not use comma delimeter in the hc() chain already using comma.
+hc keybind Super-r reload
+hc keybind Super-Shift-r detect_monitors
 
-hc keybind $Super-t $TERMINAL
-hc keybind $Super-Shift-t $TERMINAL
+hc keybind Super-t $TERMINAL
+hc keybind Super-Shift-t $TERMINAL
 # Enter key
-hc keybind $Super-Shift-Return $TERMINAL
-hc keybind $Super-space $DMENU_LAUNCH
-hc keybind $Super-Shift-space $DMENU_RUN
-hc keybind $Super-Control-space $DMENU_EXPLORE
+hc keybind Super-Shift-Return $TERMINAL
+hc keybind Super-space $DMENU_LAUNCH
+hc keybind Super-Shift-space $DMENU_RUN
+hc keybind Super-Control-space $DMENU_EXPLORE
 
 
 # Mouse
 hc mouseunbind --all
 hc mousebind Shift-Button1 move
 hc mousebind Control-Button1 resize
-hc mousebind $Super-Control-Button1 zoom
+hc mousebind Super-Control-Button1 zoom
 
 
 # Manage Tags
-hc keybind $Super-c $TAG create
-hc keybind $Super-Shift-c $TAG break_out
-hc keybind $Super-Shift-x $TAG delete
+hc keybind Super-c substitute INDEX tags.count chain : add INDEX : use INDEX
+hc keybind Super-Shift-c substitute NAME tags.focus.name substitute INDEX tags.focus.index substitute CLIENT clients.focus.instance substitute ID clients.focus.winid chain : rename NAME INDEX : add CLIENT : move CLIENT : use CLIENT : emit_hook update_tags
+hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME : emit_hook update_tags
 
 # Focus Tags
 tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
@@ -63,64 +64,66 @@ hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
-        hc keybind "$Super-$key" use_index "$i"
-        hc keybind "$Super-Shift-$key" move_index "$i"
+        hc keybind "Super-$key" use_index "$i"
+        hc keybind "Super-Shift-$key" move_index "$i"
     fi
 done
 
-hc keybind $Super-period use_index +1 --skip-visible
-hc keybind $Super-Shift-period move_index +1 --skip-visible
-hc keybind $Super-End use_index +1 --skip-visible # fn-RightArrow
-hc keybind $Super-Shift-End move_index +1 --skip-visible # fn-RightArrow
-hc keybind $Super-comma use_index -1 --skip-visible
-hc keybind $Super-Shift-comma move_index -1 --skip-visible
-hc keybind $Super-Home use_index -1 --skip-visible # fn-LeftArrow
-hc keybind $Super-Shift-Home move_index -1 --skip-visible # fn-LeftArrow
-hc keybind $Super-apostrophe use_previous
-hc keybind $Super-Shift-apostrophe move_previous
+hc keybind Super-period use_index +1 --skip-visible
+hc keybind Super-Shift-period move_index +1 --skip-visible
+hc keybind Super-End use_index +1 --skip-visible # fn-RightArrow
+hc keybind Super-Shift-End move_index +1 --skip-visible # fn-RightArrow
+hc keybind Super-comma use_index -1 --skip-visible
+hc keybind Super-Shift-comma move_index -1 --skip-visible
+hc keybind Super-Home use_index -1 --skip-visible # fn-LeftArrow
+hc keybind Super-Shift-Home move_index -1 --skip-visible # fn-LeftArrow
+hc keybind Super-apostrophe use_previous
+# must create an inner chain for the inner substitute
+#hc keybind Super-Shift-apostrophe chain : use_previous : substitute INDEX tags.focus.index chain . use_previous . move_index INDEX
+hc keybind Super-Shift-apostrophe substitute ID clients.focus.winid chain : use_previous : bring ID : use_previous
 
 # Manage Windows
-hc keybind $Super-w close # close window
+hc keybind Super-w close # close window
 
 # Move Window
-hc keybind $Super-Shift-Left shift left
-hc keybind $Super-Shift-Down shift down
-hc keybind $Super-Shift-Up shift up
-hc keybind $Super-Shift-Right shift right
+hc keybind Super-Shift-Left shift left
+hc keybind Super-Shift-Down shift down
+hc keybind Super-Shift-Up shift up
+hc keybind Super-Shift-Right shift right
 
 # Resize Window
 RESIZESTEP=0.025
-hc keybind $Super-Control-Left resize left +$RESIZESTEP
-hc keybind $Super-Control-Down resize down +$RESIZESTEP
-hc keybind $Super-Control-Up resize up +$RESIZESTEP
-hc keybind $Super-Control-Right resize right +$RESIZESTEP
+hc keybind Super-Control-Left resize left +$RESIZESTEP
+hc keybind Super-Control-Down resize down +$RESIZESTEP
+hc keybind Super-Control-Up resize up +$RESIZESTEP
+hc keybind Super-Control-Right resize right +$RESIZESTEP
 
 # Focus Window
-hc keybind $Super-Left focus left
-hc keybind $Super-Down focus down
-hc keybind $Super-Up focus up
-hc keybind $Super-Right focus right
+hc keybind Super-Left focus left
+hc keybind Super-Down focus down
+hc keybind Super-Up focus up
+hc keybind Super-Right focus right
 
-hc keybind $Super-Tab cycle_all +1
-hc keybind $Super-Shift-Tab cycle_all -1
-hc keybind $Super-Shift-apostrophe cycle_monitor
+hc keybind Super-Tab cycle_all +1
+hc keybind Super-Shift-Tab cycle_all -1
+hc keybind Super-Control-Tab cycle_monitor
 
 
 # Manage Frames
-hc keybind $Super-x remove
+hc keybind Super-x remove
 
-hc keybind $Super-$Mod-Left split left 0.5
-hc keybind $Super-$Mod-Down split bottom 0.5
-hc keybind $Super-$Mod-Up split top 0.5
-hc keybind $Super-$Mod-Right split right 0.5
-hc keybind $Super-minus split bottom 0.5
-hc keybind $Super-backslash split right 0.5
-hc keybind $Super-Return split explode
+hc keybind Super-Alt-Left split left 0.5
+hc keybind Super-Alt-Down split bottom 0.5
+hc keybind Super-Alt-Up split top 0.5
+hc keybind Super-Alt-Right split right 0.5
+hc keybind Super-minus split bottom 0.5
+hc keybind Super-backslash split right 0.5
+hc keybind Super-Return split explode
 
-hc keybind $Super-f cycle_layout 1
-hc keybind $Super-Shift-f floating toggle
-hc keybind $Super-Control-f fullscreen toggle
-hc keybind $Super-$Mod-f pseudotile toggle
+hc keybind Super-f cycle_layout 1
+hc keybind Super-Shift-f floating toggle
+hc keybind Super-Control-f fullscreen toggle
+hc keybind Super-Alt-f pseudotile toggle
 
 
 # Media Keys
