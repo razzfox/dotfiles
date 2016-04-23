@@ -16,18 +16,19 @@ herbstclient pad $monitor $panel_height
 
 # Theme
 font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
-# Not used
-#bordercolor="$(herbstclient get frame_bg_active_color)"
-# Main text
+# Window Title text
 fgcolor="$(herbstclient get frame_border_inner_color)"
 bgcolor="$(herbstclient get frame_bg_normal_color)"
-# Labels for right side
+# Tinted labels on the right side
 textcolor="$(herbstclient get window_border_inner_color)"
+# Tags
 selfg="$bgcolor"
 selbg="$(herbstclient get window_border_active_color)"
 separator="^bg()^fg($selbg)|"
 urgentcolor="$(herbstclient get window_border_urgent_color)"
 flashcolor="$urgentcolor"
+# Not used
+#bordercolor="$(herbstclient get frame_bg_active_color)"
 
 # Variables
 getbat="bash $HOME/.config/shell/bat.arch"
@@ -44,11 +45,15 @@ windowtitle="$(herbstclient stack | grep -F -A1 Focus-Layer | tail -n 1 | cut -d
 IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
 
 # Functions
-getdate() { # have so many problems with this, so I made a function
+tag () {
+  bash $HOME/.config/herbstluftwm/tags.sh "$@"
+}
+
+getdate () { # have so many problems with this, so I made a function
   date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d"
 }
 
-setflash() {
+setflash () {
   if test $# == 0; then
     herbstclient emit_hook $(echo -ne "flash\t") 2>/dev/null || break
   else
@@ -61,7 +66,8 @@ setflash() {
   fi
 }
 
-draw_tags() {
+# TODO: Pad spacing by the longest possible name (ALL WINDOWS) so they are all the same width
+draw_tags () {
   for i in "${tags[@]}"; do
     case ${i:0:1} in
       '#')
@@ -85,11 +91,11 @@ draw_tags() {
   done
 }
 
-add_event() {
+add_event () {
   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 }
 
-sighandler() {
+sighandler () {
   echo "Exiting..."
   exit
 }
@@ -154,9 +160,11 @@ herbstclient --idle | while true; do
   case "${cmd[0]}" in
     tag*)
       IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
-      ;;
+      # fall through because focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
+      ;&
     focus_changed|window_title_changed)
       windowtitle="${cmd[@]:2}"
+      tag rename "${cmd[@]:1}"
       ;;
     date)
       date="${cmd[@]:1}"
