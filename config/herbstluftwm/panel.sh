@@ -164,7 +164,10 @@ herbstclient --idle | while true; do
       ;&
     focus_changed|window_title_changed)
       windowtitle="${cmd[@]:2}"
-      tag rename "${cmd[@]:1}"
+      tag rename
+      ;;
+    update_tags)
+      tag update
       ;;
     date)
       date="${cmd[@]:1}"
