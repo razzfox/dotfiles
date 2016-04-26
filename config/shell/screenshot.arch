@@ -1,0 +1,3 @@
+screenshot () {
+  sleep ${1:-5} && import -window root ~/screenshot$(date +%FHMS).jpg
+}

@@ -1,0 +1,23 @@
+sysen() {
+  sudo systemctl daemon-reload
+  sudo systemctl enable "$@"
+  sudo systemctl start "$@"
+}
+
+sysdis() {
+  sudo systemctl disable "$@"
+  sudo systemctl stop "$@"
+}
+
+systa() {
+  sudo systemctl status "$@"
+}
+
+sysre() {
+  sudo systemctl daemon-reload
+  sudo systemctl restart "$@"
+}
+
+sysdr() {
+  sudo systemctl daemon-reload
+}

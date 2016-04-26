@@ -1,0 +1,24 @@
+# Test for terminal
+test -t 0 || return 1
+
+
+# If not inside a tmux session, start a new session or join one
+if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != "linux" -a ! -e "$HOME/.notmux" -a "$EUID" != "0"; then
+  if tmux list-sessions | cut -d: -f1 | grep -q "${TMUX_SESSION:-$USER}" 2>/dev/null; then
+    exec tmux -f "${TMUX_CONF:-$HOME/.config/tmux/tmuxrc}" new-session -s "${TMUX_SESSION:-$USER}-$(date +%N | tr -d 0 | tail -c 4)" -t "${TMUX_SESSION:-$USER}"
+  else
+    exec tmux -f "${TMUX_CONF:-$HOME/.config/tmux/tmuxrc}" new-session -s "${TMUX_SESSION:-$USER}"
+  fi
+fi
+
+
+# Dotfiles
+for file in ~/.config/shell/{*.$(basename ${SHELL:-bash}),*.sh,*.${ID:-arch},*.${OS:-linux}}; do
+  source "$file" >/dev/null
+done
+
+
+# Display Files
+cd
+pwd
+ls
