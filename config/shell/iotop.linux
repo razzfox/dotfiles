@@ -1,0 +1,4 @@
+# Monitor process IO
+iotop() {
+  sudo $(which iotop) --only --processes --accumulated
+}

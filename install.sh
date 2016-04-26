@@ -5,45 +5,41 @@
 
 # Locate dotfiles
 cd
-test -z "$DOTFILES" -a $# = 1 && DOTFILES="$1" || DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DOTFILES="$(readlink -f "$DOTFILES")"
+test -z "$DOTFILES" -a $# = 1 && DOTFILES="$1"
+# BASH_SOURCE only works if install.sh is in the dotfiles root
+test -z "$DOTFILES" -a $# = 0 && DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 test ! -d "$DOTFILES" -a -d dotfiles && DOTFILES="$PWD/dotfiles"
+
+export DOTFILES="$(readlink -f "$DOTFILES")"
 if test ! -d "$DOTFILES"; then
   echo "Error: '$DOTFILES' does not exist." >/dev/stderr
   return 1
 fi
-export DOTFILES
 
 
 # Detect ID (distro) and OS (kernel)
 touch .notmux
-test -n "$ID" || source $DOTFILES/shell/profile
+test -n "$ID" || source dotfiles/config/shell/profile
 rm .notmux
+
+if test "$EUID" = 0; then
+  for FILE in "$DOTFILES"/userskel/root/{*,.??*}; do
+    # create directories and symlink files
+    test -e "$FILE" && cp --force --recursive --symbolic-link --verbose "$FILE" ./
+  done
+fi  
 
 
 # Links
-test -d dotfiles || ln --force --relative --symbolic --verbose "$DOTFILES" dotfiles
-ln --force --relative --symbolic --verbose "$DOTFILES"/shell/profile .profile
-if test $SHELL = /bin/bash; then
-  ln --force --relative --symbolic --verbose "$DOTFILES"/shell/profile .bash_profile
-  ln --force --relative --symbolic --verbose "$DOTFILES"/shell/bashrc .bashrc
-fi
+for FILE in "$DOTFILES"/userskel/{default,$ID}/{*,.??*}; do
+  # create directories and symlink files
+  test -e "$FILE" && cp --force --recursive --symbolic-link --verbose "$FILE" ./
+done
 
-if test $EUID = 0; then # root
-  cd "$DOTFILES"/config/$ID
-  echo cp --force --interactive --parents --recursive --symbolic-link --verbose * /
-  cd
-
-else # user (runs twice if bash is set to glob .files by default)
-  for FILE in "$DOTFILES"/config/$ID$HOME/{*,.??*}; do
-    if test -d "$FILE"; then
-      cp --force --recursive --symbolic-link --verbose "$FILE" ./
-    else
-      test -e "$FILE" && ln --force --relative --symbolic --verbose "$FILE"
-    fi
-  done
-
-fi
+for FILE in "$DOTFILES"/config/{*,.??*}; do
+  # single symlink
+  test -e "$FILE" && ln --force --relative --symbolic --verbose "$FILE" .config/
+done
 
 
 # Enable 'git push' synchronization from other servers
@@ -55,8 +51,3 @@ git config --global receive.denyCurrentBranch ignore
 
 # Squelsh "adopt current behavior" message for global
 git config --global push.default simple
-
-
-# Other settings
-echo
-echo ":: Link your own personal data: '.ssh/ssh_servers', '.walls/', '.gitconfig', '.motdrc'"
