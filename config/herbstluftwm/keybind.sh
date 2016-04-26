@@ -23,7 +23,7 @@ Mod=Mod1 # Alt/Option key
 SCREENSAVER="spawn xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="spawn xset s off -dpms"
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
-#TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
+TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
 DMENU_LAUNCH="spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh"
 DMENU_RUN="spawn dmenu_run"
 DMENU_EXPLORE="spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
@@ -52,9 +52,12 @@ hc mousebind Super-Control-Button1 zoom
 
 
 # Manage Tags
-hc keybind Super-c substitute INDEX tags.count chain : add INDEX : use INDEX
-hc keybind Super-Shift-c substitute NAME tags.focus.name substitute INDEX tags.focus.index substitute CLIENT clients.focus.instance substitute ID clients.focus.winid chain : rename NAME INDEX : add CLIENT : move CLIENT : use CLIENT : emit_hook update_tags
-hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME : emit_hook update_tags
+# both emits tag_added
+hc keybind Super-c $TAG create
+#substitute NAME tags.focus.name substitute ID clients.focus.winid substitute INDEX tags.focus.index
+hc keybind Super-Shift-c substitute CLIENT clients.focus.instance chain : add CLIENT : move CLIENT : use CLIENT : $TAG update
+# emits tag_removed
+hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME : $TAG update
 
 # Focus Tags
 tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
@@ -64,23 +67,26 @@ hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
-        hc keybind "Super-$key" use_index "$i"
-        hc keybind "Super-Shift-$key" move_index "$i"
+        hc keybind "Super-$key" use_index $i
+        hc keybind "Super-Shift-$key" substitute INDEX tags.focus.index chain : move_index $i : $TAG rename INDEX
     fi
 done
 
-hc keybind Super-period use_index +1 --skip-visible
-hc keybind Super-Shift-period move_index +1 --skip-visible
-hc keybind Super-End use_index +1 --skip-visible # fn-RightArrow
-hc keybind Super-Shift-End move_index +1 --skip-visible # fn-RightArrow
-hc keybind Super-comma use_index -1 --skip-visible
-hc keybind Super-Shift-comma move_index -1 --skip-visible
-hc keybind Super-Home use_index -1 --skip-visible # fn-LeftArrow
-hc keybind Super-Shift-Home move_index -1 --skip-visible # fn-LeftArrow
+hc keybind Super-period use_index +1
+hc keybind Super-Shift-period substitute INDEX tags.focus.index chain : move_index +1 : $TAG rename_next INDEX
+# fn-RightArrow
+hc keybind Super-End use_index +1
+hc keybind Super-Shift-End substitute INDEX tags.focus.index chain : move_index +1 : $TAG rename_next INDEX
+hc keybind Super-comma use_index -1
+hc keybind Super-Shift-comma substitute INDEX tags.focus.index chain : move_index -1 : $TAG rename_prev INDEX
+# fn-LeftArrow
+hc keybind Super-Home use_index -1
+hc keybind Super-Shift-Home substitute INDEX tags.focus.index chain : move_index -1 : $TAG rename_prev INDEX
 hc keybind Super-apostrophe use_previous
+# does not emit tag_added nor tag_removed
 # must create an inner chain for the inner substitute
-#hc keybind Super-Shift-apostrophe chain : use_previous : substitute INDEX tags.focus.index chain . use_previous . move_index INDEX
-hc keybind Super-Shift-apostrophe substitute ID clients.focus.winid chain : use_previous : bring ID : use_previous
+#hc keybind Super-Shift-apostrophe chain : use_previous : substitute INDEX tags.focus.index chain . use_previous . move_index INDEX : emit_hook update_tags
+hc keybind Super-Shift-apostrophe substitute ID clients.focus.winid chain : use_previous : bring ID : substitute INDEX tags.focus.index $TAG rename INDEX : use_previous
 
 # Manage Windows
 hc keybind Super-w close # close window
