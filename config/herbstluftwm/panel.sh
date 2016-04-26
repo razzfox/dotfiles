@@ -158,16 +158,17 @@ herbstclient --idle | while true; do
   # wait for next event here at 'read'
   IFS=$'\t' read -ra cmd || break
   case "${cmd[0]}" in
+    # tag_added|tag_removed|update_tags)
+    # Take care of this in tag script itself
+    #   tag update
+    #   ;&
     tag*)
       IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
-      # fall through because focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
-      ;&
+      # focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
+      ;;
     focus_changed|window_title_changed)
       windowtitle="${cmd[@]:2}"
       tag rename
-      ;;
-    update_tags)
-      tag update
       ;;
     date)
       date="${cmd[@]:1}"
