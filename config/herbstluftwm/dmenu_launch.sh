@@ -32,7 +32,7 @@ hist="$HOME/.config/dmenu-launch/history"
 lock="$HOME/.config/dmenu-launch/lock"
 
 # Dmenu command.
-dm="dmenu -i $DMENU_OPTIONS"
+dm="dmenu -i $DMENU_OPTIONS $@"
 if tty &>/dev/null && [[ "$TERM" != 'dumb' ]]; then
     if type -p slmenu &>/dev/null; then
         dm='slmenu -i'

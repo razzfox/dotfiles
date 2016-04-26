@@ -1,7 +1,7 @@
 unset file
 pushd .
 while true; do
-  file="$(printf "%s\n" * .* | dmenu)" || exit
+  file="$(printf "%s\n" * .* | dmenu $@)" || exit
   if test -d "$file"; then
     cd "$file"
   else
@@ -13,7 +13,7 @@ popd
 unset afile
 pushd .
 while true; do
-  afile="$(printf "%s\n" * .* | dmenu)"
+  afile="$(printf "%s\n" * .* | dmenu $@)"
   if test -d "$afile"; then
     cd "$afile"
   else
