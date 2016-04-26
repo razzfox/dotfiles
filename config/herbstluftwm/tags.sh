@@ -35,6 +35,7 @@ rename_prev)
   ;;
   # INDEX=$( herbstclient get_attr tags.by-name.${2}.index 2>/dev/null )
 rename)
+  unset NAME
   if test -n "$2"; then
     # takes index number starting from zero
     INDEX=$2
@@ -57,24 +58,29 @@ rename)
   herbstclient rename $TAG ${INDEX}${NAME}
   ;;
 update)
-  # COUNT=$( herbstclient get_attr tags.count )
-  # for i in $( seq 0 $(( $COUNT - 1 )) ); do
-  #   tags rename $i
-  # done
-
-  for i in $( herbstclient attr clients. | grep -vE 'children|focus|attributes' ); do
-    TAG=$( herbstclient get_attr clients.${i}tag )
-    INDEX=$( herbstclient get_attr tags.by-name.${TAG}.index )
-    TAGS="$( echo $TAGS $INDEX | tr '[:space:]' '\n' | sort | uniq )"
-  done
-
-  for i in $TAGS; do
+  # Must update all because the order of tags after a deleted tag will change
+  COUNT=$( herbstclient get_attr tags.count )
+  for i in $( seq 0 $(( $COUNT - 1 )) ); do
     tags rename $i
   done
+
+  # This only updates tags with windows
+  # unset TAGS
+  # for i in $( herbstclient attr clients. | grep -vE 'children|focus|attributes' ); do
+  #   #TAG=$( herbstclient get_attr clients.${i}tag )
+  #   INDEX=$( herbstclient get_attr tags.by-name.${TAG}.index )
+  #   #TAGS="$( echo $TAGS $INDEX | tr '[:space:]' '\n' | sort | uniq )"
+  #   TAGS="TAGS $INDEX"
+  # done
+  # for i in $( echo $TAGS $INDEX | tr '[:space:]' '\n' | sort | uniq ); do
+  #   tags rename $i
+  # done
 
   hc() {
     COMMANDS="$COMMANDS , $@"
   }
+  TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
+
   tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
   tag_keys=( $( seq ${#tag_names[@]} ) )
   for i in ${!tag_names[@]} ; do
