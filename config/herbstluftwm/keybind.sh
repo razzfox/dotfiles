@@ -24,10 +24,10 @@ SCREENSAVER="spawn xset -display :0 dpms force off" # Works best as a single key
 SCREENSAVEROFF="spawn xset s off -dpms"
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
-export DMENU_OPTIONS="-nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
-DMENU_LAUNCH="spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS"
-DMENU_RUN="spawn dmenu_run $DMENU_OPTIONS"
-DMENU_EXPLORE="spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS"
+DMENU_OPTIONS="-i -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
+DMENU_LAUNCH="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS -m MONITOR"
+DMENU_RUN="substitute MONITOR monitors.focus.index spawn dmenu_run $DMENU_OPTIONS -m MONITOR"
+DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS -m MONITOR"
 
 # General Keys
 hc keyunbind --all
@@ -61,15 +61,14 @@ hc keybind Super-Shift-c substitute CLIENT clients.focus.instance chain : add CL
 hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME : $TAG update
 
 # Focus Tags
+# Done here initially, but then done on the fly with tags.sh
 tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
 tag_keys=( $( seq ${#tag_names[@]} ) )
-
-hc rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
-        hc keybind "Super-$key" use_index $i
-        hc keybind "Super-Shift-$key" substitute INDEX tags.focus.index chain : move_index $i : $TAG rename INDEX
+        hc keybind Super-$key use_index $i
+        hc keybind Super-Shift-$key substitute INDEX tags.focus.index chain : move_index $i : $TAG rename INDEX
     fi
 done
 
