@@ -24,9 +24,10 @@ SCREENSAVER="spawn xset -display :0 dpms force off" # Works best as a single key
 SCREENSAVEROFF="spawn xset s off -dpms"
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
-DMENU_LAUNCH="spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh"
-DMENU_RUN="spawn dmenu_run"
-DMENU_EXPLORE="spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh"
+export DMENU_OPTIONS="-nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
+DMENU_LAUNCH="spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS"
+DMENU_RUN="spawn dmenu_run $DMENU_OPTIONS"
+DMENU_EXPLORE="spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS"
 
 # General Keys
 hc keyunbind --all
