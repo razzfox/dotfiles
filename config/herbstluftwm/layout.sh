@@ -12,22 +12,14 @@ hc() {
   COMMANDS="$COMMANDS , $@"
 }
 
-unset tag_names
-#tag_names=( {1..9} )
-
-
-## Tag actions must be atomic, not chained together
-herbstclient lock
+tag_names=( )
 
 # Create Tags
+## Tag actions must be atomic, not chained together
 herbstclient rename default "${tag_names[0]}" || true
-herbstclient rename '#default' "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
   herbstclient add "${tag_names[$i]}"
 done
-
-## End atomic tag actions
-herbstclient unlock
 
 
 # Rules
