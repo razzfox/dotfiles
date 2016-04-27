@@ -43,14 +43,14 @@ rename)
     for i in $( herbstclient attr clients. | grep -vE 'children|focus|attributes' ); do
       if herbstclient compare clients.${i}tag = ${TAG}; then
         # Use clients.focus.instance or class
-        NAME=$( herbstclient get_attr clients.${i}instance )
+        NAME=$( herbstclient get_attr clients.${i}class )
         break
       fi
     done
   else
     INDEX=$( herbstclient get_attr tags.focus.index )
     TAG=$( herbstclient get_attr tags.focus.name )
-    NAME=$( herbstclient get_attr clients.focus.instance )
+    NAME=$( herbstclient get_attr clients.focus.class )
   fi
 
   INDEX=$(( $INDEX + 1 ))
