@@ -1,4 +1,4 @@
-hc() {
+hc () {
   COMMANDS="$COMMANDS , $@"
 }
 

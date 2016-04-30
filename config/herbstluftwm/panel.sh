@@ -49,7 +49,8 @@ tag () {
   bash $HOME/.config/herbstluftwm/tags.sh "$@"
 }
 
-getdate () { # have so many problems with this, so I made a function
+getdate () {
+  # have so many problems with this, so I made a function
   date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d"
 }
 
@@ -66,7 +67,7 @@ setflash () {
   fi
 }
 
-# TODO: Pad spacing by the longest possible name (ALL WINDOWS) so they are all the same width
+# TODO: Pad spacing by the longest possible name (ALL WINDOWS) so they are generally the same width
 draw_tags () {
   for i in "${tags[@]}"; do
     case ${i:0:1} in
@@ -91,24 +92,24 @@ draw_tags () {
   done
 }
 
-add_event () {
-  while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
+draw_text () {
+  # right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
+  right=" $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
+  right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
+  echo -n "$separator$flash ^bg()^fg()${windowtitle//^/^^}" # print left-aligned text
+  echo "^pa($(($panel_width - $right_text_width)))$right" # print right-aligned text
 }
 
-sighandler () {
-  echo "Exiting..."
-  exit
-}
-
-trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 
 ### Event generator ###
 # the goal is to use 'hc emit_hook',with inline dzen2 colors, formed like this:
 #   <eventname>\t<data> [...]
 # e.g.
 #   date    ^fg(#efefef)18:33^fg(#909090), 2013-10-^fg(#efefef)29
-#
-#
+
+# add_event () {
+#   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
+# }
 
 while pgrep --uid $USER herbstluftwm &>/dev/null; do
   date="$(getdate)"
@@ -131,31 +132,37 @@ while pgrep --uid $USER herbstluftwm &>/dev/null; do
   brightness="$($getbr)"
 
   sleep 29 # pause end of loop so that it runs through on first run
-done &>/dev/null & PID+=( $! )
-# output to null because it prints the entire block when terminated
+done &>/dev/null & PID=$!
+# output to null so it doesn't print the entire block when terminated
 
-### Output ###
-# This part prints dzen data based on the _previous_ data handling run,
-# and then waits for the next event to happen.
+
+sighandler () {
+  kill ${PID} & disown
+  echo "Exiting panel.sh"
+  exit
+}
+
+trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
+
+
+### Data handling loop ###
+# This part handles the hooks emitted in the event loop(s) above and by
+# hlwm itself (focus and tags), then sets variables based on them.
 
 herbstclient --idle | while true; do
-  # Tags
+  ### Output ###
+  # This part prints dzen data based on the _previous_ data handling run,
+  # and then waits for the next event to happen.
+
+  # Tags on left side
   draw_tags
 
-  # Panel text
-# right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
-  right=" $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
-  right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
-  echo -n "$separator$flash ^bg()^fg()${windowtitle//^/^^}" # print left-aligned text
-  echo "^pa($(($panel_width - $right_text_width)))$right" # print right-aligned text
+  # Text in the middle and right side
+  draw_text
 
-  ### Data handling ###
-  # This part handles the events generated in the event loop, and sets
-  # internal variables based on them. The event and its arguments are
-  # read into the array cmd, then action is taken depending on the event
-  # name.
-
-  # wait for next event here at 'read'
+  # The event and its arguments are read into the array 'cmd', then
+  # action is taken depending on the name (first array item).
+  # The loop waits here at 'read' for the next event hook.
   IFS=$'\t' read -ra cmd || break
   case "${cmd[0]}" in
     # tag_added|tag_removed|update_tags)
@@ -164,9 +171,9 @@ herbstclient --idle | while true; do
     #   ;&
     tag*)
       IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
-      # focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
       ;;
     focus_changed|window_title_changed)
+      # focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
       windowtitle="${cmd[@]:2}"
       tag rename
       ;;
@@ -202,13 +209,12 @@ herbstclient --idle | while true; do
       fi
       ;;
     reload|quit_panel)
-      kill ${PID[@]} & disown
+      kill ${PID} & disown
       exit
       ;;
   esac
 
   ### dzen2 ###
-  # After the data is gathered and processed, the output of the previous block
-  # gets piped to dzen2.
+  # After the data is gathered and processed, the output gets piped to dzen2.
 done | dzen2 -w $panel_width -x $x -y $y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor" \
 -e "button3=;button4=exec:herbstclient use_index -1;button5=exec:herbstclient use_index +1"
