@@ -26,7 +26,7 @@ TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
 DMENU_OPTIONS="-i -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
 DMENU_LAUNCH="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS -m MONITOR"
-DMENU_RUN="substitute MONITOR monitors.focus.index spawn dmenu_run $DMENU_OPTIONS -m MONITOR"
+DMENU_RUN="substitute MONITOR monitors.focus.index spawn dmenu_run -l ${LINES:-50} $DMENU_OPTIONS -m MONITOR"
 DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS -m MONITOR"
 
 # General Keys
@@ -47,9 +47,9 @@ hc keybind Super-Control-space $DMENU_EXPLORE
 
 # Mouse
 hc mouseunbind --all
-hc mousebind Shift-Button1 move
-hc mousebind Control-Button1 resize
-hc mousebind Super-Control-Button1 zoom
+hc mousebind Super-Shift-Button1 move
+hc mousebind Super-Control-Button1 resize
+hc mousebind Super-Shift-Control-Button1 zoom
 
 
 # Manage Tags

@@ -1,0 +1,105 @@
+# Keybind
+
+# General
+# Prefix (not used often in my setup)
+unbind C-b
+set -g prefix C-a
+
+bind M-a send-prefix
+bind M-d detach
+bind M-Q confirm-before -p "kill-session #S? (y/n)" kill-session
+bind M-r source-file "$TMUX_CONF" \; display-message "tmux: source-file $TMUX_CONF"
+bind M-? list-keys
+
+# Save buffer
+bind M-{ command-prompt -p 'save history to filename:' -I '~/tmux.history' 'capture-pane -S -32768 ; save-buffer %1 ; delete-buffer'
+bind M-} command-prompt "find-window '%%'"
+
+# Copy Buffer
+bind M-= choose-buffer
+bind M-+ delete-buffer
+bind M-[ copy-mode
+bind M-] paste-buffer
+
+# Clipboard (requires xclip)
+# Save into system clipboard (+). With preselection.
+bind M-k choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 -sel clipboard\" \; run \" tmux display \\\"Clipboard \(+\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
+# Copy from + clipboard.
+bind M-u run "tmux set-buffer \"$(xclip -out -display :0 -sel clipboard)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(+\) $(xclip -out -display :0 -sel clipboard | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
+# Save into selection clipboard (*). With preselection.
+bind M-K choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 \" \; run \" tmux display \\\"Clipboard \(*\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
+# Copy from * clipboard.
+bind M-U run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(*\) $(xclip -o | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
+
+
+# Manage Windows
+bind M-c new-window
+bind M-X confirm-before -p "kill-window '#I #W'? (y/N)" kill-window
+
+# Reorder Windows
+# Shift-,
+bind M-< swap-window -t -1
+# Shift-.
+bind M-> swap-window -t +1
+# Shift-' swap last window
+bind M-'"' swap-window -t !
+
+# Focus Windows
+bind M-"'" last-window
+bind M-, previous-window
+bind M-. next-window
+
+bind M-1 select-window -t :1
+bind M-2 select-window -t :2
+bind M-3 select-window -t :3
+bind M-4 select-window -t :4
+bind M-5 select-window -t :5
+bind M-6 select-window -t :6
+bind M-7 select-window -t :7
+bind M-8 select-window -t :8
+bind M-9 select-window -t :9
+bind M-0 select-window -t :0
+
+
+# Manage Panes
+# New pane right
+bind M-\ split-window -h
+# New pane down
+bind M-- split-window -v
+bind M-x confirm-before -p "kill-pane '#I #W[#P]'? (y/N)" kill-pane
+
+# Move pane to new window. 'C' is case-sensitive
+bind M-C break-pane
+
+bind M-! join-pane -t :1
+bind M-@ join-pane -t :2
+bind M-'#' join-pane -t :3
+bind M-'$' join-pane -t :4
+bind M-% join-pane -t :5
+bind M-^ join-pane -t :6
+bind M-& join-pane -t :7
+bind M-* join-pane -t :8
+bind M-( join-pane -t :9
+bind M-) join-pane -t :0
+
+# Move panes
+bind S-Left move-pane -t left
+bind S-Right move-pane -t right
+bind S-Up move-pane -t top
+bind S-Down move-pane -t bottom
+
+#bind M-C-o rotate-window
+bind M-o rotate-window
+bind M-f next-layout
+
+# Resize panes
+bind C-Left resize-pane -L 5
+bind C-Right resize-pane -R 5
+bind C-Up resize-pane -U 5
+bind C-Down resize-pane -D 5
+
+# Select panes
+bind M-Left select-pane -L
+bind M-Right select-pane -R
+bind M-Up select-pane -U
+bind M-Down select-pane -D
