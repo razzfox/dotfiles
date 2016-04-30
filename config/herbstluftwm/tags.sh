@@ -83,7 +83,8 @@ update)
   #   tags rename $i
   # done
 
-  tag_names=( "$( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' )" )
+  # don't quote this because bash elects to smart quote it for us
+  tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
   tag_keys=( $( seq ${#tag_names[@]} ) )
   for i in ${!tag_names[@]} ; do
       key="${tag_keys[$i]}"

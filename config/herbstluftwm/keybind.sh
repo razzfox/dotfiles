@@ -60,16 +60,16 @@ hc keybind Super-Shift-c substitute CLIENT clients.focus.instance chain : add CL
 hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME : $TAG update
 
 # Focus Tags
-# Done here initially, but then done on the fly with tags.sh
-tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
-tag_keys=( $( seq ${#tag_names[@]} ) )
-for i in ${!tag_names[@]} ; do
-    key="${tag_keys[$i]}"
-    if ! [ -z "$key" ] ; then
-        hc keybind Super-$key use_index $i
-        hc keybind Super-Shift-$key chain : move_index $i : $TAG rename $i
-    fi
-done
+# May be done here initially, or done on the fly with tags.sh
+# tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
+# tag_keys=( $( seq ${#tag_names[@]} ) )
+# for i in ${!tag_names[@]} ; do
+#     key="${tag_keys[$i]}"
+#     if ! [ -z "$key" ] ; then
+#         hc keybind Super-$key use_index $i
+#         hc keybind Super-Shift-$key chain : move_index $i : $TAG rename $i
+#     fi
+# done
 
 hc keybind Super-period use_index +1
 hc keybind Super-Shift-period substitute INDEX tags.focus.index chain : move_index +1 : $TAG rename_next INDEX

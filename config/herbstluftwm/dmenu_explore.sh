@@ -1,6 +1,8 @@
 unset file
 DMENU="dmenu -l ${LINES:-50}"
 
+# TODO: after file select (or '.' for dirs) then create a mv/cp/trash/openwith menu
+
 pushd .
 while true; do
   file="$(printf "%s\n" * .* | $DMENU $@)" || exit
