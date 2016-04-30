@@ -1,7 +1,9 @@
 unset file
+DMENU="dmenu -l ${LINES:-50}"
+
 pushd .
 while true; do
-  file="$(printf "%s\n" * .* | dmenu  -l ${LINES:-50} $@)" || exit
+  file="$(printf "%s\n" * .* | $DMENU $@)" || exit
   if test -d "$file"; then
     cd "$file"
   else
@@ -13,7 +15,7 @@ popd
 unset afile
 pushd .
 while true; do
-  afile="$(printf "%s\n" * .* | dmenu -l ${LINES:-50} $@)"
+  afile="$(printf "%s\n" * .* | $DMENU $@)"
   if test -d "$afile"; then
     cd "$afile"
   else

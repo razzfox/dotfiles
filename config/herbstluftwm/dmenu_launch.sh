@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Modified to remove annoying menu items in the middle of the history list.
+
+
 ### Dmenu Launcher ################
 # Version 0.5.11 by Scott Garrett #
 # Wintervenom [(at)] gmail.com    #
@@ -144,6 +148,17 @@ list_xdg_shortcuts () {
 }
 
 build_opt_list () {
+    echo "[${config_menu[1]}: $flag_terminal]"
+
+    [[ "$term_mode" ]] &&
+        echo "[${config_menu[3]}: $flag_detach]"
+
+    if [[ "$flag_cache" == 'yes' ]]; then
+        [[ ! -f "${cache}-menu" ]] &&
+            cache_menu
+        cat "${cache}-menu"
+    fi
+
     echo "[${config_menu[2]}: $terminal]"
     echo "[${config_menu[3]}: $flag_detach]"
     echo "[${config_menu[6]}: $flag_history]"
@@ -200,21 +215,10 @@ cache_menu () {
 build_menu () {
     debug 'Building menu.'
 
-    echo "[${config_menu[1]}: $flag_terminal]"
-
-    [[ "$term_mode" ]] &&
-        echo "[${config_menu[3]}: $flag_detach]"
-
     [[ "$flag_prefix_opts" == 'yes' ]] &&
         build_opt_list
 
-    if [[ "$flag_cache" == 'yes' ]]; then
-        [[ ! -f "${cache}-menu" ]] &&
-            cache_menu
-        cat "${cache}-menu"
-    else
-        build_list
-    fi
+    build_list
 
     # ...then, the configuration options.
     [[ "$flag_prefix_opts" != 'yes' ]] &&
@@ -237,15 +241,11 @@ build_hist_menu () {
     hist_items=$(grep -Fx "$(echo "$menu_items")" "$hist")
     echo "$hist_items" > "$hist" # Keep the history file free of invalids.
 
-    # There's probably a better way, but this works, for now.
-    if [[ ${#hist_items} > 1 ]]; then
-        [[ "$flag_history" == 'yes' ]] &&
-            echo "[${config_menu[0]}]"
-        echo "$hist_items"
-        echo "$menu_items" | grep -Fvx "$hist_items"
-    else
-        echo "$menu_items"
-    fi
+    echo "$hist_items"
+    echo "$menu_items" | grep -Fvx "$hist_items"
+
+    [[ "$flag_history" == 'yes' ]] &&
+        echo "[${config_menu[0]}]"
 }
 
 program_exists () {
@@ -298,13 +298,15 @@ cache_menu &
 while :; do
     while [[ -f "${cache}-menu.lock" ]]; do
         debug "Waiting for menu caching to finish..."
-        sleep 1
+        sleep 0.5
     done
     # Ask the user to select a program to launch.
     if [[ "$flag_history" == 'yes' ]]; then
-        app=$(build_hist_menu | $dm -p "${dm_prompts['execute']}")
+        #app=$(build_hist_menu | $dm -p "${dm_prompts['execute']}")
+        app=$(build_hist_menu | $dm)
     else
-        app=$(build_menu | $dm -p "${dm_prompts['execute']}")
+        #app=$(build_menu | $dm -p "${dm_prompts['execute']}")
+        app=$(build_menu | $dm)
     fi
 
     debug "User selected: $app"

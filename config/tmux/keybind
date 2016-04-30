@@ -93,20 +93,20 @@ bind -n M-o rotate-window
 bind -n M-f next-layout
 
 # Resize panes
-bind -r M-C-Left resize-pane -L 5
-bind -r M-C-Right resize-pane -R 5
-bind -r M-C-Up resize-pane -U 5
-bind -r M-C-Down resize-pane -D 5
+#bind -r M-C-Left resize-pane -L 5
+#bind -r M-C-Right resize-pane -R 5
+#bind -r M-C-Up resize-pane -U 5
+#bind -r M-C-Down resize-pane -D 5
 bind -n C-Left resize-pane -L 5
 bind -n C-Right resize-pane -R 5
 bind -n C-Up resize-pane -U 5
 bind -n C-Down resize-pane -D 5
 
 # Select panes
-bind -r Left select-pane -L
-bind -r Right select-pane -R
-bind -r Up select-pane -U
-bind -r Down select-pane -D
+#bind -r Left select-pane -L
+#bind -r Right select-pane -R
+#bind -r Up select-pane -U
+#bind -r Down select-pane -D
 bind -n M-Left select-pane -L
 bind -n M-Right select-pane -R
 bind -n M-Up select-pane -U
