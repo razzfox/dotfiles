@@ -1,10 +1,16 @@
+hc () {
+  COMMANDS="$COMMANDS , $@"
+}
+
+TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
+
 tags () {
 case "$1" in
 create)
   #NEWTAG="$( echo | dmenu -p 'New tag name:' )"
   INDEX=$( herbstclient get_attr tags.count )
   INDEX=$(( $INDEX + 1 ))
-  herbstclient chain : add $INDEX : use $INDEX
+  herbstclient substitute INDEX tags.focus.index chain : add $INDEX : use $INDEX : $TAG rename INDEX
 
   # Sets new keybinds
   tags update
@@ -33,32 +39,33 @@ rename_next)
 rename_prev)
   tags rename $(( $2 - 1 ))
   ;;
-  # INDEX=$( herbstclient get_attr tags.by-name.${2}.index 2>/dev/null )
 rename)
   unset NAME
   if test -n "$2"; then
     # takes index number starting from zero
+    # INDEX=$( herbstclient get_attr tags.by-name.${2}.index 2>/dev/null )
     INDEX=$2
-    TAG=$( herbstclient get_attr tags.${INDEX}.name )
+    TAG="$( herbstclient get_attr tags.${INDEX}.name )"
     for i in $( herbstclient attr clients. | grep -vE 'children|focus|attributes' ); do
-      if herbstclient compare clients.${i}tag = ${TAG}; then
+      if herbstclient compare clients.${i}tag = "${TAG}"; then
         # Use clients.focus.instance or class
-        NAME=$( herbstclient get_attr clients.${i}class )
+        NAME="$( herbstclient get_attr clients.${i}class )"
         break
       fi
     done
   else
     INDEX=$( herbstclient get_attr tags.focus.index )
-    TAG=$( herbstclient get_attr tags.focus.name )
-    NAME=$( herbstclient get_attr clients.focus.class )
+    TAG="$( herbstclient get_attr tags.focus.name )"
+    NAME="$( herbstclient get_attr clients.focus.class )"
   fi
 
   INDEX=$(( $INDEX + 1 ))
-  test -n "$NAME" && NAME="-$NAME"
-  herbstclient rename $TAG ${INDEX}${NAME}
+  # test -n "$NAME" && NAME="-$NAME"
+  test -n "$NAME" && NAME=" $NAME" || INDEX=" $INDEX "
+  herbstclient rename "$TAG" "${INDEX}${NAME}"
   ;;
 update)
-  # Must update all because the order of tags after a deleted tag will change
+  # Must update all because the order of tags may change after one is deleted
   COUNT=$( herbstclient get_attr tags.count )
   for i in $( seq 0 $(( $COUNT - 1 )) ); do
     tags rename $i
@@ -76,18 +83,13 @@ update)
   #   tags rename $i
   # done
 
-  hc() {
-    COMMANDS="$COMMANDS , $@"
-  }
-  TAG="spawn bash $HOME/.config/herbstluftwm/tags.sh"
-
-  tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
+  tag_names=( "$( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' )" )
   tag_keys=( $( seq ${#tag_names[@]} ) )
   for i in ${!tag_names[@]} ; do
       key="${tag_keys[$i]}"
       if ! [ -z "$key" ] ; then
           hc keybind Super-$key use_index $i
-          hc keybind Super-Shift-$key substitute INDEX tags.focus.index chain : move_index $i : $TAG rename INDEX
+          hc keybind Super-Shift-$key chain : move_index $i : $TAG rename $i
       fi
   done
   herbstclient chain $COMMANDS

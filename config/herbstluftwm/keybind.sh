@@ -14,7 +14,7 @@
 # e key       |
 
 # The separator here must be separate from the separator used below, so it can run a chain inside a chain
-hc() {
+hc () {
   COMMANDS="$COMMANDS , $@"
 }
 
@@ -55,7 +55,6 @@ hc mousebind Super-Shift-Control-Button1 zoom
 # Manage Tags
 # both emits tag_added
 hc keybind Super-c $TAG create
-#substitute NAME tags.focus.name substitute ID clients.focus.winid substitute INDEX tags.focus.index
 hc keybind Super-Shift-c substitute CLIENT clients.focus.instance chain : add CLIENT : move CLIENT : use CLIENT : $TAG update
 # emits tag_removed
 hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME : $TAG update
@@ -68,7 +67,7 @@ for i in ${!tag_names[@]} ; do
     key="${tag_keys[$i]}"
     if ! [ -z "$key" ] ; then
         hc keybind Super-$key use_index $i
-        hc keybind Super-Shift-$key substitute INDEX tags.focus.index chain : move_index $i : $TAG rename INDEX
+        hc keybind Super-Shift-$key chain : move_index $i : $TAG rename $i
     fi
 done
 
@@ -89,7 +88,8 @@ hc keybind Super-apostrophe use_previous
 hc keybind Super-Shift-apostrophe substitute ID clients.focus.winid chain : use_previous : bring ID : substitute INDEX tags.focus.index $TAG rename INDEX : use_previous
 
 # Manage Windows
-hc keybind Super-w close # close window
+hc keybind Super-w close
+hc keybind Super-Shift-w close_and_remove
 
 # Move Window
 hc keybind Super-Shift-Left shift left

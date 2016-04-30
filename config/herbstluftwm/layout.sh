@@ -8,7 +8,7 @@
 # windowtype: 'xprop | grep _NET_WM_WINDOW_TYPE'
 # windowrole: 'xprop | grep WM_WINDOW_ROLE'
 
-hc() {
+hc () {
   COMMANDS="$COMMANDS , $@"
 }
 
