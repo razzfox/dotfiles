@@ -154,11 +154,12 @@ main () {
             # Check and see if the binary exists, and launch it, if so.
             if program_exists $app; then
                 update_history "$selection"
-                if list_xdg_shortcuts | grep $app && ! bin_list | grep $app; then
+                if app_list | grep $selection; then
                   exec $app
                 else
                   exec $TERMINAL -e $app
                 fi
+                exit
             else
                 echo '[OK]' | $dm -p "No binary found at '$app'"
             fi
