@@ -31,6 +31,7 @@ flashcolor="$urgentcolor"
 #bordercolor="$(herbstclient get frame_bg_active_color)"
 
 # Variables
+#acpi -b | cut -d' ' -f4
 getbat="bash $HOME/.config/shell/bat.arch"
 # Possible commands: up down mute mute_source <num>
 getvol="bash $HOME/.config/shell/vl.arch"
@@ -45,10 +46,6 @@ windowtitle="$(herbstclient stack | grep -F -A1 Focus-Layer | tail -n 1 | cut -d
 IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
 
 # Functions
-tag () {
-  bash $HOME/.config/herbstluftwm/tags.sh "$@"
-}
-
 getdate () {
   # have so many problems with this, so I made a function
   date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d"
@@ -65,6 +62,108 @@ setflash () {
       sleep 1
     done
   fi
+}
+
+tag () {
+case "$1" in
+# create)
+#   #NEWTAG="$( echo | dmenu -p 'New tag name:' )"
+#   INDEX=$( herbstclient get_attr tags.count )
+#   INDEX=$(( $INDEX + 1 ))
+#   herbstclient substitute INDEX tags.focus.index chain : add $INDEX : use $INDEX : emit_hook rename_index INDEX
+#   ;;
+# break_out)
+#   #herbstclient substitute NAME clients.focus.class chain : rename NAME default : add NAME : move NAME : use NAME
+#   herbstclient substitute INDEX tags.count chain : add INDEX : move INDEX : use INDEX
+#   ;;
+# delete)
+#   DELTAG="$( printf '%s\n' $(herbstclient tag_status | tr -d [:punct:] ) | dmenu -p 'Delete tag:' )"
+#   if test "$DELTAG" = "$( herbstclient get_attr tags.focus.name )"; then
+#     if test $( herbstclient get_attr tags.focus.index ) != 0; then
+#       herbstclient use_index -1
+#     else
+#       herbstclient use_index +1
+#     fi
+#   fi
+#   herbstclient merge_tag "$DELTAG"
+#   ;;
+# move_previous)
+#   herbstclient substitute ID clients.focus.winid chain : use_previous : bring ID : use_previous
+#   ;;
+# rename_next)
+#   tag rename_index $(( $2 + 1 ))
+#   ;;
+# rename_prev)
+#   tag rename_index $(( $2 - 1 ))
+#   ;;
+rename_index)
+  unset NAME
+  if test -n "$2"; then
+    # takes a number index starting from zero, and optionally +1 or -1 plus count
+    INDEX="$2"
+
+    # takes a third and fourth argument to rename an arbitrary index from a starting index
+    # does not check for numbers larger than the total number of tags
+    if test -n "$4"; then
+      INDEX=$(( $INDEX $3 ))
+      if test "$INDEX" -lt "0"; then
+        # wrap around, positive number by starting with the total number of tags
+        INDEX=$(( $4 $3 ))
+      elif test "$INDEX" -gt "$(( $4 - 1 ))"; then
+        # wrap around, positive number by subtracting the total number of tags
+        INDEX=$(( $INDEX - $4 ))
+      fi
+    fi
+    TAG="$( herbstclient get_attr tags.${INDEX}.name )"
+    for i in $( herbstclient attr clients. | grep -vE 'children|focus|attributes' ); do
+      if herbstclient compare clients.${i}tag = "${TAG}"; then
+        # Use clients.focus.instance or class
+        NAME="$( herbstclient get_attr clients.${i}class )"
+        break
+      fi
+    done
+  else
+    INDEX=$( herbstclient get_attr tags.focus.index )
+    TAG="$( herbstclient get_attr tags.focus.name )"
+    NAME="$( herbstclient get_attr clients.focus.class )"
+  fi
+
+  INDEX=$(( $INDEX + 1 ))
+  test -n "$NAME" && NAME=" $NAME" || INDEX=" $INDEX "
+  herbstclient rename "$TAG" "${INDEX}${NAME}"
+  ;;
+update)
+  # Must update all because the order of tags may change after one is deleted
+  COUNT=$( herbstclient get_attr tags.count )
+  for i in $( seq 0 $(( $COUNT - 1 )) ); do
+    tag rename_index $i
+  done
+
+  # This only updates tags with windows
+  # unset TAGS
+  # for i in $( herbstclient attr clients. | grep -vE 'children|focus|attributes' ); do
+  #   #TAG=$( herbstclient get_attr clients.${i}tag )
+  #   INDEX=$( herbstclient get_attr tags.by-name.${TAG}.index )
+  #   #TAGS="$( echo $TAGS $INDEX | tr '[:space:]' '\n' | sort | uniq )"
+  #   TAGS="TAGS $INDEX"
+  # done
+  # for i in $( echo $TAGS $INDEX | tr '[:space:]' '\n' | sort | uniq ); do
+  #   tag rename_index $i
+  # done
+
+  # don't quote this because bash elects to smart quote it for us
+  tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
+  tag_keys=( $( seq ${#tag_names[@]} ) )
+  unset COMMANDS
+  for i in ${!tag_names[@]} ; do
+      key="${tag_keys[$i]}"
+      if ! [ -z "$key" ] ; then
+          COMMANDS="$COMMANDS , keybind Super-$key use_index $i , keybind Super-Shift-$key chain : move_index $i : emit_hook rename_index $i"
+      fi
+  done
+  herbstclient chain $COMMANDS
+  ;;
+esac
 }
 
 # TODO: Pad spacing by the longest possible name (ALL WINDOWS) so they are generally the same width
@@ -111,7 +210,7 @@ draw_text () {
 #   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 # }
 
-while pgrep --uid $USER herbstluftwm &>/dev/null; do
+while true; do
   date="$(getdate)"
   if test "$dateprev" != "$date"; then
     dateprev="$date"
@@ -137,7 +236,7 @@ done &>/dev/null & PID=$!
 
 
 sighandler () {
-  kill ${PID} & disown
+  kill ${PID}
   echo "Exiting panel.sh"
   exit
 }
@@ -149,33 +248,43 @@ trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 # This part handles the hooks emitted in the event loop(s) above and by
 # hlwm itself (focus and tags), then sets variables based on them.
 
-herbstclient --idle | while true; do
-  ### Output ###
-  # This part prints dzen data based on the _previous_ data handling run,
-  # and then waits for the next event to happen.
-
-  # Tags on left side
-  draw_tags
-
-  # Text in the middle and right side
-  draw_text
-
-  # The event and its arguments are read into the array 'cmd', then
-  # action is taken depending on the name (first array item).
-  # The loop waits here at 'read' for the next event hook.
-  IFS=$'\t' read -ra cmd || break
+# The event and its arguments are read into the array 'cmd', then
+# action is taken depending on the name (first array item).
+# The loop waits here at 'read' for the next event hook.
+herbstclient --idle | while IFS=$'\t' read -ra cmd || break; do
   case "${cmd[0]}" in
-    # tag_added|tag_removed|update_tags)
-    # Take care of this in tag script itself
-    #   tag update
-    #   ;&
-    tag*)
+    tag_added|tag_removed)
+      # Sets new keybinds
+      tag update &
+      ;;
+    rename_index)
+      # call rename_index by name because of fall-through case
+      tag rename_index ${cmd[@]:1} &
+      ;;
+    tag_renamed)
       IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
       ;;
-    focus_changed|window_title_changed)
-      # focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
+    window_title_changed)
       windowtitle="${cmd[@]:2}"
-      tag rename
+
+      if ! $focus_changed; then
+        tag rename_index &
+        IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
+      fi
+      focus_changed=false
+      ;;
+    tag_changed)
+      if ! $focus_changed; then
+        tag rename_index &
+      fi
+      IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
+      focus_changed=false
+      ;;
+    focus_changed)
+      # focus_changed is not called when the focus changes from an empty pane to another empty pane, including between empty tags
+      tag rename_index &
+      windowtitle="${cmd[@]:2}"
+      focus_changed=true
       ;;
     date)
       date="${cmd[@]:1}"
@@ -209,12 +318,23 @@ herbstclient --idle | while true; do
       fi
       ;;
     reload|quit_panel)
-      kill ${PID} & disown
-      exit
+      kill ${PID}
+      break
       ;;
   esac
+
+  ### Output ###
+  # This part prints dzen data based on the _previous_ data handling run,
+  # and then waits for the next event to happen.
+
+  # Tags on left side
+  draw_tags
+  # Text in the middle and right side
+  draw_text
 
   ### dzen2 ###
   # After the data is gathered and processed, the output gets piped to dzen2.
 done | dzen2 -w $panel_width -x $x -y $y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor" \
 -e "button3=;button4=exec:herbstclient use_index -1;button5=exec:herbstclient use_index +1"
+
+sighandler

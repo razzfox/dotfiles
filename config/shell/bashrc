@@ -1,4 +1,4 @@
-# Test for terminal
+# Test for fd 0 (stdin), which implies interactive input
 test -t 0 || return 1
 
 
