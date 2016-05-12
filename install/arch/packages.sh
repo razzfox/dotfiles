@@ -44,7 +44,7 @@ FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf
 # terminus-font=englishmono adobe-source-code-pro-fonts=englishmono ttf-inconsolata=englishmono ttf-gentium=latingreekcyrillicphonetic ttf-symbola=emoji ttf-mathematica=math adobee-source-han-sans-otc-fonts=chinesejapanesekorean ttf-freefont=international ttf-arphic-uming=printedchinese ttf-baekmuk=korean
 # ttf-ms-fonts = andalemono couriernew arial impact lucidasans trebuche verdana comicsans georgia timesnewroman
 
-AUR="bashtrash lsx zeal-git wiggle atom-editor-bin android-studio pingendo  mined sc-im"
+AUR="bashtrash lsx zeal-git wiggle atom-editor-bin android-studio pingendo mined sc-im meh"
 #dolphin-emu
 #broadcom-wl-dkms
 

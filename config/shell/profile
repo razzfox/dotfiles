@@ -49,10 +49,12 @@ esac
 
 
 # If on linux framebuffer tty1, start X11
-if test "$TERM" = linux -a "$(tty)" = "/dev/tty1"; then
-  startx
+if test "$TERM" = linux -a "$(tty)" = "/dev/tty1" -a "$EUID" -ne "0"; then
+  exec startx
 fi
 
 
-# Source shell functions and settings (if interactive)
-source ~/.config/shell/$(basename $SHELL)rc
+# Source shell functions and settings if interactive
+if test -t 0; then
+  source ~/.config/shell/$(basename $SHELL)rc
+fi
