@@ -88,18 +88,17 @@ bind S-Right move-pane -t right
 bind S-Up move-pane -t top
 bind S-Down move-pane -t bottom
 
-#bind C-o rotate-window
 bind o rotate-window
 bind f next-layout
 
 # Resize panes
-bind C-Left resize-pane -L 5
-bind C-Right resize-pane -R 5
-bind C-Up resize-pane -U 5
-bind C-Down resize-pane -D 5
+bind -r C-Left resize-pane -L 5
+bind -r C-Right resize-pane -R 5
+bind -r C-Up resize-pane -U 5
+bind -r C-Down resize-pane -D 5
 
 # Select panes
-bind Left select-pane -L
-bind Right select-pane -R
-bind Up select-pane -U
-bind Down select-pane -D
+bind -r Left select-pane -L
+bind -r Right select-pane -R
+bind -r Up select-pane -U
+bind -r Down select-pane -D

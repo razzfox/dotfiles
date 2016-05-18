@@ -1,5 +1,4 @@
 #!/bin/bash
-# TODO: edit the panel-daemon so that it uses an array containing the hooks (and layout), which can be live added or removed (on reload).
 
 # Geometry
 monitor=${1:-0}
