@@ -54,4 +54,5 @@ set_prompt() {
 
 }
 
-PROMPT_COMMAND="history -a; history -c; history -r; set_prompt; $PROMPT_COMMAND" # run 'set_prompt' before every command
+# run 'set_prompt' before every command
+PROMPT_COMMAND="set_prompt; $PROMPT_COMMAND"
