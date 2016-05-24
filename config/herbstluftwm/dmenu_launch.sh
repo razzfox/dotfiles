@@ -7,8 +7,6 @@ xdg_paths=(
     /usr/share/applications
 )
 
-
-
 # Path to Dmenu Launcher cache will be stored.
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
 cache="$cachedir/dmenu_launch.cache"

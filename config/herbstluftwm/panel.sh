@@ -266,7 +266,8 @@ herbstclient --idle | while IFS=$'\t' read -ra cmd || break; do
     window_title_changed)
       windowtitle="${cmd[@]:2}"
 
-      if ! $focus_changed; then
+      # this check for focus changed fixes when focus changes is usually followed by window title cange, but sometimes focus changed does not happen when a window closes
+      if ! $focus_changed || test -z "$windowtitle"; then
         tag rename_index &
         IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
       fi
@@ -284,6 +285,12 @@ herbstclient --idle | while IFS=$'\t' read -ra cmd || break; do
       tag rename_index &
       windowtitle="${cmd[@]:2}"
       focus_changed=true
+      ;;
+    floating)
+      true
+      ;;
+    pseudotile)
+      true
       ;;
     date)
       date="${cmd[@]:1}"
