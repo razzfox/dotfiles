@@ -35,8 +35,6 @@ LSILVER="#bababa"
 
 # General
 hc set auto_detect_monitors 1
-hc set_layout grid
-hc set default_frame_layout 3 # grid
 hc set tree_style 'X|:|`>-.'
 hc set focus_crosses_monitor_boundaries 1
 hc set focus_follows_mouse 1

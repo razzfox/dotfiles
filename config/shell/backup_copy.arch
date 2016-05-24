@@ -6,7 +6,7 @@ backup_copy() {
   fi
 
   #--verbose --archive --hard-links -A -X --one-file-system --human-readable
-  rsync -vaHAXxh --links --delete --delete-before --progress --exclude={/lost+found,"$3"} "$1" "$2/backup-$(basename "$1")-$(date +%F)"
+  rsync -vaHAXxh --delete --delete-before --progress --exclude={/lost+found,"$3"} "$1" "$2/backup-$(basename "$1")-$(date +%F)"
 }
 
 

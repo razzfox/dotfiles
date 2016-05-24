@@ -25,8 +25,7 @@ SCREENSAVEROFF="spawn xset s off -dpms"
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 
 DMENU_OPTIONS="-i -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
-DMENU_APP="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS -m MONITOR"
-DMENU_BIN="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_bin.sh -l ${LINES:-50} $DMENU_OPTIONS -m MONITOR"
+DMENU_LAUNCH="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS -m MONITOR"
 DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS -m MONITOR"
 
 # General Keys
@@ -38,8 +37,8 @@ hc keybind Super-Shift-r detect_monitors
 
 # Enter key
 hc keybind Super-Shift-Return $TERMINAL
-hc keybind Super-space $DMENU_APP
-hc keybind Super-Shift-space $DMENU_BIN
+hc keybind Super-space $DMENU_LAUNCH
+hc keybind Super-Shift-space substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_LAUNCH
 hc keybind Super-Control-space $DMENU_EXPLORE
 
 
@@ -82,7 +81,7 @@ hc keybind Super-Home use_index -1
 hc keybind Super-Shift-Home substitute INDEX tags.focus.index substitute COUNT tags.count chain : move_index -1 : emit_hook rename_index INDEX -1 COUNT
 hc keybind Super-apostrophe use_previous
 # does not emit tag_added nor tag_removed
-hc keybind Super-Shift-apostrophe substitute ID clients.focus.winid chain : use_previous : bring ID : substitute INDEX tags.focus.index emit_hook rename_index INDEX : use_previous
+hc keybind Super-Shift-apostrophe substitute WINID clients.focus.winid chain : use_previous : bring WINID : substitute INDEX tags.focus.index emit_hook rename_index INDEX : use_previous
 
 # Manage Windows
 hc keybind Super-w close
@@ -93,6 +92,9 @@ hc keybind Super-Shift-Left shift left
 hc keybind Super-Shift-Down shift down
 hc keybind Super-Shift-Up shift up
 hc keybind Super-Shift-Right shift right
+hc keybind Super-o chain : lock : rotate : rotate : rotate : unlock
+hc keybind Super-Shift-o rotate
+
 
 # Resize Window
 RESIZESTEP=0.025
@@ -123,10 +125,11 @@ hc keybind Super-minus split bottom 0.5
 hc keybind Super-backslash split right 0.5
 hc keybind Super-Return split explode
 
-hc keybind Super-f cycle_layout 1
-hc keybind Super-Shift-f floating toggle
+hc keybind Super-f chain cycle_layout : emit_hook cycle_layout
+hc keybind Super-Alt-f chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
+hc keybind Super-Shift-f chain : floating toggle : substitute BOOLEAN tags.focus.floating substitute INDEX tags.focus.index emit_hook floating BOOLEAN INDEX
+# emits fullscreen hook with on/off (not true/false) and winid
 hc keybind Super-Control-f fullscreen toggle
-hc keybind Super-Alt-f pseudotile toggle
 
 
 # Media Keys
@@ -142,8 +145,8 @@ hc keybind Shift-XF86KbdBrightnessDown emit_hook keybrightness 1
 hc keybind XF86KbdBrightnessUp emit_hook keybrightness up
 hc keybind Shift-XF86KbdBrightnessUp emit_hook keybrightness 100
 
-hc keybind XF86LaunchA emit_hook $DMENU_LAUNCH # keycode:120 Apple Expose
-hc keybind Shift-XF86LaunchA emit_hook $DMENU_RUN # keycode:120 Apple Expose
+hc keybind XF86LaunchA $DMENU_LAUNCH # keycode:120 Apple Expose
+hc keybind Shift-XF86LaunchA substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_LAUNCH # keycode:120 Apple Expose
 hc keybind XF86LaunchB emit_hook dashboard # keycode:204 Apple Dashboard
 hc keybind XF86LaunchB emit_hook dashboard # keycode:204 Apple Dashboard
 
