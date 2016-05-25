@@ -32,9 +32,9 @@ bind K choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 \" 
 bind U run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(*\) $(xclip -o | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
 
 
-# Manage Windows
+# Manage Windows (Tags)
 bind c new-window
-bind X confirm-before -p "kill-window '#I #W'? (y/N)" kill-window
+bind X confirm-before -p "kill-window (Tag) '#I #W'? (y/N)" kill-window
 
 # Reorder Windows
 # Shift-,
@@ -61,12 +61,12 @@ bind 9 select-window -t :9
 bind 0 select-window -t :0
 
 
-# Manage Panes
+# Manage Panes (Frames)
 # New pane right
 bind \ split-window -h
 # New pane down
 bind - split-window -v
-bind x confirm-before -p "kill-pane '#I #W[#P]'? (y/N)" kill-pane
+bind x confirm-before -p "kill-pane (Frame) '#I #W[#P]'? (y/N)" kill-pane
 
 # Move pane to new window. 'C' is case-sensitive
 bind C break-pane
@@ -92,12 +92,22 @@ bind o rotate-window
 bind f next-layout
 
 # Resize panes
+bind -n C-Left resize-pane -L 5
+bind -n C-Right resize-pane -R 5
+bind -n C-Up resize-pane -U 5
+bind -n C-Down resize-pane -D 5
+# corrects for nested tmux sessions
 bind -r C-Left resize-pane -L 5
 bind -r C-Right resize-pane -R 5
 bind -r C-Up resize-pane -U 5
 bind -r C-Down resize-pane -D 5
 
 # Select panes
+bind Left select-pane -L
+bind Right select-pane -R
+bind Up select-pane -U
+bind Down select-pane -D
+# corrects for nested tmux sessions
 bind -r Left select-pane -L
 bind -r Right select-pane -R
 bind -r Up select-pane -U

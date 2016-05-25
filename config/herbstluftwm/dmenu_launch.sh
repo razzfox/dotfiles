@@ -96,14 +96,21 @@ update_history () {
     mv "$hist"{.new,}
 }
 
+build_opt_menu () {
+    echo "Clear History"
+}
+
 build_hist_menu () {
     mkdir -p "${hist%/*}"
     touch "$hist"
-    menu_items=$(app_list)$(bin_list)
-    hist_items=$(grep -Fx "$(echo "$menu_items")" "$hist")
+    # each list must be separated by a newline
+    menu_items="$(app_list)
+$(bin_list)
+$(build_opt_menu)"
+    hist_items="$(grep -Fx "$menu_items" "$hist")"
 
-    # Keep the history file free of invalids.
-    echo "$hist_items" > "$hist"
+    # # Keep the history file free of invalids.
+    # echo "$hist_items" > "$hist"
 
     echo "$hist_items"
     echo "$menu_items" | grep -Fvx "$hist_items"
@@ -123,9 +130,9 @@ main () {
     done
 
     # Ask the user to select a program to launch.
-    app=$(build_hist_menu | $dm)
+    selection=$(build_hist_menu | $dm)
 
-    case "$app" in
+    case "$selection" in
         *"Clear History"*)
             confirm=$(printf '%s\n' '[Yes]' '[No]' |
                 $dm -p "Clear History?")
@@ -135,25 +142,23 @@ main () {
             ;;
         *)
             # Quit if nothing was selected.
-            [[ -z "$app" ]] && exit
+            test -z "$selection" && exit 1
 
-            selection=$app
+            app="$selection"
+
             # If the selection doesn't exist, see if it's an XDG shortcut.
-            if ! program_exists $app; then
+            if ! program_exists "$selection"; then
                 app=$(grep -F "$app"$'\t' "$cache" | sed 's/.*\t//;s/ %.//g')
 
                 # If there's more than one, ask which binary to use.
-                [[ "$(echo "$app" | wc -l)" != '1' ]] &&
-                    app=$(echo "$app" | $dm -p "Which binary?")
-
-                [[ -z "$app" ]] && exit
+                test "$(echo "$app" | wc -l)" != '1' && app=$(echo "$app" | $dm -p "Which binary?")
             fi
 
             # Check and see if the binary exists, and launch it, if so.
             if program_exists $app; then
                 update_history "$selection"
-                if app_list | grep $selection; then
-                  exec $app
+                if app_list | grep "$selection"; then
+                  exec $selection
                 else
                   exec $TERMINAL -e $app
                 fi
