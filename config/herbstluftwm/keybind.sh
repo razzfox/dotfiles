@@ -20,8 +20,12 @@ hc () {
 
 Super=Mod4 # Super key
 Mod=Mod1 # Alt/Option key
+
 SCREENSAVER="spawn xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="spawn xset s off -dpms"
+SCREENOFF="chain : emit_hook keybrightness 0 : emit_hook brightness 0"
+SCREENON="chain : emit_hook brightness 100 : emit_hook keybrightness 100"
+
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 
 DMENU_OPTIONS="-i -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
@@ -111,21 +115,21 @@ hc keybind Super-Right focus right
 
 hc keybind Super-Tab cycle_all +1
 hc keybind Super-Shift-Tab cycle_all -1
-hc keybind Super-Control-Tab cycle_monitor
+hc keybind Super-Control-Tab cycle_monitor +1
 
 
 # Manage Frames
 hc keybind Super-x remove
 
-hc keybind Super-Alt-Left split left 0.5
-hc keybind Super-Alt-Down split bottom 0.5
-hc keybind Super-Alt-Up split top 0.5
-hc keybind Super-Alt-Right split right 0.5
-hc keybind Super-minus split bottom 0.5
-hc keybind Super-backslash split right 0.5
 hc keybind Super-Return split explode
+hc keybind Super-Alt-Up split top 0.5
+hc keybind Super-Alt-Down split bottom 0.5
+hc keybind Super-minus split bottom 0.5
+hc keybind Super-Alt-Left split left 0.5
+hc keybind Super-Alt-Right split right 0.5
+hc keybind Super-backslash split right 0.5
 
-hc keybind Super-f chain cycle_layout : emit_hook cycle_layout
+hc keybind Super-f chain : cycle_layout +1 : emit_hook cycle_layout +1
 hc keybind Super-Alt-f chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
 hc keybind Super-Shift-f chain : floating toggle : substitute BOOLEAN tags.focus.floating substitute INDEX tags.focus.index emit_hook floating BOOLEAN INDEX
 # emits fullscreen hook with on/off (not true/false) and winid
@@ -138,8 +142,8 @@ hc keybind Shift-XF86MonBrightnessDown emit_hook brightness 1
 hc keybind XF86MonBrightnessUp emit_hook brightness up # keycode:225
 hc keybind Shift-XF86MonBrightnessUp emit_hook brightness 100
 
-hc keybind XF86KbdLightOnOff emit_hook keybrightness 0
-hc keybind Shift-XF86KbdLightOnOff emit_hook keybrightness 100
+hc keybind XF86KbdLightOnOff emit_hook keybrightness toggle
+hc keybind Shift-XF86KbdLightOnOff emit_hook keybrightness toggle
 hc keybind XF86KbdBrightnessDown emit_hook keybrightness down
 hc keybind Shift-XF86KbdBrightnessDown emit_hook keybrightness 1
 hc keybind XF86KbdBrightnessUp emit_hook keybrightness up
@@ -147,8 +151,8 @@ hc keybind Shift-XF86KbdBrightnessUp emit_hook keybrightness 100
 
 hc keybind XF86LaunchA $DMENU_LAUNCH # keycode:120 Apple Expose
 hc keybind Shift-XF86LaunchA substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_LAUNCH # keycode:120 Apple Expose
-hc keybind XF86LaunchB emit_hook dashboard # keycode:204 Apple Dashboard
-hc keybind XF86LaunchB emit_hook dashboard # keycode:204 Apple Dashboard
+hc keybind XF86LaunchB $TERMINAL -e htop # keycode:204 Apple Dashboard
+hc keybind Shift-XF86LaunchB $TERMINAL -e vnstat -l -ru -i $( ip link | grep "wlp" | cut -d: -f 2 ) # keycode:204 Apple Dashboard
 
 hc keybind XF86AudioNext emit_hook play next # keycode:163
 hc keybind XF86AudioPlay emit_hook play # keycode:164
@@ -163,7 +167,10 @@ hc keybind Shift-XF86AudioMute emit_hook volume mute-input
 
 hc keybind XF86Eject $SCREENSAVER # keycode:161
 hc keybind Shift-XF86Eject $SCREENSAVEROFF # keycode:161
-hc keybind XF86PowerOff brightness 0 # keycode:116
+
+hc keybind XF86PowerOff $SCREENOFF # keycode:116
+hc keybind Shift-XF86PowerOff $SCREENON # keycode:116
+
 
 # Function Keys (these block other programs from receiving them)
 hc keybind F1 emit_hook brightness down
@@ -172,19 +179,25 @@ hc keybind F2 emit_hook brightness up
 hc keybind Shift-F2 emit_hook brightness 100
 
 #hc keybind F3 spawn true
+#hc keybind Shift-F3 spawn true
 #hc keybind F4 spawn true
+#hc keybind Shift-F4 spawn true
 #hc keybind F5 spawn true # keycode:63
+#hc keybind Shift-F5 spawn true # keycode:63
 
 hc keybind F6 emit_hook play prev
 hc keybind F7 emit_hook play
 hc keybind F8 emit_hook play next
 
 hc keybind F9 emit_hook volume mute
+hc keybind Shift-F9 emit_hook volume mute-input
 hc keybind F10 emit_hook volume down
+hc keybind Shift-F10 emit_hook volume 0
 hc keybind F11 emit_hook volume up
+hc keybind Shift-F11 emit_hook volume 100
 
-hc keybind F12 $SCREENSAVER
-hc keybind Shift-F12 $SCREENSAVEROFF
+hc keybind F12 $SCREENOFF
+hc keybind Shift-F12 $SCREENON
 
 
 # Chain commands

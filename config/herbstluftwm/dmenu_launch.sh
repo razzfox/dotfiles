@@ -158,7 +158,7 @@ main () {
             if program_exists $app; then
                 update_history "$selection"
                 if app_list | grep "$selection"; then
-                  exec $selection
+                  exec $app
                 else
                   exec $TERMINAL -e $app
                 fi
