@@ -3,8 +3,8 @@ dotfiles
 
 Install
 ----
-Run 'install/dotfiles/install.sh'. That will symlink everything from 'user' to your home from default and from the directory of your system $ID.
-Run any other install script in 'install' to install that program, or initialize its settings.
+Run 'install.sh'. That will symlink everything from 'user' to your home from default and from the directory of your system $ID.
+Run any other install script in 'install' to install that program, or initialize its settings (including Bash).
 
 Explanations
 ----
