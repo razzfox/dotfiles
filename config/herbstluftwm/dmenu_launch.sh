@@ -158,9 +158,9 @@ main () {
             if program_exists $app; then
                 update_history "$selection"
                 if app_list | grep "$selection"; then
-                  exec $app
+                  herbstclient spawn $app
                 else
-                  exec $TERMINAL -e $app
+                  herbstclient spawn $TERMINAL -e $app
                 fi
                 exit
             else

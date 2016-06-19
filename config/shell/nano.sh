@@ -1,4 +1,4 @@
-source "$DOTFILES"/install/nano/settings.sh
+source "$DOTFILES"/bootstrap/nano/settings.sh
 
 nanosource() {
   nano "$@" && source "$@"

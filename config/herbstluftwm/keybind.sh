@@ -35,7 +35,10 @@ DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/
 # General Keys
 hc keyunbind --all
 
-hc keybind Super-Shift-q chain : emit_hook quit_panel : quit # can not use comma delimeter in the hc() chain already using comma.
+# can not use comma delimeter in the hc() chain already using comma.
+hc keybind Super-Shift-q chain : emit_hook quit_panel : quit
+hc keybind Super-Control-q emit_hook quit_panel
+# emits reload
 hc keybind Super-r reload
 hc keybind Super-Shift-r detect_monitors
 

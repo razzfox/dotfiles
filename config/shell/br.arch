@@ -68,5 +68,3 @@ br() {
 
   echo 7299 | su root --command="echo $BR_NEW >$BACKLIGHT/brightness"
 }
-
-br "$@"
