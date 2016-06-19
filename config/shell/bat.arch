@@ -13,6 +13,3 @@ bat() {
 
   test "${BAT%%.*}" -ge 31 -o "$CHARGING" = "Charging"
 }
-
-
-bat "$@"

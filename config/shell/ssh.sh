@@ -1,7 +1,7 @@
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
-  source "$DOTFILES"/install/ssh/settings.sh
+  source "$DOTFILES"/bootstrap/ssh/settings.sh
 fi
 
 
@@ -41,15 +41,16 @@ EOF
 }
 
 
-ssh_servers() {
+ssh_server() {
     unset userpass
     unset user
     unset pass
     unset servershare
     unset server
     unset share
+    unset port
     unset name
-    unset namevar
+    unset nameupper
     unset sshcmd
     unset rsynccmd
     unset tmuxcmd
@@ -65,20 +66,24 @@ ssh_servers() {
     # substr: trim longest string from the front/prefix(##) before(*x) a '@' char
     servershare="${i##*@}"
     server="${servershare%%:*}"
-    share="${servershare#*:}"
+    port="${servershare#*:}"
+    port="${port%%:*}"
+    test "$port" = "$servershare" && unset port
+    test "$port" -eq "$port" 2>/dev/null || unset port
+    share="${servershare##*:}"
     test "$share" = "$servershare" && unset share
+    test "$share" -eq "$share" 2>/dev/null && unset share
 
     # get subdomain or at least remove tld
     name="${server%%.*}"
     # substr: take out longest string from front(##) before(*x) a '.' char
-    test "${name##*.}" = "local" && name="${name}local"
+    test "${server##*.}" = "local" && name="${name}local"
 
+    #nameupper="${name^^}"
+    nameupper="$(echo $name | tr '[:lower:]' '[:upper:]')"
     # if variable already exists, and is not the same server
-    # take out the last domain and all periods
-    #namevar="${name^^}"
-    namevar="$(echo $name | tr '[:lower:]' '[:upper:]')"
-    if test -n "${!namevar}"; then
-      previous="${!namevar}"
+    if test -n "${!nameupper}"; then
+      previous="${!nameupper}"
       if test "${previous%@*}" != "$user"; then
         # different user on same server
         name="${user}_${server%%.*}"
@@ -93,31 +98,63 @@ ssh_servers() {
         name="${name//.}"
       fi
     fi
-
-    # take out all periods
+    # remove all periods
     name="${name//.}"
     #export ${name^^}="${user}@$server"
-    export $(echo $name | tr '[:lower:]' '[:upper:]')="${user}@$server"
+    export ${nameupper}="${user}@$server"
 
-    if test -z "$pass"; then
-      sshcmd="ssh -t"
-      rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress \"\$@\""
-    else
+    # debug
+    # echo ${i:-null}
+    # echo userpass ${userpass:-null}
+    # echo user ${user:-null}
+    # echo pass ${pass:-null} optional
+    # echo servershare ${servershare:-null}
+    # echo server ${server:-null}
+    # echo share ${share:-null} optional
+    # echo port ${port:-null} optional
+    # echo name ${name:-null}
+    # echo nameupper ${nameupper:-null}
+    # echo
+
+    # if test -z "$pass"; then
+    #   sshcmd="ssh -t"
+    #   rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress \"\$@\""
+    # else
+    #   sshcmd="ssh_expect $pass"
+    #   rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
+    # fi
+
+    if test -n "$pass"; then
       sshcmd="ssh_expect $pass"
-      rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
+      rsynccmd="rsync_expect $pass"
+    else
+      sshcmd="ssh -t"
+      rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress"
     fi
 
+    if test -n "$port"; then
+      if test -n "$pass"; then
+        # slight change for the expect programs
+        sshcmd="$sshcmd '-p $port'"
+        rsynccmd="$rsynccmd '-e ssh -p $port'"
+      else
+        sshcmd="$sshcmd -p $port"
+        rsynccmd="$rsynccmd -e 'ssh -p $port'"
+      fi
+    fi
+
+    namelower="$(echo $name | tr '[:upper:]' '[:lower:]')"
     #eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
     #eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
     #eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
-    eval "ssh$(echo $name | tr '[:upper:]' '[:lower:]') () { $sshcmd \$$(echo $name | tr '[:lower:]' '[:upper:]') \"\$@\"; }"
-    eval "ssh$(echo $name | tr '[:upper:]' '[:lower:]')rc () { $sshcmd \$$(echo $name | tr '[:lower:]' '[:upper:]') '$SHELL --rcfile .$USER'; }"
-    eval "rsync$(echo $name | tr '[:upper:]' '[:lower:]') () { $rsynccmd \$$(echo $name | tr '[:lower:]' '[:upper:]'):${share:-\~/} ; }"
+    eval "ssh$namelower () { $sshcmd \$$nameupper \"\$@\"; }"
+    # eval "ssh${namelower}rc () { $sshcmd \$$nameupper '$SHELL --rcfile .$USER'; }"
+    eval "rsync$namelower () { $rsynccmd \$${nameupper}:${share:-\~/} ; }"
 }
 
 # Optional SERVERS string array
 source $HOME/.ssh/ssh_servers
 
 for i in ${SSH_SERVERS[@]}; do
-  ssh_servers "$@"
+  ssh_server "$@"
 done
