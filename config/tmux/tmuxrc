@@ -4,14 +4,21 @@
 # 'S-' 'Shift' is not a modifier key. Keys are case-sensitive
 
 # Settings
-
 # Shell
-set -g default-command "$SHELL"
+#set -g default-command "$SHELL"
+set -g default-command 'tmux command-prompt -p "tmux command:" "respawn-window '%%'"'
 set -g default-terminal "screen-256color"
 
-# Default history is 2000
-set -g history-limit 100000
 
+# Tmux
+# Default history is 2000
+set -g history-limit 1000000
+
+# Do not close windows when processes die
+set -g remain-on-exit on
+
+
+# Terminal
 # Allows for faster key repetition
 set -s escape-time 0
 
@@ -23,14 +30,7 @@ set -g alternate-screen off
 setw -g aggressive-resize on
 
 
-# Mouse
-# Unfortunately this is not comapatible with X.org selection or clipboard
-#setw -g mode-mouse on
-#set -g mouse-select-pane on
-#set -g mouse-resize-pane on
-#set -g mouse-select-window on
-
-
+# Source other files
 source-file ~/.config/tmux/keybind
 source-file ~/.config/tmux/keybind_prefix
 source-file ~/.config/tmux/style

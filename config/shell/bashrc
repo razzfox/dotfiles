@@ -16,9 +16,3 @@ fi
 for file in ~/.config/shell/{*.$(basename ${SHELL:-bash}),*.sh,*.${ID:-arch},*.${OS:-linux}}; do
   source "$file" >/dev/null
 done
-
-
-# Display Files
-cd
-pwd
-ls

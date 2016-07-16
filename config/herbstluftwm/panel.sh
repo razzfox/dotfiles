@@ -2,16 +2,28 @@
 
 # Geometry
 monitor=${1:-0}
-geometry=( $(herbstclient monitor_rect "$monitor") ) # formatted W H X Y
-[ -z "$geometry" ] && echo "Invalid monitor $monitor" && exit 1
-x=${geometry[0]}
-y=${geometry[1]}
-#panel_width=$(( ${geometry[2]} -25 ))
-panel_width=${geometry[2]}
+geometry=( $(herbstclient monitor_rect "$monitor") ) # formatted X Y W H
+[ -z "$geometry" ] && echo "panel.sh: Invalid monitor $monitor" && exit 1
+screen_x=${geometry[0]}
+screen_y=${geometry[1]}
+screen_w=${geometry[2]}
+screen_h=${geometry[3]}
+panel_x=$screen_x
+panel_width=$screen_w
 
 # change for HiDPI monitors
-panel_height=${2:-15}
-herbstclient pad $monitor $panel_height
+panel_height=${2:-14}
+
+# Top
+#panel_y=$screen_y
+#herbstclient pad $monitor $panel_height
+# Bottom
+panel_y=$(( ${screen_h} - ${panel_height} ))
+herbstclient pad $monitor 0 0 $panel_height
+
+# Icon Tray
+pkill trayer
+herbstclient spawn trayer --edge top --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --expand true
 
 # Theme
 font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
@@ -358,7 +370,7 @@ herbstclient --idle | while true; do
 
   ### dzen2 ###
   # After the data is gathered and processed, the output gets piped to dzen2.
-done | dzen2 -w $panel_width -x $x -y $y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor" \
+done | dzen2 -w $panel_width -x $panel_x -y $panel_y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor" \
 -e "button3=;button4=exec:herbstclient use_index -1;button5=exec:herbstclient use_index +1"
 
 sighandler ${PID}
