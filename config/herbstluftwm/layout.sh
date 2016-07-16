@@ -1,13 +1,21 @@
-
-
-
 hc () {
   COMMANDS="$COMMANDS , $@"
 }
 
-tag_names=( )
+
+# Panel based on: /etc/xdg/herbstluftwm/panel.sh
+panel="bash $HOME/.config/herbstluftwm/panel.sh"
+panel_height=14
+panel_top=false
+
+for monitor in $(herbstclient list_monitors | cut -d':' -f1); do
+  # Inherits the current environment with style colors
+  herbstclient spawn $panel $monitor $panel_height $panel_top
+done
+
 
 # Create Tags
+tag_names=( )
 ## Tag actions must be atomic, not chained together
 herbstclient rename default "${tag_names[0]}" || true
 for i in ${!tag_names[@]} ; do
@@ -20,7 +28,6 @@ done
 # 1: horizontal - clients are placed next to each other
 # 2: max - all clients are maximized in this frame
 # 3: grid - clients are arranged in an almost quadratic grid
-
 # use 3: grid by default
 hc set default_frame_layout 3
 hc set_layout grid
@@ -45,7 +52,6 @@ hc unrule --all
 hc rule focus=off
 # do not pseudotile frames by default
 hc rule pseudotile=off
-
 
 # Popups
 #hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on

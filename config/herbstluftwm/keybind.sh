@@ -28,7 +28,7 @@ SCREENON="chain : emit_hook brightness 100 : emit_hook keybrightness 100"
 
 TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 
-DMENU_OPTIONS="-i -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
+DMENU_OPTIONS="-i $( $panel_top || echo '-b' ) -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
 DMENU_LAUNCH="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS -m MONITOR"
 DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS -m MONITOR"
 

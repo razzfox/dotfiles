@@ -14,12 +14,13 @@ panel_width=$screen_w
 # change for HiDPI monitors
 panel_height=${2:-14}
 
-# Top
-#panel_y=$screen_y
-#herbstclient pad $monitor $panel_height
-# Bottom
-panel_y=$(( ${screen_h} - ${panel_height} ))
-herbstclient pad $monitor 0 0 $panel_height
+if ${3:-true}; then # Top
+  panel_y=$screen_y
+  herbstclient pad $monitor $panel_height
+else # Bottom
+  panel_y=$(( ${screen_h} - ${panel_height} ))
+  herbstclient pad $monitor 0 0 $panel_height
+fi
 
 # Icon Tray
 pkill trayer
