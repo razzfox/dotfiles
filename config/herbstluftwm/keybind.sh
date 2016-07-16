@@ -91,7 +91,7 @@ hc keybind Super-apostrophe use_previous
 hc keybind Super-Shift-apostrophe substitute WINID clients.focus.winid chain : use_previous : bring WINID : substitute INDEX tags.focus.index emit_hook rename_index INDEX : use_previous
 
 # Manage Windows
-hc keybind Super-w close
+#hc keybind Super-Shift-w close
 hc keybind Super-Shift-w close_and_remove
 
 # Move Window

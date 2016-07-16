@@ -93,9 +93,12 @@ bind -n M-_ command-prompt -p "tmux command (new pane down):" "split-window -v '
 # Kill pane
 #bind -n M-W confirm-before -p "kill-pane (Frame) '#I #W[#P]'? (y/N)" kill-pane
 bind -n M-W kill-pane
+
 bind -n M-'\;' respawn-pane
 #bind -n M-: confirm-before -p "kill and respawn-pane (Frame) '#I #W[#P]'? (y/N)" 'respawn-pane -k'
 bind -n M-: command-prompt -p "tmux command (respawn '#I #W[#P]'):" "respawn-pane -k '%%'"
+
+bind -n M-x respawn-pane "tmux kill-pane"
 
 # Move pane to new window. 'C' is case-sensitive
 # BUG: Using capital C key is broken
