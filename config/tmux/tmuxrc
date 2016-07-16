@@ -6,7 +6,7 @@
 # Settings
 # Shell
 #set -g default-command "$SHELL"
-set -g default-command 'tmux command-prompt -p "tmux command:" "respawn-window '%%'"'
+set -g default-command 'tmux command-prompt -p "tmux command:" "respawn-pane '%%'"'
 set -g default-terminal "screen-256color"
 
 
@@ -32,6 +32,6 @@ setw -g aggressive-resize on
 
 # Source other files
 source-file ~/.config/tmux/style
-run-shell bash ~/.config/tmux/style_hostname.sh
+run-shell "bash ~/.config/tmux/style_hostname.sh"
 source-file ~/.config/tmux/keybind
-run-shell bash ~/.config/tmux/keybind_prefix.sh
+run-shell "bash ~/.config/tmux/keybind_prefix.sh"
