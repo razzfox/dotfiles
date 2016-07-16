@@ -31,6 +31,7 @@ setw -g aggressive-resize on
 
 
 # Source other files
-source-file ~/.config/tmux/keybind
-source-file ~/.config/tmux/keybind_prefix
 source-file ~/.config/tmux/style
+run-shell bash ~/.config/tmux/style_hostname.sh
+source-file ~/.config/tmux/keybind
+run-shell bash ~/.config/tmux/keybind_prefix.sh
