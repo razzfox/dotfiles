@@ -5,13 +5,13 @@ what_the_commit_message() {
 }
 
 git_download_functions () {
-  source /tmp/git-completion.bash 2>/dev/null && source /tmp/git-prompt.sh 2>/dev/null && return
+  source $HOME/git-completion.bash 2>/dev/null && source $HOME/git-prompt.sh 2>/dev/null && return
 
   echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
-  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash >/tmp/git-completion.bash
-  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh >/tmp/git-prompt.sh
-  source /tmp/git-completion.bash
-  source /tmp/git-prompt.sh
+  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > $HOME/git-completion.bash
+  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh > $HOME/git-prompt.sh
+  source $HOME/git-completion.bash
+  source $HOME/git-prompt.sh
 }
 
 git_prune() {

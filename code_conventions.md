@@ -21,7 +21,7 @@ ext="${file##*\.}" # string after last '.'
 
 # Put these lines at the top and bootom of your bashrc
 PS4='+ $(date "+%s.%N")\011 '
-exec 3>&2 2>/tmp/bashstart.$$.log
+exec 3>&2 2>$HOME/bashstart.$$.log
 set -x
 
 # code
