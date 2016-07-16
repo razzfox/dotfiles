@@ -5,14 +5,14 @@
 # GIT_PS1_SHOWUPSTREAM="auto git"
 GIT_PS1_SHOWDIRTYSTATE=0
 
-#if test "${TERM##*-}" = "256color"; then
-#  fullcolor=256
-#fi
+if test "${TERM##*-}" = "256color"; then
+  fullcolor=256
+fi
 
 color_number () {
-#  HASH=$(echo $1 | tr -cd '[:alnum:]' | md5sum) # hash input
-#  HASH=$(echo $1 | tr -cd '[:alnum:]' | cksum | cut -c1-4)
-#  echo $(( 0x${HASH:0:2} % 13 + 1 ))
+  #HASH=$(echo $1 | tr -cd '[:alnum:]' | md5sum) # hash input
+  #HASH=$(echo $1 | tr -cd '[:alnum:]' | cksum | cut -c1-4)
+  #echo $(( 0x${HASH:0:2} % 13 + 1 ))
   HASH=$(echo $1 | tr -cd '[:alnum:]' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 )
   echo $(( ${HASH} % 6 + 1 ))
   # mod a 3 digit number to get 1..13 for 1..6 and 0..6 (ignoring light gray and white)
@@ -21,13 +21,13 @@ color_number () {
 
 color_word () {
   HASH=$(color_number ${1})
-#  echo -e "\033[0;9$(( ${HASH} - 7 ))m${1}\033[m"
+  #echo -e "\033[0;9$(( ${HASH} - 7 ))m${1}\033[m"
   echo -e "\033[0;3${HASH}m${1}\033[m"
 }
 
 color_number256 () {
-#  HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
-#  echo $(( 0x${HASH:1:5} % 256 )) # avoid negative sign and convert to decimal, mod a 3 digit number to get 0..255
+  #HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
+  #echo $(( 0x${HASH:1:5} % 256 )) # avoid negative sign and convert to decimal, mod a 3 digit number to get 0..255
   HASH=$(echo $1 | tr -cd '[:alnum:].' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 | cut -c1-3)
   echo $(( ${HASH} % 256 ))
 }
