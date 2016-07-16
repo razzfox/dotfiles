@@ -158,13 +158,14 @@ main () {
             if program_exists $app; then
                 update_history "$selection"
                 if app_list | grep "$selection"; then
-                  herbstclient spawn $app
+                  #herbstclient spawn
+                  exec $app
                 else
-                  herbstclient spawn $TERMINAL -e $app
+                  exec $TERMINAL -e $app
                 fi
-                exit
             else
-                echo '[OK]' | $dm -p "No binary found at '$app'"
+                exec bash $app
+                #echo '[OK]' | $dm -p "No binary found at '$app' for '$selection'"
             fi
             ;;
     esac

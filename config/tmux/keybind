@@ -4,24 +4,16 @@
 # Prefix (not used often in my setup)
 unbind C-b
 set -g prefix C-a
-
 bind -n M-a send-prefix
+
 bind -n M-d detach
-bind -n M-Q confirm-before -p "kill-session #S? (y/n)" kill-session
-bind -n M-r source-file "$TMUX_CONF" \; display-message "tmux: source-file $TMUX_CONF"
+bind -n M-Q confirm-before -p "kill-session #S? (y/N)" kill-session
+
+bind -n M-r unbind-key -a \; source-file "$TMUX_CONF" \; display-message "tmux: clear keybinds and source-file $TMUX_CONF"
 bind -n M-? list-keys
 
-# Save buffer
-bind -n M-{ command-prompt -p 'save history to filename:' -I '~/tmux.history' 'capture-pane -S -32768 ; save-buffer %1 ; delete-buffer'
-bind -n M-} command-prompt "find-window '%%'"
 
-# Copy Buffer
-bind -n M-= choose-buffer
-bind -n M-+ delete-buffer
-bind -n M-[ copy-mode
-bind -n M-] paste-buffer
-
-# Clipboard (requires xclip)
+# Clipboards (requires xclip)
 # Save into system clipboard (+). With preselection.
 bind -n M-k choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 -sel clipboard\" \; run \" tmux display \\\"Clipboard \(+\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
 # Copy from + clipboard.
@@ -31,20 +23,32 @@ bind -n M-K choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :
 # Copy from * clipboard.
 bind -n M-U run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(*\) $(xclip -o | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
 
+# Save buffer
+bind -n M-{ command-prompt -p 'save history to filename:' -I '~/tmux_#I_history.txt' 'capture-pane -S -E ; save-buffer %1 ; delete-buffer'
+bind -n M-} command-prompt "find-window '%%'"
+
+# Copy Buffer
+bind -n M-= choose-buffer
+bind -n M-+ delete-buffer
+bind -n M-[ copy-mode
+bind -n M-] paste-buffer
+
 
 # Manage Windows (Tags)
 bind -n M-c new-window
+bind -n M-Space command-prompt -p "tmux command (new window):" "new-window '%%'"
+
 bind -n M-X confirm-before -p "kill-window (Tag) '#I #W'? (y/N)" kill-window
 
-# Reorder Windows
+# Reorder Windows (Tags)
 # Shift-,
-bind -n M-< swap-window -t -1
+#bind -n M-< swap-window -t -1
 # Shift-.
-bind -n M-> swap-window -t +1
+#bind -n M-> swap-window -t +1
 # Shift-' swap last window
-bind -n M-'"' swap-window -t !
+#bind -n M-'"' swap-window -t :!
 
-# Focus Windows
+# Focus Windows (Tags)
 bind -n M-"'" last-window
 bind -n M-, previous-window
 bind -n M-. next-window
@@ -60,16 +64,52 @@ bind -n M-8 select-window -t :8
 bind -n M-9 select-window -t :9
 bind -n M-0 select-window -t :0
 
+# Select Windows (Tags)
+# BUG: using Shift with arrow keys does not work
+# These options are ignored
+bind -n M-S-Left previous-window
+bind -n M-S-Right next-window
+bind -n M-S-Up select-window -t :^
+bind -n M-S-Down select-window -t :'$'
+# corrects for nested tmux sessions
+# These options are overwritten by the pane commands after them
+bind -r S-Left previous-window
+bind -r S-Right next-window
+bind -r S-Up select-window -t :^
+bind -r S-Down select-window -t :'$'
 
-# Manage Panes (Frames)
+# Unused: NPage/PageDown/PgDn, PPage/PageUp/PgUp
+
+
+# Manage Panes (Frames/Windows)
 # New pane right
 bind -n M-\ split-window -h
+bind -n M-'|' command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
+
 # New pane down
 bind -n M-- split-window -v
-bind -n M-x confirm-before -p "kill-pane (Frame) '#I #W[#P]'? (y/N)" kill-pane
+bind -n M-_ command-prompt -p "tmux command (new pane down):" "split-window -v '%%'"
+
+# Kill pane
+#bind -n M-W confirm-before -p "kill-pane (Frame) '#I #W[#P]'? (y/N)" kill-pane
+bind -n M-W kill-pane
+bind -n M-'\;' respawn-pane
+#bind -n M-: confirm-before -p "kill and respawn-pane (Frame) '#I #W[#P]'? (y/N)" 'respawn-pane -k'
+bind -n M-: command-prompt -p "tmux command (respawn '#I #W[#P]'):" "respawn-pane -k '%%'"
 
 # Move pane to new window. 'C' is case-sensitive
+# BUG: Using capital C key is broken
+# These appear to be identical (either one will work independently of Shift key)
+bind -n M-C-c break-pane
+bind -n M-C-C break-pane
+# These appear to do nothing
 bind -n M-C break-pane
+bind -n M-S-c break-pane
+bind -n M-S-C break-pane
+
+bind -n M-< join-pane -t -1
+bind -n M-> join-pane -t +1
+bind -n M-'"' join-pane -t :!
 
 bind -n M-! join-pane -t :1
 bind -n M-@ join-pane -t :2
@@ -83,13 +123,13 @@ bind -n M-( join-pane -t :9
 bind -n M-) join-pane -t :0
 
 # Move panes
-bind -n M-S-Left move-pane -t left
-bind -n M-S-Right move-pane -t right
-bind -n M-S-Up move-pane -t top
-bind -n M-S-Down move-pane -t bottom
-
 bind -n M-o rotate-window
 bind -n M-f next-layout
+
+#bind -n M-S-Left move-pane -t left
+#bind -n M-S-Right move-pane -t right
+#bind -n M-S-Up move-pane -t top
+#bind -n M-S-Down move-pane -t bottom
 
 # Resize panes
 bind -n C-Left resize-pane -L 5
