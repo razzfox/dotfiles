@@ -28,7 +28,9 @@ DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg
 
 SERVER="transmission-cli transmission-remote-cli"
 
-PRINTER="cups ghostscript gsfonts gutenprint brother-hll2360d"
+PRINTER="cups ghostscript gsfonts gutenprint"
+# AUR: brother-hll2360d
+
 
 TERM="st"
 
@@ -37,7 +39,6 @@ OTHER="cmatrix lm_sensors"
 AUDIO="pulseaudio"
 
 MEDIA="mplayer vorbis-tools mpg123 ffmpeg imagemagick"
-
 #audacity
 
 FONTS="terminus-font adobe-source-code-pro-fonts ttf-inconsolata ttf-gentium ttf-symbola font-mathematica adobe-source-han-sans-otc-fonts ttf-freefont ttf-arphic-uming ttf-baekmuk"
