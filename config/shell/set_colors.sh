@@ -84,7 +84,7 @@ initializeANSI()
   reset="${esc}[0m"
 }
 
-color_bars() {
+color_bars () {
   initializeANSI
 
   cat << EOF
@@ -93,7 +93,7 @@ color_bars() {
 EOF
 }
 
-color_256 () {
+color_bars256 () {
   for i in $( seq 0 255 ); do echo -n $(tput setaf $i)▆$(tput sgr 0) ; done
   for i in $( seq 0 255 ); do echo -n $(tput bold)$(tput setaf $i)▆$(tput sgr 0) ; done
 }
