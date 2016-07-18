@@ -15,15 +15,15 @@ source ~/.config/shell/set_prompt.bash
 
 # It is necessary to do this way because I only want to change the color, not the existing format
 echo -n "set -g " >> $HOME/style_hostname
-tmux show-window-options -g pane-active-border-style | sed "s/colour[0-9]*/colour$(color_number$fullcolor $HOSTNAME)/" >> $HOME/style_hostname
+tmux show-window-options -g pane-active-border-style | sed "s/colour[0-9]*/colour$(color_number $HOSTNAME)/" >> $HOME/style_hostname
 
 echo -n "set -g " >> $HOME/style_hostname
-tmux show-window-options -g window-status-current-format | sed "s/bg=colour[0-9]*/bg=colour$(color_number$fullcolor $HOSTNAME)/" >> $HOME/style_hostname
+tmux show-window-options -g window-status-current-format | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" >> $HOME/style_hostname
 
 echo -n "set -g " >> $HOME/style_hostname
-tmux show-options -g status-right | sed "s/bg=colour[0-9]*/bg=colour$(color_number$fullcolor $HOSTNAME)/" | tr \" \' >> $HOME/style_hostname
+tmux show-options -g status-right | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" | tr \" \' >> $HOME/style_hostname
 
 tmux source-file $HOME/style_hostname
 rm $HOME/style_hostname
 
-tmux set -g message-bg colour$( color_number256 $HOSTNAME )
+tmux set -g message-bg colour$( color_number $HOSTNAME )

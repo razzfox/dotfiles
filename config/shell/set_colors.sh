@@ -87,13 +87,12 @@ initializeANSI()
 color_bars () {
   initializeANSI
 
-  cat << EOF
- ${redf}▆▆▆▆▆▆▆${reset} ${greenf}▆▆▆▆▆▆▆${reset} ${yellowf}▆▆▆▆▆▆▆${reset} ${bluef}▆▆▆▆▆▆▆${reset} ${purplef}▆▆▆▆▆▆▆${reset} ${cyanf}▆▆▆▆▆▆▆${reset} ${whitef}▆▆▆▆▆▆▆${reset}
- ${boldon}${redf}▆▆▆▆▆▆▆${reset} ${boldon}${greenf}▆▆▆▆▆▆▆${reset} ${boldon}${yellowf}▆▆▆▆▆▆▆${reset} ${boldon}${bluef}▆▆▆▆▆▆▆${reset} ${boldon}${purplef}▆▆▆▆▆▆▆${reset} ${boldon}${cyanf}▆▆▆▆▆▆▆${reset} ${boldon}${whitef}▆▆▆▆▆▆▆${reset}
-EOF
+  printf "${blackf}▆▆▆▆▆▆▆${reset} ${redf}▆▆▆▆▆▆▆${reset} ${greenf}▆▆▆▆▆▆▆${reset} ${yellowf}▆▆▆▆▆▆▆${reset} ${bluef}▆▆▆▆▆▆▆${reset} ${purplef}▆▆▆▆▆▆▆${reset} ${cyanf}▆▆▆▆▆▆▆${reset} ${whitef}▆▆▆▆▆▆r${reset}\n"
+  printf "${boldon}${blackf}▆▆▆▆▆▆▆${reset} ${boldon}${redf}▆▆▆▆▆▆▆${reset} ${boldon}${greenf}▆▆▆▆▆▆▆${reset} ${boldon}${yellowf}▆▆▆▆▆▆▆${reset} ${boldon}${bluef}▆▆▆▆▆▆▆${reset} ${boldon}${purplef}▆▆▆▆▆▆▆${reset} ${boldon}${cyanf}▆▆▆▆▆▆▆${reset} ${boldon}${whitef}▆▆▆▆▆▆▆${reset}\n"
 }
 
 color_bars256 () {
   for i in $( seq 0 255 ); do echo -n $(tput setaf $i)▆$(tput sgr 0) ; done
+  printf '\n'
   for i in $( seq 0 255 ); do echo -n $(tput bold)$(tput setaf $i)▆$(tput sgr 0) ; done
 }
