@@ -3,7 +3,7 @@
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
-  source "${DOTFILES:-~/dotfiles}"/bootstrap/ssh/settings.sh
+  source "${DOTFILES:-$HOME/dotfiles}"/bootstrap/ssh/settings.sh
 fi
 
 

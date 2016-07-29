@@ -75,18 +75,18 @@ ANSWER=$(echo "$ANSWER" | tr '[:upper:]' '[:lower:]')
 if test "$ANSWER" = "y" || test "$ANSWER" = "yes"; then
   pacstrap -i /mnt $(for pkg in $PACKAGES; do echo ${!pkg}; done)
 
-  if test -n "$AUR" -a -n "${DOTFILES:-~/dotfiles}"; then
+  if test -n "$AUR" -a -n "${DOTFILES:-$HOME/dotfiles}"; then
     for pkg in $AUR; do
-      arch-chroot /mnt "${DOTFILES:-~/dotfiles}"/bootstrap/arch/aur-get.sh $pkg
+      arch-chroot /mnt "${DOTFILES:-$HOME/dotfiles}"/bootstrap/arch/aur-get.sh $pkg
     done
   fi
 
 else
   pacman -Syu $(for pkg in $PACKAGES; do echo ${!pkg}; done)
 
-  if test -n "$AUR" -a -n "${DOTFILES:-~/dotfiles}"; then
+  if test -n "$AUR" -a -n "${DOTFILES:-$HOME/dotfiles}"; then
     for pkg in $AUR; do
-      bash "${DOTFILES:-~/dotfiles}"/bootstrap/arch/aur-get.sh $pkg
+      bash "${DOTFILES:-$HOME/dotfiles}"/bootstrap/arch/aur-get.sh $pkg
     done
   fi
 fi
