@@ -1,10 +1,10 @@
 # Disable Startup Chime
 
 # Option 1: run mute command on LogoutHook
-#sudo defaults write com.apple.loginwindow LogoutHook "${DOTFILES:-~/dotfiles}"/shell/set_chime.osx
+#sudo defaults write com.apple.loginwindow LogoutHook "${DOTFILES:-$HOME/dotfiles}"/shell/set_chime.osx
 
 # Option 2: Run script in sleep loop, sleep until capture HUP signal and run mute command
-#( trap "source '${DOTFILES:-~/dotfiles}'/shell/set_chime.osx" SIGHUP SIGINT SIGTERM; sleep infinity & wait ) &
+#( trap "source '${DOTFILES:-$HOME/dotfiles}'/shell/set_chime.osx" SIGHUP SIGINT SIGTERM; sleep infinity & wait ) &
 
 set_chime() {
   # Try setting nvram

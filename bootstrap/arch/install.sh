@@ -32,7 +32,7 @@ wifi-menu
 # Locate dotfiles
 cd
 test -z "$DOTFILES" -a $# = 1 && DOTFILES="$1" || DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DOTFILES="$(readlink -f "${DOTFILES:-~/dotfiles}")"
+DOTFILES="$(readlink -f "${DOTFILES:-$HOME/dotfiles}")"
 test ! -d "$DOTFILES" -a -d dotfiles && DOTFILES="$PWD/dotfiles"
 if test ! -d "$DOTFILES"; then
   echo "Error: '$DOTFILES' does not exist." >/dev/stderr
@@ -41,14 +41,14 @@ fi
 export DOTFILES
 
 # Repo Mirrorlist (will be copied to installation)
-source ${DOTFILES:-~/dotfiles}/shell/pacman.arch && pacmrr
+source ${DOTFILES:-$HOME/dotfiles}/shell/pacman.arch && pacmrr
 #nano /etc/pacman.d/mirrorlist
 
 # Install
-source ${DOTFILES:-~/dotfiles}/bootstrap/arch/packages.arch
+source ${DOTFILES:-$HOME/dotfiles}/bootstrap/arch/packages.arch
 
 # Setup (fstab, locale, time, hostname, keyboard layout and buttons, users, network settings, and bootloader/efivars)
-source ${DOTFILES:-~/dotfiles}/bootstrap/arch/settings.arch
+source ${DOTFILES:-$HOME/dotfiles}/bootstrap/arch/settings.arch
 
 # Login (customize anything else)
 arch-chroot /mnt /bin/bash

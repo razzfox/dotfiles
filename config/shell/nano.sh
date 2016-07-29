@@ -1,4 +1,4 @@
-source "${DOTFILES:-~/dotfiles}"/bootstrap/nano/settings.sh
+source "${DOTFILES:-$HOME/dotfiles}"/bootstrap/nano/settings.sh
 
 nanosource() {
   nano "$@" && source "$@"
