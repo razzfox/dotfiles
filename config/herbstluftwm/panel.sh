@@ -29,15 +29,15 @@ herbstclient spawn trayer --edge top --align right --widthtype request --heightt
 # Theme
 font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
 # Window Title text
-fgcolor="$(herbstclient get frame_border_inner_color)"
-bgcolor="$(herbstclient get frame_bg_normal_color)"
+fgcolor="$( herbstclient get frame_border_inner_color )"
+bgcolor="$( herbstclient get frame_bg_normal_color )"
 # Tinted labels on the right side
-textcolor="$(herbstclient get window_border_inner_color)"
+textcolor="$( herbstclient get window_border_inner_color )"
 # Tags
 selfg="$bgcolor"
-selbg="$(herbstclient get window_border_active_color)"
+selbg="$( herbstclient get window_border_active_color )"
 separator="^bg()^fg($selbg)|"
-urgentcolor="$(herbstclient get window_border_urgent_color)"
+urgentcolor="$( herbstclient get window_border_urgent_color )"
 flashcolor="$urgentcolor"
 # Not used
 #bordercolor="$(herbstclient get frame_bg_active_color)"
@@ -51,20 +51,87 @@ source $HOME/.config/shell/vl.arch
 
 # Functions
 sighandler () {
-  # echo "Exiting panel.sh $$" >> ~/panel.txt
-  # echo "Killing panel.sh" >> ~/panel.txt
-  #  echo "Exiting panel.sh ${1} sighandler" >> ~/panel.txt
-  #echo "Starting panel.sh ${PID}" >> ~/panel.txt
-  kill ${@:-PID}
+  visible='false'
+  herbstclient pad $monitor 0
+
+  kill $PID $@
   exit
 }
 
 trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 
 # getdate can not be a varibale because of automatic bash smart quoting. FAIL
-getdate () {
-  # have so many problems with this, so I made a function
-  date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d"
+get_date () {
+  date=$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )
+  if test "$date" != "$dateprev"; then
+    dateprev="$date"
+    herbstclient emit_hook $(echo -ne "date\t$date") 2>/dev/null || break
+  fi
+}
+
+get_battery () {
+  battery="$( bat )"
+  if test "$battery" != "$batteryprev"; then
+    batteryprev="$battery"
+    herbstclient emit_hook $(echo -ne "battery\t$battery") 2>/dev/null || break
+    ! bat >/dev/null && setflash "$battery" && bat status >/dev/null && setflash &
+    # first setflash lasts about 28-30 seconds, but flash remains on screen for notification purposes, so
+    # the second setflash removes flash if battery is better
+  fi
+}
+
+get_volume () {
+  # Run in case settings are changed via terminal or otherwise
+  volume="$( vl )"
+  if test "$volume" != "$volumeprev"; then
+    volumeprev="$volume"
+    herbstclient emit_hook $(echo -ne "volume\t$volume") 2>/dev/null || break
+  fi
+}
+
+get_brightness () {
+  brightness="$( br )"
+  if test "$brightness" != "$brightnessprev"; then
+    brightnessprev="$brightness"
+    herbstclient emit_hook $(echo -ne "brightness\t$brightness") 2>/dev/null || break
+  fi
+}
+
+get_diskspace () {
+  diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
+  if test "$diskspace" != "$diskspaceprev"; then
+    diskspaceprev="$diskspace"
+    herbstclient emit_hook $(echo -ne "diskspace\t$diskspace") 2>/dev/null || break
+  fi
+}
+
+get_cpuload () {
+  # cores=$( grep -c ^processor /proc/cpuinfo )
+  # Gives cores + 1
+  cpu=$( grep -c ^cpu /proc/stat )
+  A=($(sed -n '2,5p' /proc/stat))
+  # sleep 0.2
+  sleep ${1:-5}
+  C=($(sed -n '2,5p' /proc/stat))
+  # user         + nice     + system   + idle
+  B0=$((${A[1]}  + ${A[2]}  + ${A[3]}  + ${A[4]}))
+  B1=$((${A[12]} + ${A[13]} + ${A[14]} + ${A[15]}))
+  # B2=$((${A[23]} + ${A[24]} + ${A[25]} + ${A[26]}))
+  # B3=$((${A[34]} + ${A[35]} + ${A[36]} + ${A[37]}))
+  # user         + nice     + system   + idle
+  D0=$((${C[1]}  + ${C[2]}  + ${C[3]}  + ${C[4]}))
+  D1=$((${C[12]} + ${C[13]} + ${C[14]} + ${C[15]}))
+  # D2=$((${C[23]} + ${C[24]} + ${C[25]} + ${C[26]}))
+  # D3=$((${C[34]} + ${C[35]} + ${C[36]} + ${C[37]}))
+  # cpu usage per core
+  E0=$((100 * (B0 - D0 - ${A[4]}  + ${C[4]})  / (B0 - D0)))
+  E1=$((100 * (B1 - D1 - ${A[15]} + ${C[15]}) / (B1 - D1)))
+  # E2=$((100 * (B2 - D2 - ${A[26]} + ${C[26]}) / (B2 - D2)))
+  # E3=$((100 * (B3 - D3 - ${A[37]} + ${C[37]}) / (B3 - D3)))
+
+  # cpuload=( $( bash ~/code/bashcpu.sh ) )
+  cpuload="$E0 $E1"
+  herbstclient emit_hook $(echo -ne "cpuload\t${cpuload[@]}") 2>/dev/null || break
 }
 
 setflash () {
@@ -209,7 +276,7 @@ draw_tags () {
 
 draw_text () {
   # right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
-  right=" $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
+  right=" $separator^fg($textcolor) cpu^fg($fgcolor)$cpuload^fg($textcolor) hd^fg($fgcolor)${diskspace}% $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
   right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
   echo -n "$separator$flash ^bg()^fg()${windowtitle//^/^^}" # print left-aligned text
   echo "^pa($(($panel_width - $right_text_width)))$right" # print right-aligned text
@@ -217,10 +284,18 @@ draw_text () {
 
 
 # Initialize Variables
-battery="$(bat)"
-volume="$(vl)"
-brightness="$(br)"
-date="$(getdate)"
+date="$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )"
+dateprev="$date"
+battery="$( bat )"
+batteryprev="$battery"
+volume="$( vl )"
+volumeprev="$volume"
+brightness="$( br )"
+brightnessprev="$brightness"
+cpuload="0 0"
+diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
+diskspaceprev="$diskspace"
+
 visible="true"
 windowtitle="$(herbstclient stack | grep -F -A1 Focus-Layer | tail -n 1 | cut -d '"' -f 2 | grep -F -v Fullscreen-Layer)"
 IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
@@ -236,37 +311,40 @@ IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
 #   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 # }
 
-while sleep 29; do
-  date="$(getdate)"
-  if test "$dateprev" != "$date"; then
-    dateprev="$date"
-    herbstclient emit_hook $(echo -ne "date\t$date") 2>/dev/null || break
-  fi
+# ( 5 x 5 ) + 4 = 29 sec
+# 3.625 sec x 8 = 29 sec
+while true; do
+  get_date
 
-  battery="$(bat)"
-  if test "$battery" != "$batteryprev"; then
-    batteryprev="$battery"
-    herbstclient emit_hook $(echo -ne "battery\t$battery") 2>/dev/null || break
-    ! bat >/dev/null && setflash "$battery" && bat status >/dev/null && setflash &
-    # first setflash lasts about 28-30 seconds, but flash remains on screen for notification purposes, so
-    # the second setflash removes flash if battery is better
-  fi
+# Inspiration from this address:
+# https://github.com/dustinkirkland/byobu/blob/master/usr/bin/wifi-status
+  # get_ipaddress
 
-  # Run in case settings are changed via terminal or otherwise
-  volume="$(vl)"
-  if test "$volume" != "$volumeprev"; then
-    volumeprev="$volume"
-    herbstclient emit_hook $(echo -ne "setvolume\t$volume") 2>/dev/null || break
-  fi
+  get_battery
 
-  brightness="$(br)"
-  if test "$brightness" != "$brightnessprev"; then
-    brightnessprev="$brightness"
-    herbstclient emit_hook $(echo -ne "setbrightness\t$brightness") 2>/dev/null || break
-  fi
+  get_volume
+
+  get_brightness
+
+  get_diskspace
+
+  for i in 1 2 3 4 5 6 7 8; do
+    # get_fanspeed
+    # get_cputemp
+    # get_cpuspeed
+    get_cpuload 3.625
+    # get_cpuload sleeps internally
+  done
 
 done &>/dev/null & PID=$!
 # output to null so it doesn't print the entire block when terminated
+
+# while sleep 5; do
+#   # get_fanspeed
+#   # get_cputemp
+#   # get_cpuspeed
+#   get_cpuload
+# done &>/dev/null & PID="$PID $!"
 
 
 ### Data handling loop ###
@@ -342,6 +420,12 @@ herbstclient --idle | while true; do
     brightness)
       brightness="$(br ${cmd[@]:1})"
       ;;
+    cpuload)
+      cpuload="${cmd[@]:1}"
+      ;;
+    diskspace)
+      diskspace="${cmd[@]:2}"
+      ;;
     # togglehidepanel)
     #   currentmonidx=$(herbstclient list_monitors | sed -n '/\[FOCUS\]$/s/:.*//p')
     #   if [ "${cmd[1]}" -ne "$monitor" ] ; then
@@ -359,10 +443,11 @@ herbstclient --idle | while true; do
     #   fi
     #   ;;
     quit_panel)
-      visible='false'
-      herbstclient pad $monitor 0
-      ;&
+      sighandler
+      break
+      ;;
     reload)
+      sighandler
       break
       ;;
   esac &>/dev/null
@@ -374,5 +459,4 @@ herbstclient --idle | while true; do
 done | dzen2 -w $panel_width -x $panel_x -y $panel_y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor" \
 -e "button3=;button4=exec:herbstclient use_index -1;button5=exec:herbstclient use_index +1"
 
-sighandler ${PID}
-# Unreachable
+sighandler

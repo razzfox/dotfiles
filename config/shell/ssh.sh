@@ -1,3 +1,5 @@
+# set -x
+
 test $EUID = 0 && return 1
 
 if test ! -d $HOME/.ssh; then
@@ -5,36 +7,26 @@ if test ! -d $HOME/.ssh; then
 fi
 
 
-# ssh_expect <password> <name@host> ["<options/commands>"]
-ssh_expect() {
+# auto_expect <password> <command> ["<options>" "<arguments>"]
+auto_expect() {
   expect -f <(cat <<'EOF'
-log_user 0
-set pass [lindex $argv 0]
-set server [lindex $argv 1]
-set ops [lindex $argv 2]
-
-spawn ssh -t $server $ops
-match_max 100000
-expect "*?assword:*"
-send -- "$pass\r"
 log_user 1
-interact
-EOF
-  ) "$@"
-}
-
-rsync_expect() {
-  expect -f <(cat <<'EOF'
-log_user 0
 set pass [lindex $argv 0]
-set server [lindex $argv 1]
+set cmd [lindex $argv 1]
 set ops [lindex $argv 2]
+set 3 [lindex $argv 3]
+set 4 [lindex $argv 4]
+set 5 [lindex $argv 5]
+set 6 [lindex $argv 6]
+set 7 [lindex $argv 7]
+set 8 [lindex $argv 8]
+set 9 [lindex $argv 9]
+set 10 [lindex $argv 10]
 
-spawn rsync --verbose --recursive --copy-links --perms --executability --progress $server $ops
+spawn $cmd $ops $3 $4 $5 $6 $7 $8 $9 $10
 match_max 100000
-expect "*?assword:*"
+expect "*?ass*"
 send -- "$pass\r"
-log_user 1
 interact
 EOF
   ) "$@"
@@ -51,9 +43,11 @@ ssh_server() {
     unset port
     unset name
     unset nameupper
+    unset namelower
     unset sshcmd
+    unset sshops
     unset rsynccmd
-    unset tmuxcmd
+    unset rsyncops
 
     # substr: trim shortest string from back/suffix(%) after(x*) a '@' char
     userpass="${i%@*}"
@@ -79,6 +73,11 @@ ssh_server() {
     # substr: take out longest string from front(##) before(*x) a '.' char
     test "${server##*.}" = "local" && name="${name}local"
 
+    # rename if it is only a number
+    if test $name -eq $name 2>/dev/null; then
+      name="ip${server//./_}"
+    fi
+
     #nameupper="${name^^}"
     nameupper="$(echo $name | tr '[:lower:]' '[:upper:]')"
     # if variable already exists, and is not the same server
@@ -100,56 +99,31 @@ ssh_server() {
     fi
     # remove all periods
     name="${name//.}"
+    #namelower=${name,,}
+    namelower="$(echo $name | tr '[:upper:]' '[:lower:]')"
     #export ${name^^}="${user}@$server"
     export ${nameupper}="${user}@$server"
 
-    # debug
-    # echo ${i:-null}
-    # echo userpass ${userpass:-null}
-    # echo user ${user:-null}
-    # echo pass ${pass:-null} optional
-    # echo servershare ${servershare:-null}
-    # echo server ${server:-null}
-    # echo share ${share:-null} optional
-    # echo port ${port:-null} optional
-    # echo name ${name:-null}
-    # echo nameupper ${nameupper:-null}
-    # echo
 
-    # if test -z "$pass"; then
-    #   sshcmd="ssh -t"
-    #   rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress \"\$@\""
-    # else
-    #   sshcmd="ssh_expect $pass"
-    #   rsynccmd="rsync_expect $pass \\'\"\$@\"\\'"
-    # fi
-
-    if test -n "$pass"; then
-      sshcmd="ssh_expect $pass"
-      rsynccmd="rsync_expect $pass"
-    else
-      sshcmd="ssh -t"
-      rsynccmd="rsync --verbose --recursive --copy-links --perms --executability --progress"
-    fi
+    # Format and eval functions
+    sshcmd="ssh"
+    sshops="-t"
+    rsynccmd="rsync"
+    rsyncops="--verbose --recursive --copy-links --perms --executability --progress"
 
     if test -n "$port"; then
-      if test -n "$pass"; then
-        # slight change for the expect programs
-        sshcmd="$sshcmd '-p $port'"
-        rsynccmd="$rsynccmd '-e ssh -p $port'"
-      else
-        sshcmd="$sshcmd -p $port"
-        rsynccmd="$rsynccmd -e 'ssh -p $port'"
-      fi
+      sshops="$sshops -p $port"
+      rsyncops="$rsyncops -e \"$sshcmd -p $port\""
     fi
 
-    namelower="$(echo $name | tr '[:upper:]' '[:lower:]')"
-    #eval "ssh${name,,} () { $sshcmd \$${name^^} \"\$@\"; }"
-    #eval "ssh${name,,}rc () { $sshcmd \$${name^^} '$SHELL --rcfile .$USER'; }"
-    #eval "rsync${name,,} () { $rsynccmd \$${name^^}:${share:-\~/} ; }"
-    eval "ssh$namelower () { $sshcmd \$$nameupper \"\$@\"; }"
-    # eval "ssh${namelower}rc () { $sshcmd \$$nameupper '$SHELL --rcfile .$USER'; }"
-    eval "rsync$namelower () { $rsynccmd \$${nameupper}:${share:-\~/} ; }"
+    if test -n "$pass"; then
+      sshcmd="auto_expect $pass $sshcmd"
+      rsynccmd="auto_expect $pass $rsynccmd"
+    fi
+
+    eval "ssh$namelower () { $sshcmd $sshops \$$nameupper \"\$@\" $SHELL ; }"
+    eval "mosh$namelower () { mosh --ssh="ssh -p $port" \$$nameupper \"\$@\" ; }"
+    eval "rsync$namelower () { $rsynccmd $rsyncops \"\$@\" \$${nameupper}:${share:-\~/} ; }"
 }
 
 # Optional SERVERS string array
@@ -158,3 +132,6 @@ source $HOME/.ssh/ssh_servers
 for i in ${SSH_SERVERS[@]}; do
   ssh_server "$@"
 done
+
+
+# set +x
