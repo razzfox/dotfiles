@@ -1,6 +1,6 @@
 catsource() {
-  echo "$DOTFILES/shell/$1"*
-  less "$DOTFILES/shell/$1"*
+  echo "${DOTFILES:-~/dotfiles}/shell/$1"*
+  less "${DOTFILES:-~/dotfiles}/shell/$1"*
 }
 
 catnocolor() {
