@@ -1,7 +1,7 @@
 # Uses optional env var '$SSH_SERVERS' array from '.ssh/ssh_servers'
 dotfiles-sync() {
   pushd .
-  cd "$DOTFILES"
+  cd "${DOTFILES:-~/dotfiles}"
 
   # Check status, do not proceed unless repo is clean
   if ! gg; then
@@ -24,7 +24,7 @@ dotfiles-sync() {
   OLDIFS="$IFS" ; IFS=$'\n' ; for i in $(git remote -v); do
     git push $( echo ${i} | grep push | cut -f 1 )
   done ; IFS="$OLDIFS"
-  
+
 #  for i in ${SSH_SERVERS[*]}; do
 #    echo -e "${C_EMP}git push $i$C_F"
 #    if test "${i##*\.}" = "local"; then

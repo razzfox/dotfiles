@@ -7,9 +7,9 @@ export SHELL=\"\$SHELL --rcfile ~/.\$TMUX_SESSION\"
 
 " >$HOME/.$USER
 
-head -n 8 "$DOTFILES"/shell/bashrc >>$HOME/.$USER
+head -n 8 "${DOTFILES:-~/dotfiles}"/shell/bashrc >>$HOME/.$USER
 
-cat "$DOTFILES"/shell/{profile,*.bash,*.sh,*.redhat,*.linux} \
+cat "${DOTFILES:-~/dotfiles}"/shell/{profile,*.bash,*.sh,*.redhat,*.linux} \
 | grep -v "^source.*" \
 | grep -v "^which.*return.*" \
 | grep -v "^test.*return.*" \
@@ -22,6 +22,6 @@ test -e ~/htoprc && mkdir -p ~/.config/htop && mv -v htoprc ~/.config/htop/htopr
 
 compile_bashrc
 
-rsync --verbose --recursive --copy-links --perms --executability --progress .$USER "DOTFILES"/config/arch/home/razz/.tmux.conf "$DOTFILES"/bootstrap/nano/settings.sh "DOTFILES"/config/arch/home/razz/.config/htop/htoprc $1:~/
+rsync --verbose --recursive --copy-links --perms --executability --progress .$USER "${DOTFILES:-~/dotfiles}"/config/arch/home/razz/.tmux.conf "${DOTFILES:-~/dotfiles}"/bootstrap/nano/settings.sh "${DOTFILES:-~/dotfiles}"/config/arch/home/razz/.config/htop/htoprc $1:~/
 
 rm .$USER

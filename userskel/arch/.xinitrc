@@ -29,7 +29,7 @@ export density="$( xdpyinfo | grep resolution | cut -d ' ' -f 2 | cut -d 'x' -f 
 #xrandr --auto --output LVDS --primary --mode 1366x768 --left-of VGA-0 --output VGA-0 --mode 1280x1024
 
 # Background (display from imagemagick)
-source "$DOTFILES"/config/shell/ls.bash && display -size $dimensions -density $density -window root "$(lr $HOME/walls | head -n 1)" &
+source "${DOTFILES:-~/dotfiles}"/config/shell/ls.bash && display -size $dimensions -density $density -window root "$(lr $HOME/walls | head -n 1)" &
 
 # Standby/Suspend, Screensaver, and Energy Star/DPMS
 xset s off -dpms
