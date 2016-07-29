@@ -5,6 +5,11 @@
 # GIT_PS1_SHOWUPSTREAM="auto git"
 GIT_PS1_SHOWDIRTYSTATE=0
 
+# Alternative to __git_ps1
+parse_git_branch () {
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
 if test "${TERM##*-}" = "256color"; then
   fullcolor=256
 fi
