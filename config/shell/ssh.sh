@@ -23,6 +23,7 @@ set 8 [lindex $argv 8]
 set 9 [lindex $argv 9]
 set 10 [lindex $argv 10]
 
+# This spawn command inserts the spaces as arguments
 spawn $cmd $ops $3 $4 $5 $6 $7 $8 $9 $10
 match_max 100000
 expect "*?ass*"
