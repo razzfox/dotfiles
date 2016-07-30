@@ -14,9 +14,6 @@ cache="$cachedir/dmenu_launch.cache"
 # Path to history file.
 hist="$cachedir/dmenu_launch.history"
 
-# Path to lock file.
-lock="$cachedir/dmenu_launch.lock"
-
 # Dmenu command.
 dm="dmenu -i $DMENU_OPTIONS $@"
 
@@ -79,18 +76,6 @@ bin_list () {
     fi
 }
 
-cache_menu () {
-    touch "${cache}-menu.lock"
-
-    # Create cache directory if it doesn't exist.
-    mkdir -p "${cache%/*}"
-    app_list > "${cache}-menu.new"
-    bin_list >> "${cache}-menu.new"
-
-    mv "${cache}-menu"{.new,}
-    rm "${cache}-menu.lock"
-}
-
 update_history () {
     (echo "$1"; head -9 "$hist" | grep -Fvx "$1") > "$hist.new"
     mv "$hist"{.new,}
@@ -103,10 +88,12 @@ build_opt_menu () {
 build_hist_menu () {
     mkdir -p "${hist%/*}"
     touch "$hist"
+
     # each list must be separated by a newline
     menu_items="$(app_list)
 $(bin_list)
 $(build_opt_menu)"
+
     hist_items="$(grep -Fx "$menu_items" "$hist")"
 
     # # Keep the history file free of invalids.
@@ -122,13 +109,6 @@ program_exists () {
 
 
 main () {
-    cache_menu &
-
-    while [[ -f "${cache}-menu.lock" ]]; do
-        # "Waiting for menu caching to finish..."
-        sleep 0.25
-    done
-
     # Ask the user to select a program to launch.
     selection=$(build_hist_menu | $dm)
 
