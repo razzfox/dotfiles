@@ -4,7 +4,7 @@ hc () {
 
 
 # Panel based on: /etc/xdg/herbstluftwm/panel.sh
-panel="bash $HOME/.config/herbstluftwm/panel.sh"
+panel="nice -n 19 bash $HOME/.config/herbstluftwm/panel.sh"
 panel_height=14
 panel_top=false
 

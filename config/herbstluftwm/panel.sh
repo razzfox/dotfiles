@@ -22,9 +22,6 @@ else # Bottom
   herbstclient pad $monitor 0 0 $panel_height
 fi
 
-# Icon Tray
-pkill trayer
-herbstclient spawn trayer --edge top --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --expand true
 
 # Theme
 font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
@@ -51,9 +48,7 @@ source $HOME/.config/shell/vl.arch
 
 # Functions
 sighandler () {
-  visible='false'
   herbstclient pad $monitor 0
-
   kill $PID $@
   exit
 }
@@ -296,7 +291,6 @@ cpuload="0 0"
 diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
 diskspaceprev="$diskspace"
 
-visible="true"
 windowtitle="$(herbstclient stack | grep -F -A1 Focus-Layer | tail -n 1 | cut -d '"' -f 2 | grep -F -v Fullscreen-Layer)"
 IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
 
@@ -336,7 +330,7 @@ while true; do
     # get_cpuload sleeps internally
   done
 
-done &>/dev/null & PID=$!
+done &>/dev/null & PID="$! $PID"
 # output to null so it doesn't print the entire block when terminated
 
 # while sleep 5; do
@@ -345,6 +339,13 @@ done &>/dev/null & PID=$!
 #   # get_cpuspeed
 #   get_cpuload
 # done &>/dev/null & PID="$PID $!"
+
+
+# Icon Tray
+# This is not necessary due to sighandler, but it seems to help avoid the race condition sometimes.
+pkill trayer
+# Race condition: if trayer starts first, then dzen2 will spawn on top of it
+nice -n 19 trayer --edge $( ${3:-true} && echo "top" || echo "bottom" ) --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --distance -2 --expand true & PID="$! $PID"
 
 
 ### Data handling loop ###
@@ -434,7 +435,7 @@ herbstclient --idle | while true; do
     #   if [ "${cmd[1]}" = "current" ] && [ "$currentmonidx" -ne "$monitor" ] ; then
     #     continue
     #   fi
-    #   if $visible; then
+    #   if ${visible:-false}; then
     #     visible='false'
     #     herbstclient pad $monitor 0
     #   else

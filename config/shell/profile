@@ -5,6 +5,23 @@
 # Dotfiles
 test -z "${DOTFILES}" && export DOTFILES="$HOME/dotfiles"
 
+# SSH-Agent
+if test -f $HOME/.ssh/id_rsa -a ! -S ${SSH_AUTH_SOCK:-/dev/null} ; then
+  eval $( cat /tmp/ssh-$USER 2>/dev/null ) &>/dev/null
+
+  if test ! -S ${SSH_AUTH_SOCK:-/dev/null} ; then
+    eval $( ssh-agent -s | tee /tmp/ssh-$USER ) &>/dev/null
+
+    echo "SSH-Agent: $SSH_AGENT_PID"
+    echo -n "bash: .profile: Press Enter to skip. "
+    if ! ssh-add $HOME/.ssh/id_rsa 2>/dev/null ; then
+      kill $SSH_AGENT_PID
+      rm /tmp/ssh-$USER
+      unset SSH_AGENT_PID
+      unset SSH_AUTH_SOCK
+    fi
+  fi
+fi
 
 # Tmux
 test -z "$TMUX_CONF" && export TMUX_CONF="$HOME/.config/tmux/tmuxrc"

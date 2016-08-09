@@ -13,8 +13,10 @@ cache="$cachedir/dmenu_launch.cache"
 
 # Path to history file.
 hist="$cachedir/dmenu_launch.history"
+cmdhist="$cachedir/dmenu_launch"
 
 # Dmenu command.
+opt_term=false
 dm="dmenu -i $DMENU_OPTIONS $@"
 
 # Choose proper LSX binary.
@@ -28,6 +30,15 @@ else
     # Use compgen cleverness.
     lsx () { compgen -c -X '_*' | grep -Fv "$(compgen -bk)"; }
 fi
+
+
+# Functions
+sighandler () {
+  rm "$hist"
+  exit
+}
+
+trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 
 
 list_xdg_shortcuts () {
@@ -77,76 +88,105 @@ bin_list () {
 }
 
 update_history () {
-    (echo "$1"; head -9 "$hist" | grep -Fvx "$1") > "$hist.new"
-    mv "$hist"{.new,}
+    test -n "$2" || return
+
+    echo "$2" > "$1.new"
+    grep -Fvx "$2" "$1" >> "$1.new"
+    # Unlimited history
+    # (echo "$1"; head -9 "$hist" | grep -Fvx "$1") > "$hist"
+    mv "$1"{.new,}
 }
 
-build_opt_menu () {
-    echo "Clear History"
+opt_menu () {
+    echo "Start Terminal
+Clear History"
 }
 
-build_hist_menu () {
+build_menu () {
     mkdir -p "${hist%/*}"
     touch "$hist"
 
     # each list must be separated by a newline
     menu_items="$(app_list)
 $(bin_list)
-$(build_opt_menu)"
+$(opt_menu)"
 
-    hist_items="$(grep -Fx "$menu_items" "$hist")"
-
-    # # Keep the history file free of invalids.
+    # hist_items="$(grep -Fx "$menu_items" "$hist")"
+    #
+    # # # Keep the history file free of invalids.
     # echo "$hist_items" > "$hist"
+    #
+    # echo "$hist_items"
+    # echo "$menu_items" | grep -Fvx "$hist_items"
 
-    echo "$hist_items"
-    echo "$menu_items" | grep -Fvx "$hist_items"
+    cat "$hist"
+    echo "$menu_items" | grep -Fvxf "$hist"
 }
 
 program_exists () {
     type -p "$1" &>/dev/null
 }
 
+get_arguments () {
+    arguments="$( cat "$cmdhist.${1// }" | $dm -p "Arguments for '$1'" )"
+    if test -n "$arguments" ; then
+        update_history "$cmdhist.${1// }" "$arguments"
+    fi
+}
+
+launch_selection () {
+    if ! program_exists "$selection" ; then
+        app=$( grep -F "$selection"$'\t' "$cache" | sed 's/.*\t//;s/ %.//g' )
+
+        # If there's more than one, ask which binary to use.
+        test "$( echo "$app" | wc -l )" -ne 1 && app="$( echo "$app" | $dm -p "Which binary?" )"
+        
+        # Inverts terminal vs background launch behavior
+        if $opt_term ; then
+            get_arguments $app
+            app="$TERMINAL -e $app $arguments"
+        fi
+
+        exec $app
+    fi
+
+    # No quotes here so that only the first word is tested for an executable
+    if program_exists $selection ; then
+        update_history "$cmdhist.${selection%% *}" "${selection#* }"
+
+
+        # Inverts terminal vs background launch behavior
+        if ! $opt_term ; then
+            selection="$TERMINAL -e $selection"
+        fi
+
+        exec ${selection} ${arguments}
+    fi
+}
+
 
 main () {
     # Ask the user to select a program to launch.
-    selection=$(build_hist_menu | $dm)
+    selection=$( build_menu | $dm )
+
+    # Quit if nothing was selected.
+    test -z "$selection" && exit 1
 
     case "$selection" in
-        *"Clear History"*)
+        "Clear History")
             confirm=$(printf '%s\n' '[Yes]' '[No]' |
                 $dm -p "Clear History?")
             [[ -z "$confirm" || "$confirm" == '[No]' ]] && continue
-            rm -f "$hist"
-            touch "$hist"
+            rm "$hist"
             ;;
-        *)
-            # Quit if nothing was selected.
+        "Start Terminal")
+            opt_term=true
+            selection=$( build_menu | $dm -p "In new $TERMINAL terminal" )
             test -z "$selection" && exit 1
-
-            app="$selection"
-
-            # If the selection doesn't exist, see if it's an XDG shortcut.
-            if ! program_exists "$selection"; then
-                app=$(grep -F "$app"$'\t' "$cache" | sed 's/.*\t//;s/ %.//g')
-
-                # If there's more than one, ask which binary to use.
-                test "$(echo "$app" | wc -l)" != '1' && app=$(echo "$app" | $dm -p "Which binary?")
-            fi
-
-            # Check and see if the binary exists, and launch it, if so.
-            if program_exists $app; then
-                update_history "$selection"
-                if app_list | grep "$selection"; then
-                  #herbstclient spawn
-                  exec $app
-                else
-                  exec $TERMINAL -e $app
-                fi
-            else
-                exec bash $app
-                #echo '[OK]' | $dm -p "No binary found at '$app' for '$selection'"
-            fi
+            ;&
+        *)
+            update_history "$hist" "$selection"
+            launch_selection "$selection"
             ;;
     esac
 }
