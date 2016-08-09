@@ -6,7 +6,7 @@ rsync() {
   echo "--copy-links (-L) means to transform into dir/files, not keep synlinks" >/dev/stderr
   
   #$(which rsync) --verbose --recursive --copy-links --perms --executability --progress "$@"
-  $(which rsync) -vaLP "$@"
+  $(which rsync) -vaLP "${@%*/}"
 }
 
 copy() {

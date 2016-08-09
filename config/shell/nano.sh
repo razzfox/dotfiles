@@ -1,7 +1,7 @@
 source "${DOTFILES:-$HOME/dotfiles}"/bootstrap/nano/settings.sh
 
 nanosource() {
-  nano "$@" && source "$@"
+  nano "$@" && for i in "$@" ; do source "$i" ; done
 }
 
 nanocat() {

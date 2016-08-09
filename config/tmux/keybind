@@ -41,17 +41,15 @@ bind -n M-Space command-prompt -p "tmux command (new window):" "new-window '%%'"
 bind -n M-X confirm-before -p "kill-window (Tag) '#I #W'? (y/N)" kill-window
 
 # Reorder Windows (Tags)
-# Shift-,
-#bind -n M-< swap-window -t -1
-# Shift-.
-#bind -n M-> swap-window -t +1
-# Shift-' swap last window
-#bind -n M-'"' swap-window -t :!
+# Meta-C does not work?
+bind -n M-C-, swap-window -t :-1
+bind -n M-C-. swap-window -t :+1
+bind -n M-C-"'" swap-window -t :!
 
 # Focus Windows (Tags)
-bind -n M-"'" last-window
 bind -n M-, previous-window
 bind -n M-. next-window
+bind -n M-"'" last-window
 
 bind -n M-1 select-window -t :1
 bind -n M-2 select-window -t :2
@@ -66,7 +64,7 @@ bind -n M-0 select-window -t :0
 
 # Select Windows (Tags)
 # BUG: using Shift with arrow keys does not work
-# These options are ignored
+# The following four options are ignored
 bind -n M-S-Left previous-window
 bind -n M-S-Right next-window
 bind -n M-S-Up select-window -t :^
@@ -85,6 +83,8 @@ bind -r S-Down select-window -t :'$'
 # New pane right
 bind -n M-\ split-window -h
 bind -n M-'|' command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
+
+bind -n M-Return command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
 
 # New pane down
 bind -n M-- split-window -v
@@ -110,8 +110,9 @@ bind -n M-C break-pane
 bind -n M-S-c break-pane
 bind -n M-S-C break-pane
 
-bind -n M-< join-pane -t -1
-bind -n M-> join-pane -t +1
+# Note: target-windowmust be addressed with a colon (or session:)
+bind -n M-< join-pane -t :-1
+bind -n M-> join-pane -t :+1
 bind -n M-'"' join-pane -t :!
 
 bind -n M-! join-pane -t :1
