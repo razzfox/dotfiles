@@ -140,14 +140,19 @@ launch_selection () {
 
         # If there's more than one, ask which binary to use.
         test "$( echo "$app" | wc -l )" -ne 1 && app="$( echo "$app" | $dm -p "Which binary?" )"
-        
+
         # Inverts terminal vs background launch behavior
         if $opt_term ; then
             get_arguments $app
             app="$TERMINAL -e $app $arguments"
         fi
 
-        exec $app
+        # echo "$app" | $dm -p "Launching:"
+        # file "$app" | grep -q "POSIX shell script" && bash $app
+        # exec $app
+
+        # IntelliJ Idea has quotes around the listed filename, which causes it to not be found, since the quotes are never dropped from the executable path
+        exec ${app//'"'} 2>$cachedir/dmenu_launch.err
     fi
 
     # No quotes here so that only the first word is tested for an executable
@@ -160,6 +165,7 @@ launch_selection () {
             selection="$TERMINAL -e $selection"
         fi
 
+        # echo "$selection" | $dm -p "Exec:"
         exec ${selection} ${arguments}
     fi
 }

@@ -84,7 +84,7 @@ bind -r S-Down select-window -t :'$'
 bind -n M-\ split-window -h
 bind -n M-'|' command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
 
-bind -n M-Return command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
+bind -n M-Enter command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
 
 # New pane down
 bind -n M-- split-window -v
