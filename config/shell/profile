@@ -73,5 +73,5 @@ fi
 
 # Source shell functions and settings if interactive
 if test -t 0; then
-  source ~/.config/shell/$(basename $SHELL)rc
+  source $HOME/.config/shell/$(basename $SHELL)rc
 fi
