@@ -27,7 +27,3 @@ export HISTSIZE="$HISTFILESIZE"
 export HISTTIMEFORMAT="[%F %T]: "
 export HISTCONTROL='ignoredups' # ignoredups or ignorespace or ignoreboth
 export HISTIGNORE='clear:cl:exit' # hide some commands from history
-
-
-# Prompt Command
-PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
