@@ -31,9 +31,9 @@
 #   AddressFamily any
 #   ConnectTimeout 0
 #   StrictHostKeyChecking ask
-#   IdentityFile ~/.ssh/identity
-#   IdentityFile ~/.ssh/id_rsa
-#   IdentityFile ~/.ssh/id_dsa
+#   IdentityFile $HOME/.ssh/identity
+#   IdentityFile $HOME/.ssh/id_rsa
+#   IdentityFile $HOME/.ssh/id_dsa
 #   Port 22
 #   Protocol 2,1
 #   Cipher 3des

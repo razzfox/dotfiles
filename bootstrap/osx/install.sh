@@ -26,8 +26,8 @@ systemsetup -setrestartfreeze on
 # Disable hibernate and delete sleepimage (default mode is 3)
 #sudo pmset -a hibernatemode 0; sudo rm -rf /var/vm/sleepimage
 
-# Show the ~/Library folder
-chflags nohidden ~/Library
+# Show the $HOME/Library folder
+chflags nohidden $HOME/Library
 
 # symlink Coreservices
 ln -s /System/Library/CoreServices /Applications/CoreServices
@@ -40,7 +40,7 @@ if test -d /Library/Java/JavaVirtualMachines/jdk*.jdk; then
 fi
 
 # Create .gitignore for Macs
-echo ".DS_Store" >> ~/.gitignore
+echo ".DS_Store" >> $HOME/.gitignore
 
 # App Store Debug Menu
 defaults write com.apple.appstore ShowDebugMenu -bool true

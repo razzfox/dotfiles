@@ -19,4 +19,4 @@ sudo chmod 0777 /dev/disk0* 2>/dev/null
 VBoxManage internalcommands createrawvmdk -filename /path/to/file.vmdk -rawdisk /dev/disk0 -partitions 1,4
 
 # Enable user access to disks at boot (disk permissions are reset)
-echo 'echo PASSWORD | sudo -S chmod 0777 /dev/disk0* 2>/dev/null' >> ~/.bashrc
+echo 'echo PASSWORD | sudo -S chmod 0777 /dev/disk0* 2>/dev/null' >> $HOME/.bashrc

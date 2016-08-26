@@ -124,7 +124,7 @@ get_cpuload () {
   # E2=$((100 * (B2 - D2 - ${A[26]} + ${C[26]}) / (B2 - D2)))
   # E3=$((100 * (B3 - D3 - ${A[37]} + ${C[37]}) / (B3 - D3)))
 
-  # cpuload=( $( bash ~/code/bashcpu.sh ) )
+  # cpuload=( $( bash $HOME/code/bashcpu.sh ) )
   cpuload="$E0 $E1"
   herbstclient emit_hook $(echo -ne "cpuload\t${cpuload[@]}") 2>/dev/null || break
 }
