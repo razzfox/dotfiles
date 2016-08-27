@@ -13,6 +13,6 @@ fi
 
 
 # Dotfiles
-for file in ~/.config/shell/{*.$(basename ${SHELL:-bash}),*.sh,*.${ID:-arch},*.${OS:-linux}}; do
+for file in $HOME/.config/shell/{*.$(basename ${SHELL:-bash}),*.sh,*.${ID:-arch},*.${OS:-linux}}; do
   source "$file" >/dev/null
 done

@@ -1,15 +1,15 @@
-WALLPAPERS=~/walls
+WALLPAPERS=$HOME/walls
 
 # Copy random wallpapers
 set_walls() {
-  test -d $WALLPAPERS || return 1
+  test -d "$WALLPAPERS" || return 1
 
-  mkdir -p ~/Pictures
+  mkdir -p $HOME/Pictures
 
-  if test "$( cat ~/Pictures/date.txt 2>/dev/null )" != "$(date +%F)" -o -e "$( find ~/walls/ -maxdepth 1 -type f | tail -n 1 )"; then
-    rm ~/Pictures/*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,bmp,BMP,tiff,TIFF,tif,TIF} 2>/dev/null
-    cp $(lr $WALLPAPERS | tail) ~/Pictures/ 2>/dev/null
-    date +%F > ~/Pictures/date.txt
+  if test "$( cat $HOME/Pictures/date.txt 2>/dev/null )" != "$( date +%F )" -o -e "$( find "$WALLPAPERS" -maxdepth 1 -type f | tail -n 1 )"; then
+    rm $HOME/Pictures/*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,bmp,BMP,tiff,TIFF,tif,TIF} 2>/dev/null
+    cp $( lr "$WALLPAPERS" | tail ) $HOME/Pictures/ 2>/dev/null
+    date +%F > $HOME/Pictures/date.txt
   fi
 }
 

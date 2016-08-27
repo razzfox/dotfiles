@@ -1,7 +1,7 @@
 screenshot () {
   echo sleep ${1:-5}
   sleep ${1:-5}
-  screenshot="screenshot$(date +%F%H%M%S).jpg"
+  screenshot="screenshot$(date +%F-%H-%M-%S).jpg"
   import -window root "$screenshot"
   ls -l "$screenshot"
 }

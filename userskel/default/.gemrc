@@ -1,2 +1,2 @@
 gem: --user-install --no-document
-gempath: ~/.gem
+gempath: $HOME/.gem

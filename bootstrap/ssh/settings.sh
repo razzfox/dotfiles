@@ -1,4 +1,4 @@
-# Protect ~/.ssh from other users and own group
+# Protect $HOME/.ssh from other users and own group
 mkdir -p -m 700 $HOME/.ssh
 chmod 700 $HOME/.ssh
 chmod 600 $HOME/.ssh/*
