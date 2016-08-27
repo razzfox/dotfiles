@@ -1,31 +1,28 @@
 source "${DOTFILES:-$HOME/dotfiles}"/bootstrap/nano/settings.sh
 
 nanosource() {
-  nano "$1" && source "$1" && echo "sourced $1"
+  nano "$@" && source "$@" && echo "sourced $@"
 }
 
 nanodotfiles() {
+  unset NS
   for i in "$@" ; do
-    file="${DOTFILES}/config/shell/${i}"
-    if test -f ${file}* 2>/dev/null ; then
-      nanosource ${file}*
+    # I dont know why all of these stop working when I put them in quotes, but they only glob without quotes, even with 'shopt -s extglob'
+    file=${DOTFILES}/config/shell/${i}*
+    if test -f ${file} ; then
+      NS="$NS ${file}"
     else
       echo "Press Ctrl-C to exit."
-      select j in ${file}*; do
-        if echo ${file}* | grep "$j" ; then
-          nanosource "$j"
+      select j in ${DOTFILES}/config/shell/${i}* ; do
+        if echo ${DOTFILES}/config/shell/${i}* | grep "$j" ; then
+          NS="$NS ${j}"
         fi
         break
-#        case "$j" in
-#          "")
-#            break
-#            ;;
-#          *)
-#            ;;
-#        esac
       done
     fi
   done
+  
+  nanosource $NS
 }
 
 nanoexec() {
