@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# ~/.xinitrc
+# $HOME/.xinitrc
 #
 # Executed by startx (run your window manager from here)
 
-# in case startx is called outside ~/
+# Just in case startx is run outside of home
 cd
 
 # Import system settings
@@ -39,4 +39,4 @@ export screensaver="cmatrix -a -u 6 -b"
 export TERMINAL="$( which tilda 2>/dev/null || which guake 2>/dev/null || which st 2>/dev/null || which xterm 2>/dev/null )"
 
 # Window Manager
-exec herbstluftwm -c ~/.config/herbstluftwm/hlwmrc &>$HOME/hlwm.log$(date +%F:%H:%M:%S)
+exec herbstluftwm -c $HOME/.config/herbstluftwm/hlwmrc &>/tmp/hlwm-$USER-$(date +%F-%H-%M-%S).log

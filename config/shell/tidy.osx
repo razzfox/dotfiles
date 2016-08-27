@@ -6,14 +6,14 @@ tidy_launchservices() {
 
 # Reset LaunchPad
 tidy_launchpad() {
-  rm ~/Library/Application\ Support/Dock/*.db ; killall Dock
+  rm $HOME/Library/Application\ Support/Dock/*.db ; killall Dock
   defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
 }
 
 
 # Delete leftover App Library directories
 tidy_applibrary() {
-  echo rm -rf $(for f in ~/Library/Containers/*; do osascript -e "app id \"${f##*/}\"" &> /dev/null || echo $f; done)
+  echo rm -rf $(for f in $HOME/Library/Containers/*; do osascript -e "app id \"${f##*/}\"" &> /dev/null || echo $f; done)
 }
 
 
@@ -32,11 +32,11 @@ tidy_javaupdate() {
 # Delete default home folders that recreate periodically
 tidy_home() {
   echo 7299 | sudo -S true
-  sudo rm -v ~/*/.localized ~/*/.DS_Store ~/*/._.DS_Store
+  sudo rm -v $HOME/*/.localized $HOME/*/.DS_Store $HOME/*/._.DS_Store
 
-  sudo rm -v ~/Public/Drop\ Box/.localized ~/Public/.com.apple.timemachine.supported
+  sudo rm -v $HOME/Public/Drop\ Box/.localized $HOME/Public/.com.apple.timemachine.supported
 
-  sudo rmdir ~/Applications ~/Desktop ~/Documents ~/Movies ~/Music ~/Pictures ~/Public/Drop\ Box ~/Public
+  sudo rmdir $HOME/Applications $HOME/Desktop $HOME/Documents $HOME/Movies $HOME/Music $HOME/Pictures $HOME/Public/Drop\ Box $HOME/Public
 }
 
 tidy_home "$@" 2>/dev/null || true

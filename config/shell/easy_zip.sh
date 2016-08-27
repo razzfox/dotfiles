@@ -24,6 +24,7 @@ for i; do
   *.xz)  c='unxz';;
   *.zip) c='unzip';;
   *.lzma) c='xz -d';;
+  *.pkg) c='xar -xf';;
   *)     echo "easy_extract: Error: the file '$i' is not recognized." >/dev/stderr
          continue;;
   esac

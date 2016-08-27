@@ -58,4 +58,5 @@ set_prompt() {
 }
 
 # run 'set_prompt' before every command
-PROMPT_COMMAND="set_prompt; $PROMPT_COMMAND"
+# run this command once all dotfiles are loaded, or else it is very slow to load
+PROMPT_COMMAND="trap 'set_prompt; history -a; history -c; history -r;' DEBUG ; unset PROMPT_COMMAND"
