@@ -9,4 +9,8 @@ rmdir () {
 
   echo $( which rmdir ) -v "$@"
   $( which rmdir ) -v "$@"
+  
+  if test $? -ne 0 ; then
+    ls -lah "$@"
+  fi
 }
