@@ -6,6 +6,7 @@ rmdir () {
 
     echo
   fi
-  
+
+  echo $( which rmdir ) -v "$@"
   $( which rmdir ) -v "$@"
 }
