@@ -65,16 +65,16 @@ bind -n M-0 select-window -t :0
 # Select Windows (Tags)
 # BUG: using Shift with arrow keys does not work
 # The following four options are ignored
-bind -n M-S-Left previous-window
-bind -n M-S-Right next-window
-bind -n M-S-Up select-window -t :^
-bind -n M-S-Down select-window -t :'$'
+#bind -n M-S-Left previous-window
+#bind -n M-S-Right next-window
+#bind -n M-S-Up select-window -t :^
+#bind -n M-S-Down select-window -t :'$'
 # corrects for nested tmux sessions
 # These options are overwritten by the pane commands after them
-bind -r S-Left previous-window
-bind -r S-Right next-window
-bind -r S-Up select-window -t :^
-bind -r S-Down select-window -t :'$'
+#bind -r S-Left previous-window
+#bind -r S-Right next-window
+#bind -r S-Up select-window -t :^
+#bind -r S-Down select-window -t :'$'
 
 # Unused: NPage/PageDown/PgDn, PPage/PageUp/PgUp
 
@@ -130,10 +130,16 @@ bind -n M-) join-pane -t :0
 bind -n M-o rotate-window
 bind -n M-f next-layout
 
+# These actions are annoyingly unpredictable
 #bind -n M-S-Left move-pane -t left
 #bind -n M-S-Right move-pane -t right
 #bind -n M-S-Up move-pane -t top
 #bind -n M-S-Down move-pane -t bottom
+# corrects for nested tmux sessions
+#bind -r S-Left move-pane -t left
+#bind -r S-Right move-pane -t right
+#bind -r S-Up move-pane -t top
+#bind -r S-Down move-pane -t bottom
 
 # Resize panes
 bind -n C-Left resize-pane -L 5
