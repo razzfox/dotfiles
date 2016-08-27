@@ -6,6 +6,7 @@ rm () {
 
     echo
   fi
-  
+
+  echo $( which rm ) -vI "$@"
   $( which rm ) -vI "$@"
 }
