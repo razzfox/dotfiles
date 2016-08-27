@@ -10,7 +10,7 @@ mv () {
       if test -f "$i" -a -f "${last}/${i##*/}" ; then
         conflict=1
         echo -n "mv: error: "
-        diff -s "$i" "${last}/${i##*/}"
+        diff -qs "$i" "${last}/${i##*/}"
       fi
     done
   #fi
