@@ -11,6 +11,6 @@ rmdir () {
   $( which rmdir ) -v "$@"
   
   if test $? -ne 0 ; then
-    ls -lah "$@"
+    ls -lah "$@" | less
   fi
 }
