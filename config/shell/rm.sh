@@ -3,7 +3,7 @@ rm () {
     for i in "$@" ; do
       if test -d "$i" ; then
         echo
-        tree "$i"
+        tree -a "$i"
       else
         echo -n "'$i' "
       fi
