@@ -19,17 +19,17 @@ chmod_reset() {
   echo -n "777 - umask = "
   echo $(( 777 - $(umask) ))
 
-  test "$#" != "1" && return 1
-
-  for FILE in $(find ./"$1" \! -perm 0644 -type f -o \! -perm 0755 -type d); do
-    if test -d "$FILE"; then
-      echo chmod 0755 "$FILE"
-      chmod 0755 "$FILE"
-    fi
-    if test -f "$FILE"; then
-      echo chmod 0644 "$FILE"
-      chmod 0644 "$FILE"
-    fi
+  for i in "$@"; do 
+    for FILE in $(find ./"$i" \! -perm 0644 -type f -o \! -perm 0755 -type d); do
+      if test -d "$FILE"; then
+        echo chmod 0755 "$FILE"
+        chmod 0755 "$FILE"
+      fi
+      if test -f "$FILE"; then
+        echo chmod 0644 "$FILE"
+        chmod 0644 "$FILE"
+      fi
+    done
   done
 }
 
@@ -37,22 +37,17 @@ chmod_reset() {
 chmod_shared() {
   test "$#" != "1" && return 1
 
-  for FILE in $(find ./"$1" \! -perm 0664 -type f -o \! -perm 0775 -type d); do
-    if test -d "$FILE"; then
-      echo chmod 0775 "$FILE"
-      chmod 0775 "$FILE"
-    fi
-    if test -f "$FILE"; then
-      echo chmod 0664 "$FILE"
-      chmod 0664 "$FILE"
-    fi
-#    if test -f "$FILE"; then
-#      chmod 0664 "$FILE"
-#    else
-#      if test -d "$FILE"; then
-#        chmod 0775 "$FILE"
-#      fi
-#    fi
+  for i in "$@"; do 
+    for FILE in $(find ./"$i" \! -perm 0664 -type f -o \! -perm 0775 -type d); do
+      if test -d "$FILE"; then
+        echo chmod 0775 "$FILE"
+        chmod 0775 "$FILE"
+      fi
+      if test -f "$FILE"; then
+        echo chmod 0664 "$FILE"
+        chmod 0664 "$FILE"
+      fi
+    done
   done
 }
 
