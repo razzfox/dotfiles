@@ -8,7 +8,7 @@ mv () {
   if test -d "$last" ; then
   for i in "$@" ; do
     file="${i%/}"
-    if test "$file" != "$last" -a -e "$file" -a -e "${last}/${file##*/}" ; then
+    if test "$file" != "${last%/}" -a -e "$file" -a -e "${last}/${file##*/}" ; then
       conflict=1
       echo -n "mv: error: "
       diff -qsr --no-dereference "${file}" "${last}/${file##*/}" | grep -v "^Only in ${last}/"
