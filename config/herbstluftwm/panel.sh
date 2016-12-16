@@ -39,12 +39,6 @@ flashcolor="$urgentcolor"
 # Not used
 #bordercolor="$(herbstclient get frame_bg_active_color)"
 
-#acpi -b | cut -d' ' -f4
-source $HOME/.config/shell/bat.arch
-source $HOME/.config/shell/br.arch
-# vl commands: up down mute mute_source <num>
-source $HOME/.config/shell/vl.arch
-
 
 # Functions
 sighandler () {
@@ -52,95 +46,7 @@ sighandler () {
   kill $PID $@
   exit
 }
-
 trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
-
-# getdate can not be a varibale because of automatic bash smart quoting. FAIL
-get_date () {
-  date=$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )
-  if test "$date" != "$dateprev"; then
-    dateprev="$date"
-    herbstclient emit_hook $(echo -ne "date\t$date") 2>/dev/null || break
-  fi
-}
-
-get_battery () {
-  battery="$( bat )"
-  if test "$battery" != "$batteryprev"; then
-    batteryprev="$battery"
-    herbstclient emit_hook $(echo -ne "battery\t$battery") 2>/dev/null || break
-    ! bat >/dev/null && setflash "$battery" && bat status >/dev/null && setflash &
-    # first setflash lasts about 28-30 seconds, but flash remains on screen for notification purposes, so
-    # the second setflash removes flash if battery is better
-  fi
-}
-
-get_volume () {
-  # Run in case settings are changed via terminal or otherwise
-  volume="$( vl )"
-  if test "$volume" != "$volumeprev"; then
-    volumeprev="$volume"
-    herbstclient emit_hook $(echo -ne "volume\t$volume") 2>/dev/null || break
-  fi
-}
-
-get_brightness () {
-  brightness="$( br )"
-  if test "$brightness" != "$brightnessprev"; then
-    brightnessprev="$brightness"
-    herbstclient emit_hook $(echo -ne "brightness\t$brightness") 2>/dev/null || break
-  fi
-}
-
-get_diskspace () {
-  diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
-  if test "$diskspace" != "$diskspaceprev"; then
-    diskspaceprev="$diskspace"
-    herbstclient emit_hook $(echo -ne "diskspace\t$diskspace") 2>/dev/null || break
-  fi
-}
-
-get_cpuload () {
-  # cores=$( grep -c ^processor /proc/cpuinfo )
-  # Gives cores + 1
-  cpu=$( grep -c ^cpu /proc/stat )
-  A=($(sed -n '2,5p' /proc/stat))
-  # sleep 0.2
-  sleep ${1:-5}
-  C=($(sed -n '2,5p' /proc/stat))
-  # user         + nice     + system   + idle
-  B0=$((${A[1]}  + ${A[2]}  + ${A[3]}  + ${A[4]}))
-  B1=$((${A[12]} + ${A[13]} + ${A[14]} + ${A[15]}))
-  # B2=$((${A[23]} + ${A[24]} + ${A[25]} + ${A[26]}))
-  # B3=$((${A[34]} + ${A[35]} + ${A[36]} + ${A[37]}))
-  # user         + nice     + system   + idle
-  D0=$((${C[1]}  + ${C[2]}  + ${C[3]}  + ${C[4]}))
-  D1=$((${C[12]} + ${C[13]} + ${C[14]} + ${C[15]}))
-  # D2=$((${C[23]} + ${C[24]} + ${C[25]} + ${C[26]}))
-  # D3=$((${C[34]} + ${C[35]} + ${C[36]} + ${C[37]}))
-  # cpu usage per core
-  E0=$((100 * (B0 - D0 - ${A[4]}  + ${C[4]})  / (B0 - D0)))
-  E1=$((100 * (B1 - D1 - ${A[15]} + ${C[15]}) / (B1 - D1)))
-  # E2=$((100 * (B2 - D2 - ${A[26]} + ${C[26]}) / (B2 - D2)))
-  # E3=$((100 * (B3 - D3 - ${A[37]} + ${C[37]}) / (B3 - D3)))
-
-  # cpuload=( $( bash $HOME/code/bashcpu.sh ) )
-  cpuload="$E0 $E1"
-  herbstclient emit_hook $(echo -ne "cpuload\t${cpuload[@]}") 2>/dev/null || break
-}
-
-setflash () {
-  if test $# == 0; then
-    herbstclient emit_hook $(echo -ne "flash\t") 2>/dev/null || break
-  else
-    for i in {0..13}; do
-      herbstclient emit_hook $(echo -ne "flash\t^fg($fgcolor) $@ $separator") 2>/dev/null || break
-      sleep 1
-      herbstclient emit_hook $(echo -ne "flash\t^fg($flashcolor) $@ $separator") 2>/dev/null || break
-      sleep 1
-    done
-  fi
-}
 
 tag () {
 case "$1" in
@@ -248,19 +154,28 @@ case "$1" in
 draw_tags () {
   for i in "${tags[@]}"; do
     case ${i:0:1} in
-      '#')
-      echo -n "^bg($selbg)^fg($selfg)"
+      '.') # the tag is empty
+      echo -n "^bg()^fg($textcolor)"
       ;;
-      '+')
-      echo -n "^bg(#9CA668)^fg(#141414)"
-      ;;
-      ':')
+      ':') # the tag is not empty
       echo -n "^bg()^fg()"
       ;;
-      '!')
-      echo -n "^bg($urgentcolor)^fg(#141414)"
+      '+') # the tag is viewed on the specified MONITOR, but this monitor is not focused.
+      echo -n "^bg(#9CA668)^fg()"
       ;;
-      *)
+      '#') # the tag is viewed on the specified MONITOR and it is focused.
+      echo -n "^bg($selbg)^fg()"
+      ;;
+      '-') # the tag is viewed on a different MONITOR, but this monitor is not focused.
+      echo -n "^bg(#9CA668)^fg(#141414)"
+      ;;
+      '%') # the tag is viewed on a different MONITOR and it is focused.
+      echo -n "^bg($selbg)^fg(#141414)"
+      ;;
+      '!') # the tag contains an urgent window
+      echo -n "^bg($urgentcolor)^fg()"
+      ;;
+      *) # default case should never happen
       echo -n "^bg()^fg($textcolor)"
       ;;
     esac
@@ -277,6 +192,127 @@ draw_text () {
   echo "^pa($(($panel_width - $right_text_width)))$right" # print right-aligned text
 }
 
+#acpi -b | cut -d' ' -f4
+source $HOME/.config/shell/bat.arch
+source $HOME/.config/shell/br.arch
+# vl commands: up down mute mute_source <num>
+source $HOME/.config/shell/vl.arch
+
+# getdate can not be a varibale because of automatic bash smart quoting. FAIL
+get_date () {
+  date=$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )
+  if test "$date" != "$dateprev"; then
+    dateprev="$date"
+    herbstclient emit_hook $(echo -ne "date\t$date") 2>/dev/null || break
+  fi
+}
+
+get_battery () {
+  battery="$( bat )"
+  if test "$battery" != "$batteryprev"; then
+    batteryprev="$battery"
+    herbstclient emit_hook $(echo -ne "battery\t$battery") 2>/dev/null || break
+    ! bat >/dev/null && setflash "$battery" && bat status >/dev/null && setflash &
+    # first setflash lasts about 28-30 seconds, but flash remains on screen for notification purposes, so
+    # the second setflash removes flash if battery is better
+  fi
+}
+
+get_volume () {
+  # Run in case settings are changed via terminal or otherwise
+  volume="$( vl )"
+  if test "$volume" != "$volumeprev"; then
+    volumeprev="$volume"
+    herbstclient emit_hook $(echo -ne "volume\t$volume") 2>/dev/null || break
+  fi
+}
+
+get_brightness () {
+  brightness="$( br )"
+  if test "$brightness" != "$brightnessprev"; then
+    brightnessprev="$brightness"
+    herbstclient emit_hook $(echo -ne "brightness\t$brightness") 2>/dev/null || break
+  fi
+}
+
+get_diskspace () {
+  diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
+  if test "$diskspace" != "$diskspaceprev"; then
+    diskspaceprev="$diskspace"
+    herbstclient emit_hook $(echo -ne "diskspace\t$diskspace") 2>/dev/null || break
+  fi
+}
+
+get_cpuload2 () {
+  # cores=$( grep -c ^processor /proc/cpuinfo )
+  # Gives cores + 1
+  cpu=$( grep -c ^cpu /proc/stat )
+  A=($(sed -n '2,5p' /proc/stat))
+  # sleep 0.2
+  sleep ${1:-5}
+  C=($(sed -n '2,5p' /proc/stat))
+  # user         + nice     + system   + idle
+  B0=$((${A[1]}  + ${A[2]}  + ${A[3]}  + ${A[4]}))
+  B1=$((${A[12]} + ${A[13]} + ${A[14]} + ${A[15]}))
+  # B2=$((${A[23]} + ${A[24]} + ${A[25]} + ${A[26]}))
+  # B3=$((${A[34]} + ${A[35]} + ${A[36]} + ${A[37]}))
+  # user         + nice     + system   + idle
+  D0=$((${C[1]}  + ${C[2]}  + ${C[3]}  + ${C[4]}))
+  D1=$((${C[12]} + ${C[13]} + ${C[14]} + ${C[15]}))
+  # D2=$((${C[23]} + ${C[24]} + ${C[25]} + ${C[26]}))
+  # D3=$((${C[34]} + ${C[35]} + ${C[36]} + ${C[37]}))
+  # cpu usage per core
+  E0=$((100 * (B0 - D0 - ${A[4]}  + ${C[4]})  / (B0 - D0)))
+  E1=$((100 * (B1 - D1 - ${A[15]} + ${C[15]}) / (B1 - D1)))
+  # E2=$((100 * (B2 - D2 - ${A[26]} + ${C[26]}) / (B2 - D2)))
+  # E3=$((100 * (B3 - D3 - ${A[37]} + ${C[37]}) / (B3 - D3)))
+
+  # cpuload=( $( bash $HOME/code/bashcpu.sh ) )
+  cpuload="$E0 $E1"
+  herbstclient emit_hook $(echo -ne "cpuload\t${cpuload[@]}") 2>/dev/null || break
+}
+
+get_cpuload4 () {
+  # Gives cores + 1
+  cpu=$( grep -c ^cpu /proc/stat )
+  A=($(sed -n '2,5p' /proc/stat))
+  # sleep 0.2
+  sleep ${1:-5}
+  C=($(sed -n '2,5p' /proc/stat))
+  # user         + nice     + system   + idle
+  B0=$((${A[1]}  + ${A[2]}  + ${A[3]}  + ${A[4]}))
+  B1=$((${A[12]} + ${A[13]} + ${A[14]} + ${A[15]}))
+  B2=$((${A[23]} + ${A[24]} + ${A[25]} + ${A[26]}))
+  B3=$((${A[34]} + ${A[35]} + ${A[36]} + ${A[37]}))
+  # user         + nice     + system   + idle
+  D0=$((${C[1]}  + ${C[2]}  + ${C[3]}  + ${C[4]}))
+  D1=$((${C[12]} + ${C[13]} + ${C[14]} + ${C[15]}))
+  D2=$((${C[23]} + ${C[24]} + ${C[25]} + ${C[26]}))
+  D3=$((${C[34]} + ${C[35]} + ${C[36]} + ${C[37]}))
+  # cpu usage per core
+  E0=$((100 * (B0 - D0 - ${A[4]}  + ${C[4]})  / (B0 - D0)))
+  E1=$((100 * (B1 - D1 - ${A[15]} + ${C[15]}) / (B1 - D1)))
+  E2=$((100 * (B2 - D2 - ${A[26]} + ${C[26]}) / (B2 - D2)))
+  E3=$((100 * (B3 - D3 - ${A[37]} + ${C[37]}) / (B3 - D3)))
+
+  # cpuload=( $( bash $HOME/code/bashcpu.sh ) )
+  cpuload="$E0 $E1 $E2 $E3"
+  herbstclient emit_hook $(echo -ne "cpuload\t${cpuload[@]}") 2>/dev/null || break
+}
+
+setflash () {
+  if test $# == 0; then
+    herbstclient emit_hook $(echo -ne "flash\t") 2>/dev/null || break
+  else
+    for i in {0..13}; do
+      herbstclient emit_hook $(echo -ne "flash\t^fg($fgcolor) $@ $separator") 2>/dev/null || break
+      sleep 1
+      herbstclient emit_hook $(echo -ne "flash\t^fg($flashcolor) $@ $separator") 2>/dev/null || break
+      sleep 1
+    done
+  fi
+}
+
 
 # Initialize Variables
 date="$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )"
@@ -287,7 +323,8 @@ volume="$( vl )"
 volumeprev="$volume"
 brightness="$( br )"
 brightnessprev="$brightness"
-cpuload="0 0"
+cores="$( grep -c ^processor /proc/cpuinfo )"
+cpuload="0 0 0 0"
 diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
 diskspaceprev="$diskspace"
 
@@ -305,14 +342,14 @@ IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
 #   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 # }
 
-# ( 5 x 5 ) + 4 = 29 sec
-# 3.625 sec x 8 = 29 sec
-while true; do
+PIDFILE="/var/run/user/$UID/hlwm_panel.pid"
+# Check if event loop already exists
+! kill -s 0 $(cat $PIDFILE 2>/dev/null) 2>/dev/null && while true; do
   get_date
 
-# Inspiration from this address:
-# https://github.com/dustinkirkland/byobu/blob/master/usr/bin/wifi-status
-  # get_ipaddress
+  # Inspiration from this address:
+  # https://github.com/dustinkirkland/byobu/blob/master/usr/bin/wifi-status
+  #get_ipaddress
 
   get_battery
 
@@ -326,29 +363,18 @@ while true; do
     # get_fanspeed
     # get_cputemp
     # get_cpuspeed
-    get_cpuload 3.625
-    # get_cpuload sleeps internally
+
+    # get_cpuload sleeps internally, so it can be used to sleep the main loop
+    # 3.625 sec x 8 = 29 sec
+    get_cpuload$cores 3.625
   done
-
-done &>/dev/null & PID="$! $PID"
 # output to null so it doesn't print the entire block when terminated
+done &>/dev/null & PID="$! $PID"
 
-# while sleep 5; do
-#   # get_fanspeed
-#   # get_cputemp
-#   # get_cpuspeed
-#   get_cpuload
-# done &>/dev/null & PID="$PID $!"
+! kill -s 0 $(cat $PIDFILE 2>/dev/null) 2>/dev/null && echo $! >/var/run/user/$UID/hlwm_panel.pid
 
 
-# Icon Tray
-# This is not necessary due to sighandler, but it seems to help avoid the race condition sometimes.
-pkill trayer
-# Race condition: if trayer starts first, then dzen2 will spawn on top of it
-nice -n 19 trayer --edge $( ${3:-true} && echo "top" || echo "bottom" ) --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --distance -2 --expand true & PID="$! $PID"
-
-
-### Data handling loop ###
+### Data handler ###
 # This part handles the hooks emitted in the event loop(s) above and by
 # hlwm itself (focus and tags), then sets variables based on them.
 

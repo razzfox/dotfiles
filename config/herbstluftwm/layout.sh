@@ -2,27 +2,6 @@ hc () {
   COMMANDS="$COMMANDS , $@"
 }
 
-
-# Panel based on: /etc/xdg/herbstluftwm/panel.sh
-panel="nice -n 19 bash $HOME/.config/herbstluftwm/panel.sh"
-panel_height=14
-panel_top=false
-
-for monitor in $(herbstclient list_monitors | cut -d':' -f1); do
-  # Inherits the current environment with style colors
-  herbstclient spawn $panel $monitor $panel_height $panel_top
-done
-
-
-# Create Tags
-tag_names=( )
-## Tag actions must be atomic, not chained together
-herbstclient rename default "${tag_names[0]}" || true
-for i in ${!tag_names[@]} ; do
-  herbstclient add "${tag_names[$i]}"
-done
-
-
 # Frame Tiling Algorithms (index and name are used inconsistently)
 # 0: vertical - clients are placed below each other
 # 1: horizontal - clients are placed next to each other

@@ -15,18 +15,30 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
-# Audio
-pulseaudio --start &
-
 # Pointer and Background Color
 xsetroot -cursor_name left_ptr #-solid '#000000'
 
-# Screen size and DPI
-export dimensions="$( xdpyinfo | grep dimension | cut -d ' ' -f 2 )"
-export density="$( xdpyinfo | grep resolution | cut -d ' ' -f 2 | cut -d 'x' -f 1)"
+# Multi Monitor Setup
+monitors = $( xrandr | grep -c " connected " )
+if test $monitors -gt 1 ; then
+  echo ".xinitrc: Detected $monitors monitors connected."
+else
+  # Screen size and DPI
+  # uses xargs to remove extra spaces in string
+  export dimensions="$( xdpyinfo | grep dimension | xargs | cut -d ' ' -f 2 )"
+  export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d 'x' -f 1 )"
+fi
 
-#To determine your optimal resolutions and display names, simply run: xrandr -q
+#To determine your optimal resolutions and display names, simply run:
+#xrandr -q
+# Example command:
 #xrandr --auto --output LVDS --primary --mode 1366x768 --left-of VGA-0 --output VGA-0 --mode 1280x1024
+
+# Rotate Monitor
+# If this monitor edid is plugged in to HDMI-0, then rotate it.
+if diff /sys/class/drm/card0/card0-HDMI-A-1/edid $HOME/.config/monitorleft ; then
+  xrandr --output HDMI-0 --rotate left
+fi
 
 # Background (display from imagemagick)
 source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash && display -size $dimensions -density $density -window root "$(lr $HOME/walls | head -n 1)" &
@@ -39,4 +51,17 @@ export screensaver="cmatrix -a -u 6 -b"
 export TERMINAL="$( which tilda 2>/dev/null || which guake 2>/dev/null || which st 2>/dev/null || which xterm 2>/dev/null )"
 
 # Window Manager
+
+# Herbstluftwm
+#pulseaudio --start &
 exec herbstluftwm -c $HOME/.config/herbstluftwm/hlwmrc &>/tmp/hlwm-$USER-$(date +%F-%H-%M-%S).log
+
+#Pantheon (ElementaryOS)
+#gsettings-data-convert &
+#xdg-user-dirs-gtk-update &
+#/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+#/usr/lib/gnome-settings-daemon/gnome-settings-daemon &
+#/usr/lib/gnome-user-share/gnome-user-share &
+#eval $(gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+#export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
+#exec cerbere

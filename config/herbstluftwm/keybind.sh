@@ -18,8 +18,9 @@ hc () {
   COMMANDS="$COMMANDS , $@"
 }
 
-Super=Mod4 # Super key
-Mod=Mod1 # Alt/Option key
+# These may be for keeping consistency between different keyboards (which may swap alt and super)
+#Super=Mod4 # Super key
+#Mod=Mod1 # Alt/Option key
 
 SCREENSAVER="spawn xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="spawn xset s off -dpms"
@@ -30,42 +31,48 @@ TERMINAL="spawn ${TERMINAL:-$(which dmenu_run)}"
 
 DMENU_OPTIONS="-i $( $panel_top || echo '-b' ) -nf $( herbstclient get_attr settings.frame_border_inner_color ) -nb $( herbstclient get_attr settings.frame_bg_normal_color ) -sf $( herbstclient get_attr settings.frame_bg_normal_color ) -sb $( herbstclient get_attr settings.window_border_active_color )"
 DMENU_LAUNCH="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh $DMENU_OPTIONS -m MONITOR"
+DMENU_CMD="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh -T $DMENU_OPTIONS -m MONITOR"
 DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS -m MONITOR"
 
-# General Keys
+# General
 hc keyunbind --all
-
 # can not use comma delimeter in the hc() chain already using comma.
 hc keybind Super-Shift-q chain : emit_hook quit_panel : quit
 hc keybind Super-Control-q emit_hook quit_panel
-# emits reload
+# emits reload hook
 hc keybind Super-r reload
 hc keybind Super-Shift-r detect_monitors
 
-# Enter key
+# Add Window
+# New Terminal (shell)
 hc keybind Super-Shift-Return $TERMINAL
+# New Terminal (cmdline)
+hc keybind Super-Shift-space $DMENU_CMD
+# Launch App
 hc keybind Super-space $DMENU_LAUNCH
-hc keybind Super-Shift-space substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_LAUNCH
+# New Tag and Launch App
+hc keybind Super-Alt-space substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_LAUNCH
+# New Tag and New Terminal (cmdline)
+hc keybind Super-Shift-Alt-space substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_CMD
+# File Explorer
 hc keybind Super-Control-space $DMENU_EXPLORE
 
 
-# Mouse
+# Mouse (Floating mode)
 hc mouseunbind --all
 hc mousebind Super-Shift-Button1 move
 hc mousebind Super-Control-Button1 resize
 hc mousebind Super-Shift-Control-Button1 zoom
 
 
-# Manage Tags
-# both emits tag_added
-# hc keybind Super-c emit_hook tag_create
+# Add Tag (emits tag_added)
 hc keybind Super-c substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT "
 hc keybind Super-Shift-c substitute CLIENT clients.focus.instance chain : add CLIENT : move CLIENT : use CLIENT
-# emits tag_removed
+# Remove Tag (emits tag_removed)
 hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME
 
 # Focus Tags
-# Done here initially and on reload, but also done on the fly with tag() in panel.sh
+# Done here initially and on reload, but also done via hooks in panel.sh
 tag_names=( $( herbstclient tag_status ${monitor:-0} | tr -d '[:punct:]' ) )
 tag_keys=( $( seq ${#tag_names[@]} ) )
 for i in ${!tag_names[@]} ; do
@@ -90,53 +97,72 @@ hc keybind Super-apostrophe use_previous
 # does not emit tag_added nor tag_removed
 hc keybind Super-Shift-apostrophe substitute WINID clients.focus.winid chain : use_previous : bring WINID : substitute INDEX tags.focus.index emit_hook rename_index INDEX : use_previous
 
-# Manage Windows
+
+# Focus Monitors
+monitor_names=( $( herbstclient list_monitors ) )
+monitor_keys=( $( seq ${#monitor_names[@]} ) )
+for i in ${!monitor_names[@]} ; do
+    key="${monitor_keys[$i]}"
+    if ! [ -z "$key" ] ; then
+        hc keybind Super-Control-$key focus_monitor $i
+        hc keybind Super-Control-Shift-$key shift_to_monitor $i
+    fi
+done
+
+hc keybind Super-Control-comma cycle_monitor -1
+hc keybind Super-Control-period cycle_monitor +1
+
+
+# Remove Window
 #hc keybind Super-Shift-w close
 hc keybind Super-Shift-w close_and_remove
 
-# Move Window
-hc keybind Super-Shift-Left shift left
-hc keybind Super-Shift-Down shift down
-hc keybind Super-Shift-Up shift up
-hc keybind Super-Shift-Right shift right
-hc keybind Super-o chain : lock : rotate : rotate : rotate : unlock
-hc keybind Super-Shift-o rotate
-
-
-# Resize Window
-RESIZESTEP=0.025
-hc keybind Super-Control-Left resize left +$RESIZESTEP
-hc keybind Super-Control-Down resize down +$RESIZESTEP
-hc keybind Super-Control-Up resize up +$RESIZESTEP
-hc keybind Super-Control-Right resize right +$RESIZESTEP
-
 # Focus Window
-hc keybind Super-Left focus left
-hc keybind Super-Down focus down
 hc keybind Super-Up focus up
+hc keybind Super-Down focus down
+hc keybind Super-Left focus left
 hc keybind Super-Right focus right
 
 hc keybind Super-Tab cycle_all +1
 hc keybind Super-Shift-Tab cycle_all -1
-hc keybind Super-Control-Tab cycle_monitor +1
+
+# Move Window between Frames
+hc keybind Super-Shift-Up shift up
+hc keybind Super-Shift-Down shift down
+hc keybind Super-Shift-Left shift left
+hc keybind Super-Shift-Right shift right
 
 
-# Manage Frames
-hc keybind Super-x remove
-
+# Add Frame
 hc keybind Super-Return split explode
-hc keybind Super-Alt-Up split top 0.5
-hc keybind Super-Alt-Down split bottom 0.5
 hc keybind Super-minus split bottom 0.5
-hc keybind Super-Alt-Left split left 0.5
-hc keybind Super-Alt-Right split right 0.5
 hc keybind Super-backslash split right 0.5
 
+hc keybind Super-Alt-Up split top 0.5
+hc keybind Super-Alt-Down split bottom 0.5
+hc keybind Super-Alt-Left split left 0.5
+hc keybind Super-Alt-Right split right 0.5
+
+# Remove Frame
+hc keybind Super-x remove
+
+# Resize Frame
+RESIZESTEP=0.025
+hc keybind Super-Control-Up resize up +$RESIZESTEP
+hc keybind Super-Control-Down resize down +$RESIZESTEP
+hc keybind Super-Control-Left resize left +$RESIZESTEP
+hc keybind Super-Control-Right resize right +$RESIZESTEP
+
+# Frame Layout inside Monitor
 hc keybind Super-f chain : cycle_layout +1 : emit_hook cycle_layout +1
 hc keybind Super-Alt-f chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
 hc keybind Super-Shift-f chain : floating toggle : substitute BOOLEAN tags.focus.floating substitute INDEX tags.focus.index emit_hook floating BOOLEAN INDEX
-# emits fullscreen hook with on/off (not true/false) and winid
+# emits fullscreen hook with string on/off (not true/false) and winid
 hc keybind Super-Control-f fullscreen toggle
+
+# Rotate Frames inside Monitor
+hc keybind Super-o chain : lock : rotate : rotate : rotate : unlock
+hc keybind Super-Shift-o rotate
 
 
 # Media Keys
