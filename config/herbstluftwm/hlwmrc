@@ -1,21 +1,41 @@
 #!/bin/bash
 
-herbstclient emit_hook reload # tell listeners reload (herbstclient --idle)
+# Reload hook to kill any running panels
+herbstclient emit_hook reload
+
+
+# Create one tag per monitor (must be atomic, not chained)
+count=$( herbstclient get_attr tags.count )
+monitors=( $( seq $( xrandr | grep -c " connected " ) ) )
+herbstclient rename default " ${monitors[0]} " || true
+for tag in ${monitors[@]} ; do
+  if test $tag -gt $count ; then
+    herbstclient add " $tag "
+  fi
+done
+herbstclient detect_monitors
 
 
 # Settings
-source $HOME/.config/herbstluftwm/style.sh
 source $HOME/.config/herbstluftwm/layout.sh
+source $HOME/.config/herbstluftwm/style.sh
 source $HOME/.config/herbstluftwm/keybind.sh
 
 
-# Multi Monitor Setup
-herbstclient detect_monitors #set_monitors 1280x1024+0+0 1280x1024+1280+0
-# dual monitor setup
-#hc remove monitor 1
-#hc move_monitor 0 1366x768+0+0
-#hc use "${TAG_NAMES[0]}"
-#hc add_monitor 1440x900+1366+0 "${TAG_NAMES[1]}"
+# Panel based on: /etc/xdg/herbstluftwm/panel.sh
+panel="nice -n 19 bash $HOME/.config/herbstluftwm/panel.sh"
+panel_height=14
+panel_top=false
+for monitor in $(herbstclient list_monitors | cut -d':' -f1); do
+  # Inherits the current environment with colors from style.sh
+  herbstclient spawn $panel $monitor $panel_height $panel_top
+done
+
+
+# Icon Tray
+pkill trayer
+# Race condition: if trayer starts first, then dzen2 will spawn on top of it
+herbstclient spawn nice -n 19 trayer --edge $( ${panel_top:-true} && echo "top" || echo "bottom" ) --align right --widthtype request --heighttype pixel --height $panel_height --SetDockType true --distance -2 --expand true
 
 
 # Unlock (allow repaint)

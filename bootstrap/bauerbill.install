@@ -1,0 +1,1 @@
+aurget --deps --noconfirm --skippgpcheck --noedit --discard -S python3-xcgf pm2ml bauerbill

@@ -17,6 +17,10 @@ cmdhist="$cachedir/dmenu_launch"
 
 # Dmenu command.
 opt_term=false
+if test $1 = "-T" ; then
+  opt_term=true
+  shift
+fi
 dm="dmenu -i $DMENU_OPTIONS $@"
 
 # Choose proper LSX binary.
@@ -161,7 +165,8 @@ launch_selection () {
 
 
         # Inverts terminal vs background launch behavior
-        if ! $opt_term ; then
+        #if ! $opt_term ; then
+        if $opt_term ; then
             selection="$TERMINAL -e $selection"
         fi
 
