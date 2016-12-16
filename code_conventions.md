@@ -196,3 +196,4 @@ esac
 tmp=${TMPDIR:-/tmp}
 tmp=${tmp}/tempdir.$$
 $(umask 077 && mkdir $tmp) || echo "Error: Could not create temporary directory." >/dev/stderr && return 1
+Basic shell mistakes: relying on quoting errors to relay arguments (instead of using arrays), convoluted grep+sed pipes (instead of awk), echo -e (instead of printf), ancient backtick format (instead of $()) 
