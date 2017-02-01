@@ -1,14 +1,31 @@
 # Test for fd 0 (stdin), which implies interactive input
 test -t 0 || return 1
 
-
+if test -z "$DVTM" -a -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -e "$HOME/.nodvtm" -a ! -e "$HOME/.notmux"; then
+  unset ANSWER
+  echo -n "Start dvtm(1) or tmux(2)? (Y/n): "
+  read ANSWER
+  case $ANSWER in
+    [nN] | [n|N][O|o] )
+      false
+      ;;
+    [yY] | [yY][Ee][Ss] | 1 )
+if which dvtm &>/dev/null; then
+  exec abduco -A $USER dvtm-status
+fi
+      ;&
+    *)
+#      echo "Error: Invalid input: $ANSWER" >/dev/stderr
 # If not inside a tmux session, start a new session or join one
-if which tmux >/dev/null && test -z "$TMUX" -a "$TERM" != "linux" -a ! -e "$HOME/.notmux" -a "$EUID" != "0"; then
+if which tmux &>/dev/null; then
   if tmux list-sessions | cut -d: -f1 | grep -q "${TMUX_SESSION:-$USER}" 2>/dev/null; then
     exec tmux -f "${TMUX_CONF:-$HOME/.config/tmux/tmuxrc}" new-session -s "${TMUX_SESSION:-$USER}-$(date +%N | tr -d 0 | tail -c 4)" -t "${TMUX_SESSION:-$USER}"
   else
     exec tmux -f "${TMUX_CONF:-$HOME/.config/tmux/tmuxrc}" new-session -s "${TMUX_SESSION:-$USER}"
   fi
+fi
+      ;;
+  esac
 fi
 
 

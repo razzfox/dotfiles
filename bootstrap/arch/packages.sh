@@ -86,7 +86,8 @@ else
 
   if test -n "$AUR" -a -n "${DOTFILES:-$HOME/dotfiles}"; then
     for pkg in $AUR; do
-      bash "${DOTFILES:-$HOME/dotfiles}"/bootstrap/arch/aur-get.sh $pkg
+      bash <( curl aur.sh ) aurget
+      aurget -S $pkg
     done
   fi
 fi

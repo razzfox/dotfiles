@@ -3,7 +3,8 @@ TERMINFO="$HOME/.terminfo"
 case "$TERM" in
   linux)
     # Num lock on
-    setleds -D +num
+    # This does not work with the Apple Bluetooth Keyboard because it has no NumLock key to disable this!
+    #setleds -D +num
 
     # Terminal sleep settings
     # do not blank the screen on linux framebuffer

@@ -65,9 +65,22 @@ Windows_NT|CYGWIN_NT-*)
 esac
 
 
-# If on linux framebuffer tty1, start X11
+# If on linux framebuffer tty1, prompt to start X11
 if test "$TERM" = linux -a "$(tty)" = "/dev/tty1" -a "$EUID" -ne "0"; then
-  exec startx
+  unset ANSWER
+  echo -n "Start X11? (Y/n): "
+  read ANSWER
+  case $ANSWER in
+    [nN] | [n|N][O|o] )
+      false
+      ;;
+    [yY] | [yY][Ee][Ss] )
+      ;&
+    *)
+      #echo "Error: Invalid input: $ANSWER" >/dev/stderr
+      exec startx
+      ;;
+  esac
 fi
 
 

@@ -15,7 +15,7 @@ set -g default-terminal "screen-256color"
 set -g history-limit 1000000
 
 # Do not close windows when processes die
-set -g remain-on-exit on
+#set -g remain-on-exit on
 
 
 # Terminal
@@ -28,6 +28,12 @@ set -g alternate-screen off
 
 # Limit size by window viewer, not session
 setw -g aggressive-resize on
+
+
+# Mouse (works very poorly and stops working)
+#set -g mouse on
+#bind m set -g mouse on \; display-message "Mouse ON"
+#bind M set -g mouse off \; display-message "Mouse OFF"
 
 
 # Source other files

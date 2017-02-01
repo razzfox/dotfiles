@@ -36,9 +36,9 @@ fi
 
 # Rotate Monitor
 # If this monitor edid is plugged in to HDMI-0, then rotate it.
-if diff /sys/class/drm/card0/card0-HDMI-A-1/edid $HOME/.config/monitorleft ; then
-  xrandr --output HDMI-0 --rotate left
-fi
+#if diff /sys/class/drm/card0/card0-HDMI-A-1/edid $HOME/.config/monitorleft ; then
+#  xrandr --output HDMI-0 --rotate left
+#fi
 
 # Background (display from imagemagick)
 source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash && display -size $dimensions -density $density -window root "$(lr $HOME/walls | head -n 1)" &
@@ -50,18 +50,17 @@ export screensaver="cmatrix -a -u 6 -b"
 # Terminal
 export TERMINAL="$( which tilda 2>/dev/null || which guake 2>/dev/null || which st 2>/dev/null || which xterm 2>/dev/null )"
 
+# Clipboard Manager
+clipmenud &
+
+# Automatic mounting removable media
+thunar --daemon &
+
+# Audio
+pulseaudio --start &
+
+
 # Window Manager
 
 # Herbstluftwm
-#pulseaudio --start &
 exec herbstluftwm -c $HOME/.config/herbstluftwm/hlwmrc &>/tmp/hlwm-$USER-$(date +%F-%H-%M-%S).log
-
-#Pantheon (ElementaryOS)
-#gsettings-data-convert &
-#xdg-user-dirs-gtk-update &
-#/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-#/usr/lib/gnome-settings-daemon/gnome-settings-daemon &
-#/usr/lib/gnome-user-share/gnome-user-share &
-#eval $(gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
-#export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
-#exec cerbere
