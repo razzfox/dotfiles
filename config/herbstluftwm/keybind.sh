@@ -34,6 +34,13 @@ DMENU_LAUNCH="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/h
 DMENU_CMD="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_launch.sh -T $DMENU_OPTIONS -m MONITOR"
 DMENU_EXPLORE="substitute MONITOR monitors.focus.index spawn bash $HOME/.config/herbstluftwm/dmenu_explore.sh $DMENU_OPTIONS -m MONITOR"
 
+CLIPMENU="spawn clipmenu"
+
+CPUMONITOR="$TERMINAL -e htop"
+NETWORKMONITOR="$TERMINAL -e vnstat -l -ru -i $( ip link | grep 'state UP' | cut -d: -f 2 )"
+IOMONITOR="$TERMINAL -e sudo iotop --only --processes --accumulated"
+
+
 # General
 hc keyunbind --all
 # can not use comma delimeter in the hc() chain already using comma.
@@ -42,6 +49,10 @@ hc keybind Super-Control-q emit_hook quit_panel
 # emits reload hook
 hc keybind Super-r reload
 hc keybind Super-Shift-r detect_monitors
+
+
+# Clipboard
+hc keybind Super-k $CLIPMENU
 
 # Add Window
 # New Terminal (shell)
@@ -111,6 +122,8 @@ done
 
 hc keybind Super-Control-comma cycle_monitor -1
 hc keybind Super-Control-period cycle_monitor +1
+hc keybind Super-Control-Shift-comma shift_to_monitor -1
+hc keybind Super-Control-Shift-period shift_to_monitor +1
 
 
 # Remove Window
@@ -180,8 +193,9 @@ hc keybind Shift-XF86KbdBrightnessUp emit_hook keybrightness 100
 
 hc keybind XF86LaunchA $DMENU_LAUNCH # keycode:120 Apple Expose
 hc keybind Shift-XF86LaunchA substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : $DMENU_LAUNCH # keycode:120 Apple Expose
-hc keybind XF86LaunchB $TERMINAL -e htop # keycode:204 Apple Dashboard
-hc keybind Shift-XF86LaunchB $TERMINAL -e vnstat -l -ru -i $( ip link | grep "wlp" | cut -d: -f 2 ) # keycode:204 Apple Dashboard
+hc keybind XF86LaunchB $CPUMONITOR # keycode:204 Apple Dashboard
+hc keybind Shift-XF86LaunchB $NETWORKMONITOR # keycode:204 Apple Dashboard
+hc keybind Control-XF86LaunchB $IOMONITOR # keycode:204 Apple Dashboard
 
 hc keybind XF86AudioNext emit_hook play next # keycode:163
 hc keybind XF86AudioPlay emit_hook play # keycode:164

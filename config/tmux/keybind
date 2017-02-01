@@ -13,21 +13,20 @@ bind -n M-r unbind-key -a \; source-file "$TMUX_CONF" \; display-message "tmux: 
 bind -n M-? list-keys
 
 
-# Clipboards (requires xclip)
-# Save into system clipboard (+). With preselection.
+# Buffer and Clipboard
+# Linux X.org (requires xclip)
+# Save into system clipboard (+) with preselection.
 bind -n M-k choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 -sel clipboard\" \; run \" tmux display \\\"Clipboard \(+\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
 # Copy from + clipboard.
 bind -n M-u run "tmux set-buffer \"$(xclip -out -display :0 -sel clipboard)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(+\) $(xclip -out -display :0 -sel clipboard | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
-# Save into selection clipboard (*). With preselection.
+# Save into selection clipboard (*) with preselection.
 bind -n M-K choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 \" \; run \" tmux display \\\"Clipboard \(*\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
 # Copy from * clipboard.
 bind -n M-U run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(*\) $(xclip -o | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
 
-# Save buffer
-bind -n M-{ command-prompt -p 'save history to filename:' -I '$HOME/tmux_#I_history.txt' 'capture-pane -S -E ; save-buffer %1 ; delete-buffer'
+bind -n M-{ command-prompt -p 'save history to filename:' -I '$HOME/tmux_#I_history.txt' 'capture-pane -J -S - -E -; save-buffer %1 ; delete-buffer'
 bind -n M-} command-prompt "find-window '%%'"
 
-# Copy Buffer
 bind -n M-= choose-buffer
 bind -n M-+ delete-buffer
 bind -n M-[ copy-mode
