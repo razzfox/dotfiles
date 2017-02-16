@@ -25,34 +25,22 @@ hc set_layout grid
 # windowtype: 'xprop | grep _NET_WM_WINDOW_TYPE'
 # windowrole: 'xprop | grep WM_WINDOW_ROLE'
 
-# Rules
+
+# Defaults
 hc unrule --all
 # do not focus new clients by default
 hc rule focus=off
 # do not pseudotile frames by default
 hc rule pseudotile=off
 
-# Popups
-#hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
+# Dialog/Pop-up boxes
 hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
+#hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)|pop-up|GtkFileChooserDialog' pseudotile=on
 
-#hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' pseudotile=on
-#hc rule windowrole="pop-up" pseudotile=on
-#hc rule windowrole="GtkFileChooserDialog" pseudotile=on
-
-# Applications
+# Apps
 hc rule windowtype~'_NET_WM_STATE_FULLSCREEN' fullscreen=on
-#hc rule class~'(.*[Rr]xvt.*|.*[Tt]erm|Konsole)' focus=on # give focus to most common terminals
 hc rule instance="guake" focus=on
-hc rule instance="st-256color" focus=on
-#hc rule instance="Google-chrome-stable" tag=WEB
-#hc rule windowrole="pop-up" class="Google-chrome-stable" tag=WEB
-#hc rule title="Atom" tag=DEV
-#hc rule instance="subl3" tag=DEV
-#hc rule class="Mplayer" tag=MEDIA
-#hc rule class="Ranger" tag=MEDIA
-#hc rule class="VirtualBox" tag=OTHER
-#hc rule instance="gimp" tag=OTHER
+hc rule instance="${TERMINAL:-st-256color}" focus=on
 
 
 # Chain commands
