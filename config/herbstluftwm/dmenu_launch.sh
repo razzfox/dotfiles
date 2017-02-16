@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Path to XDG shortcut (*.desktop) directories.
-xdg_paths=(
-    "$HOME/.local/share/applications"
-    /usr/local/share/applications
-    /usr/share/applications
-)
+# xdg_paths=(
+#     "$HOME/.local/share/applications"
+#     /usr/local/share/applications
+#     /usr/share/applications
+# )
 
 # Path to Dmenu Launcher cache will be stored.
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
@@ -45,42 +45,42 @@ sighandler () {
 trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 
 
-list_xdg_shortcuts () {
-    local path
-    echo > "${cache}-shortcuts.tmp"
-    for path in "${xdg_paths[@]}"; do
-        [[ ! -d "$path" ]] && continue
-        while read -r file; do
-            basename=$(basename "$file")
-            if ! grep -Fix "$basename" "${cache}-shortcuts.tmp"; then
-                echo "$file"
-                echo "${file##*/}" >> "${cache}-shortcuts.tmp"
-            fi
-        done < <(find -L "$path" -type f -name '*.desktop')
-    done
-    rm "${cache}-shortcuts.tmp"
-}
-
-
-app_list () {
-    # Cache names and executable paths of XDG shortcuts.
-    while read -r file; do
-        # Grab the friendly names and paths of the executable.
-        awk -F'=' '
-            /^ *Name=/ { name=$2 }
-            /^ *Exec=/ { exec=$2 }
-            {
-                if (name != "" && exec != "") {
-                    print name "\t" exec
-                    name=""
-                    exec=""
-                }
-            }
-        ' "$file" 2>/dev/null
-    done > "$cache" < <(list_xdg_shortcuts)
-    # Start printing out the menu items, starting with XDG shortcut names...
-    sed 's/\t.*$//' "$cache" | sort -fu
-  }
+# list_xdg_shortcuts () {
+#     local path
+#     echo > "${cache}-shortcuts.tmp"
+#     for path in "${xdg_paths[@]}"; do
+#         [[ ! -d "$path" ]] && continue
+#         while read -r file; do
+#             basename=$(basename "$file")
+#             if ! grep -Fix "$basename" "${cache}-shortcuts.tmp"; then
+#                 echo "$file"
+#                 echo "${file##*/}" >> "${cache}-shortcuts.tmp"
+#             fi
+#         done < <(find -L "$path" -type f -name '*.desktop')
+#     done
+#     rm "${cache}-shortcuts.tmp"
+# }
+#
+#
+# app_list () {
+#     # Cache names and executable paths of XDG shortcuts.
+#     while read -r file; do
+#         # Grab the friendly names and paths of the executable.
+#         awk -F'=' '
+#             /^ *Name=/ { name=$2 }
+#             /^ *Exec=/ { exec=$2 }
+#             {
+#                 if (name != "" && exec != "") {
+#                     print name "\t" exec
+#                     name=""
+#                     exec=""
+#                 }
+#             }
+#         ' "$file" 2>/dev/null
+#     done > "$cache" < <(list_xdg_shortcuts)
+#     # Start printing out the menu items, starting with XDG shortcut names...
+#     sed 's/\t.*$//' "$cache" | sort -fu
+# }
 
 bin_list () {
     # ...then, the binary names...
@@ -111,8 +111,10 @@ build_menu () {
     touch "$hist"
 
     # each list must be separated by a newline
-    menu_items="$(app_list)
-$(bin_list)
+#     menu_items="$(app_list)
+# $(bin_list)
+# $(opt_menu)"
+    menu_items="$(bin_list)
 $(opt_menu)"
 
     # hist_items="$(grep -Fx "$menu_items" "$hist")"
