@@ -1,8 +1,0 @@
-[Unit]
-Description=Update ip address with dhcp.io
-
-[Service]
-ExecStart=/bin/bash /root/scripts/ip_dhcp_update.arch
-
-[Install]
-WantedBy=multi-user.target

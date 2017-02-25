@@ -1,0 +1,8 @@
+[Unit]
+Description=Script to periodically ping external servers to record ip address changes.
+
+[Service]
+ExecStart=/bin/bash /root/scripts/ip/dhcp_update.arch
+
+[Install]
+WantedBy=multi-user.target
