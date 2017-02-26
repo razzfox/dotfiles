@@ -1,0 +1,275 @@
+# Inspired by the command from https://wiki.archlinux.org/index.php/Full_System_Backup_with_rsync
+
+backup_this_there() {
+  if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: backup_this_there <source> <destination> [\"<exclude,any,directories>\"]"
+    return 0
+  fi
+
+#--verbose --archive --hard-links -A -X --one-file-system --human-readable
+# -A -X not on mac
+  rsync -vaHAXxh --delete --delete-before --progress --exclude={/lost+found,"$3"} "$1" "$2"/backup-$(basename "$1")-$(date +%F)
+}
+
+
+backup_dd() {
+  if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: backup_dd [<destination>]"
+    return 0
+  fi
+
+  if [[ $# != 0 ]]; then
+    if [[ -d "$1" ]]; then
+      PLACE="$1"
+    else
+      echo -n "Warning: The directory '$1' does not exist. Create it? [Y/n] "
+      read DIR
+      if [[ $DIR != 'n' ]]; then
+        mkdir --parents "$1" && echo ":: Created '$1'" || return 1
+        PLACE="$1"
+      else
+        return 1
+      fi
+    fi
+
+  else
+    PLACE="/mnt"
+
+  fi
+
+  \ls $PLACE
+  echo
+
+  DIR="$PLACE/backup-$HOSTNAME-$(date +%F-%R).img"
+  echo ":: Backup file will be named '$DIR'"
+  echo
+
+  lsblk
+  echo
+  echo -n ":: Enter device name to back up: [sdX#] "
+  read DEV
+
+  dd if=/dev/$DEV | gzip --fast > "$DIR"
+}
+
+
+backup_root() {
+  if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: backup_root [<destination>]"
+    return 0
+  fi
+
+  OPTIONS="--verbose --archive --hard-links --acls --xattrs --one-file-system --delete --delete-before --human-readable --progress" # --archive implies: --recursive --links --perms --group --owner --devices --specials --times
+  EXCLUDE="--exclude={/home/*,/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found}"
+  BACKUP="/"
+  PLACE="/mnt"
+
+  if [[ $# == 4 ]]; then
+    OPTIONS="$1"
+    EXCLUDE="$2"
+    BACKUP="$3"
+    PLACE="$4"
+  fi
+
+  echo ":: Backing up '$BACKUP'"
+
+  if [[ $# == 1 ]]; then
+    if [[ -d "$1" ]]; then
+      PLACE="$1"
+    else
+      echo -n "Warning: The directory '$1' does not exist. Create it? [Y/n] "
+      read DIR
+      if [[ $DIR != 'n' ]]; then
+        mkdir --parents "$1" && echo ":: Created '$1'" || return 1
+        PLACE="$1"
+      else
+        return 1
+      fi
+    fi
+  fi
+
+  if [[ "$(echo $PLACE | cut -d '/' -f 2)" == mnt ]] || [[ "$(echo $PLACE | cut -d '/' -f 2)" == media ]] || [[ "$(echo $PLACE | cut -d '/' -f 2)" == run ]] || [[ "$(echo $PLACE | cut -d '/' -f 2)" == tmp ]] || [[ "$(echo $PLACE | cut -d '/' -f 2)" == home ]]; then
+    true
+  else
+    echo "Error: You may only back up to an excluded directory, to avoid an infinite loop." >/dev/stderr
+    echo 'backup_root "$OPTIONS" "$EXCLUDE" "$USERDIR" "$PLACE"' >/dev/stderr
+    echo '$EXCLUDE': "$EXCLUDE" >/dev/stderr
+    return 1
+  fi
+
+  DIR="$PLACE/backup-$HOSTNAME-$(date +%F)"
+  PREV="$(\ls -d "$PLACE"/backup-$HOSTNAME-* | tail -n 1)"
+  if [[ -d "$PREV" ]]; then # directory exists
+    echo -n ":: Would you like to reuse the previous backup dir '$PREV'? [Y/n] "
+    read REUSE
+    if [[ $REUSE == 'n' ]]; then # do not reuse
+
+      if [[ -d "$DIR" ]]; then # but dir has same name
+        DIR="$DIR-$(date +%T)" # add time to new name
+      fi
+
+    else # do reuse
+      if [[ "$PREV" != "$DIR" ]]; then # if dir has different name
+        mv "$PREV" "$DIR" && echo ":: Renamed '$PREV' to '$DIR'" || return 1
+      fi
+    fi
+
+  else # does not exist
+    echo ":: Creating '$DIR'"
+
+  fi
+
+  rm "$PLACE/last_backup"
+  echo -n ":: Setting 'last_backup' link: "
+  ln --relative --symbolic --verbose "$DIR" "$PLACE/last_backup"
+
+  if [[ $# == 4 ]]; then # if evoked by backup_home (which has a different EXCLUDE)
+    DIR="$DIR/home"
+  fi
+
+  mkdir --parents "$DIR" # almays make sure directory exists, because of '.../home' possibility
+
+  rsync $OPTIONS $EXCLUDE $BACKUP "$DIR"
+
+  #rsync -vaHAXxh --delete --delete-before --progress / "$DIR" --exclude={/home/*,/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found}
+}
+
+
+backup_home() {
+  if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: backup_home [<user directory>] [<destination>]"
+    return 0
+  fi
+
+  OPTIONS="--verbose --archive --hard-links --acls --xattrs --one-file-system --delete --delete-before --human-readable --progress" # --archive implies: --recursive --links --perms --group --owner --devices --specials --times
+  EXCLUDE="--exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/bin/*,/boot/*,/etc/*,/lib/*,/lib64/*,/opt/*,/root/*,/sbin/*,/srv/*,/usr/*,/var/*}"
+
+  if [[ $# != 0 ]] && [[ -d "/home/$1" ]]; then
+    USERDIR="$1"
+    shift
+  else
+    echo
+    \ls /home
+    echo -n ":: Enter user directory in '/home': "
+    read USERDIR
+  fi
+
+  if [[ -z $USERDIR ]]; then
+    return 1
+  elif [[ -d "/home/$USERDIR" ]]; then
+    USERDIR="/home/$USERDIR"
+  elif [[ -d "$USERDIR" ]]; then
+    USERDIR="$USERDIR"
+  else
+    echo "Error: The directory '$USERDIR' does not exist." >/dev/stderr
+    \ls /home/ >/dev/stderr
+    return 1
+  fi
+
+  if [[ $# != 0 ]]; then
+    if [[ -d "$1" ]]; then
+      PLACE="$1"
+      shift
+    else
+      echo -n "Warning: The directory '$1' does not exist. Create it? [Y/n] "
+      read DIR
+      if [[ $DIR != 'n' ]]; then
+        mkdir --parents "$1" && echo ":: Created '$1'" || return 1
+        PLACE="$1"
+        shift
+      else
+        return 1
+      fi
+    fi
+
+  else
+    PLACE="/media"
+
+  fi
+
+  backup_root "$OPTIONS" "$EXCLUDE" "$USERDIR" "$PLACE"
+
+  if [[ $# != 0 ]]; then
+    backup_home "$@"
+  else
+    echo -n ":: Backup another folder in '/home'? [y/N] "
+    read ANOTHER
+    if [[ $ANOTHER == 'y' ]]; then
+      backup_home "$PLACE"
+    fi
+  fi
+
+  #rsync -aAxXvhHt --progress --delete /home/$USER/ "$DIR/home/$USERDIR/" --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/bin/*,/boot/*,/etc/*,/lib/*,/lib64/*,/opt/*,/root/*,/sbin/*,/srv/*,/usr/*,/var/*}
+}
+
+
+backup_stick() {
+  if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: backup_stick [<user directory>] [<destination>]"
+    return 0
+  fi
+
+  if [[ $# != 0 ]] && [[ -d "/home/$1" ]]; then
+    UHOME="$1"
+    shift
+  fi
+
+  if [[ $# != 0 ]]; then
+    if [[ -d "$1" ]]; then
+      PLACE="$1"
+      shift
+    else
+      echo -n "Warning: The directory '$1' does not exist. Create it? [Y/n] "
+      read DIR
+      if [[ $DIR != 'n' ]]; then
+        mkdir --parents "$1" && echo ":: Created '$1'" || return 1
+        PLACE="$1"
+        shift
+      else
+        return 1
+      fi
+    fi
+
+  else
+    PLACE="/mnt"
+
+  fi
+
+  lsblk
+  echo
+  echo -n ":: Enter the backup drive device (this will mount to '$PLACE'): [sdX#] "
+  read DEV
+
+  mount /dev/$DEV "$PLACE"
+  sleep 2
+
+  if [[ -n "$UHOME" ]]; then
+    backup_home "$UHOME" "$PLACE" "$@"
+
+  else
+    echo -n ":: Mount a separate '/boot' partition? [y/N] "
+    read BOOT
+    if [[ $BOOT == 'y' ]]; then
+      echo -n ":: Enter the backup drive boot device (this will mount to '$PLACE/last_backup/boot'): [sdX#] "
+      read BOOTDEV
+
+      backup_root $PLACE
+
+      mount /dev/$BOOTDEV "$PLACE/last_backup/boot"
+      sleep 2
+
+      cp --recursive --update --verbose /boot/* "$PLACE/last_backup/boot" && echo ":: Copied '/boot' to '$PLACE/last_backup/boot'." || echo ":: Copy '/boot' failed."
+
+      sync
+      umount /dev/$BOOTDEV
+
+    else
+      backup_root $PLACE
+      cp --recursive --update --verbose /boot/* "$PLACE/last_backup/boot" && echo ":: Copied '/boot' to '$PLACE/last_backup/boot'." || echo ":: Copy '/boot' failed."
+
+    fi
+  fi
+
+  sync
+  umount /dev/$DEV
+}

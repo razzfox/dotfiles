@@ -1,0 +1,5 @@
+# Example init run by 'motd' in ~/bashrc once per boot on user login
+
+#P=####
+#startw -p $P -i &>/dev/null &
+#unset P

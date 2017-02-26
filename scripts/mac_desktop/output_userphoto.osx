@@ -1,0 +1,7 @@
+output_userphoto() {
+  dscl . -read $HOME JPEGPhoto | tail -1 | xxd -r -p > ~/account_photo.jpg
+}
+
+output_userphoto "$@"
+
+ls -la ~/account_photo.jpg

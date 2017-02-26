@@ -1,0 +1,18 @@
+while pgrep sftp-server &>/dev/null; do
+
+  FILE="$(readlink /proc/*/fd/* | grep /mnt/B/ | head -n 1)"
+  SIZEBEFORE=$(\du --summarize "$FILE" | cut -d/ -f1)
+  sleep 1
+  SIZEAFTER=$(\du --summarize "$FILE" | cut -d/ -f1)
+
+  DIFF=$(( $SIZEAFTER - $SIZEBEFORE ))
+  MB=$(( $DIFF / 1024 ))
+
+  echo -ne '/r'
+  for i in {0..$(tput cols)}; do
+    echo -ne ' ' '\d'
+  done
+  echo -ne '\r'
+  echo -n $FILE $MB MB/s
+
+done

@@ -1,0 +1,44 @@
+DHCP_UPDATE="${HOME:-/root}/.config/dhcp_update.conf"
+PIDFILE="/run/dhcp_update.pid"
+LOGFILE="/var/log/dhcp_update.log"
+# sleep 10 hours (10*60*60=36000)
+SLEEPTIME=36000
+
+dhcp_update () {
+  # Check for running process
+  if kill -s 0 $( cat "$PIDFILE" 2>/dev/null ) 2>/dev/null; then
+    echo "Notice: dhcp_update appears to be running as PID '$( cat $PIDFILE )'."
+    return 1
+  fi
+
+  # Record PID
+  echo $$ > $PIDFILE
+
+  # Main loop
+  while true; do
+    for uri in $( cat "$DHCP_UPDATE" ); do
+      printf '%s\t%s\t%s\n' "$( date )" "$uri" "$( curl -4s "$uri" )" | tee -a "$LOGFILE"
+      printf '%s\t%s\t%s\n' "$( date )" "$uri" "$( curl -6s "$uri" )" | tee -a "$LOGFILE"
+    done
+
+    sleep $SLEEPTIME &
+    SLEEP_PID=$!
+    wait
+    unset SLEEP_PID
+  done
+}
+
+function clean_up {
+  test -n "$SLEEP_PID" && kill $SLEEP_PID
+  rm $PIDFILE
+  exit
+}
+
+trap clean_up SIGHUP SIGINT SIGTERM
+
+if test ! -f "$DHCP_UPDATE"; then
+  echo "Error: dhcp_update requires configuration at '$DHCP_UPDATE'." | tee -a "$LOGFILE"
+  exit 1
+fi
+
+dhcp_update

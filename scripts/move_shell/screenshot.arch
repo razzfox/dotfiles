@@ -1,0 +1,22 @@
+countdown() {
+  echo -n "3..." && sleep 1 && echo -n "2..." && sleep 1 && echo "1..." && sleep 1 && echo && return 0
+  # else
+  echo "Aborted"
+  return 1
+}
+
+screenshot_root_xwd() {
+  countdown && xwd -root | convert xwd:- screenshot-$(date +%F-%T).png
+}
+
+screenshot_window_xwd() {
+  countdown && xwd | convert xwd:- screenshot-$(date +%F-%T).png
+}
+
+screenshot_root_imagemagick() {
+  countdown && import -window root screenshot-$(date +%F-%T).png
+}
+
+screenshot_window_imagemagick() {
+  countdown && import screenshot-$(date +%F-%T).png
+}

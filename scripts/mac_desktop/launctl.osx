@@ -1,0 +1,10 @@
+lll ~/Library/LaunchAgents    
+lll /Library/LaunchAgents          
+lll /Library/LaunchDaemons
+lll /System/Library/LaunchAgents
+lll /System/Library/LaunchDaemons
+
+launchctl list
+
+#sudo launchctl load -w #script
+#sudo launchctl unload -w #script

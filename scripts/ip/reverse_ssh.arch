@@ -1,0 +1,20 @@
+PIDFILE="/tmp/reverse_ssh.pid"
+
+reverse_ssh() {
+  # -f backgrounds itself
+  ssh -N -T -R 19999:localhost:22 root@zulu.dhcp.io &
+  # Record PID
+  echo $! >$PIDFILE
+}
+
+# Check for running process
+kill -s 0 $(cat $PIDFILE 2>/dev/null) 2>/dev/null && echo "Notice: reverse_ssh appears to be running
+as PID '$(cat $PIDFILE)'" && return 1
+
+# Spawn updater process 10 hours (10*60*60=36000)
+while sleep 36000; do
+reverse_ssh
+done & disown
+
+# Record PID
+echo $! >$PIDFILE

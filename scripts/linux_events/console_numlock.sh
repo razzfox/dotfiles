@@ -1,0 +1,1 @@
+setleds -D +num

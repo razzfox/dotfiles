@@ -1,0 +1,87 @@
+test $EUID != 0 && return 1
+
+springclean() {
+  rm -r /root/springclean
+  mkdir --parents /root/springclean
+
+  echo
+  echo ":: The following files need to be merged: (compare with 'meld' for gui, or 'sdiff'. resolve with 'pacdiff')"
+  echo "--> pacman-list-pacfiles"
+  pacman-list-pacfiles | tee /root/springclean/pacfiles_$(date +%F).txt
+
+  echo
+  echo ":: Check if any services have entered in a failed state:"
+  echo "--> systemctl --failed --all"
+  systemctl --failed --all | tee /root/springclean/failedservices_$(date +%F).txt
+
+  echo
+  echo ":: Check for high priority errors in the systemd journal:"
+  echo "--> journalctl -p 0..3 -xn"
+  journalctl -p 0..3 -xn | tee /root/springclean/journalerrors_$(date +%F).txt
+
+  echo
+  echo ":: Look into excessive directory sizes in '/usr/share':"
+  echo "--> du /usr/share/*"
+  echo "(check springclean directory)"
+  du /usr/share/* | tee /root/springclean/usrsharesizes_$(date +%F).txt | head
+
+  echo
+  echo ":: Look into excessive binary sizes:"
+  echo "--> pacman -Qi | egrep \"^(Name|Installed Size)\" | sed -e 'N;s/\n/ /' | awk '{ print $7, $3}' | sort"
+  echo "(check springclean directory)"
+  \pacman -Qi | egrep "^(Name|Installed Size)" | sed -e 'N;s/\n/ /' | awk '{ print $7, $3}' | sort  | tee /root/springclean/binarysizes_$(date +%F).txt | head
+
+  echo
+  echo ":: Inspect and remove unnecessary broken symlinks of your system:"
+  echo "--> find /home /root /opt /etc /usr /var -type l -! -exec test -e {} \; -print"
+  echo "(check springclean directory)"
+  find /home /root /opt /etc /usr /var -type l -! -exec test -e {} \; -print  | tee /root/springclean/brokensymlinks_$(date +%F).txt
+
+  echo
+  echo ":: The following packages look like orphans: (save with 'pacman-adopt', delete all with 'pacman-remove-orphans')"
+  echo "--> pacman-list-orphan-packages"
+  pacman-list-orphan-packages | tee /root/springclean/orphanpackages_$(date +%F).txt
+
+  echo
+  echo ":: Optionally clean up system files that are not owned by an installed package. (Careful that these DO include your own settings files!)"
+  echo "--> pacman-list-orphan-files"
+  echo "(check springclean directory)"
+  pacman-list-orphan-files > /root/springclean/orphanfiles_$(date +%F).txt
+
+  echo
+  echo ":: Investigate desktop applications mime-types set in '\$HOME/.local/share/applications/'"
+  echo "--> mimeapps.list"
+  echo "--> mimeinfo.cache"
+  echo "(manually)"
+
+  echo
+  echo ":: Reorganize mirrorlist..."
+  /root/pacmrr.sh
+
+  echo
+  echo ":: Would you like to clear the package cache? [y/N] "
+  read Q
+  if test "$Q" = "y"; then
+    echo "pacman -Sc"
+    \pacman -Sc
+  fi
+
+  echo
+  echo ":: Would you like to clear the system logs? [y/N] "
+  read Q
+  if test "$Q" = "y"; then
+    echo "rm -r /var/log/*"
+    rm -riv /var/log/*
+  fi
+
+  echo
+  echo ":: Would you like to optimize pacman? (do not use with an SSD) [y/N] "
+  read Q
+  if test "$Q" = "y"; then
+    echo "pacman-optimize && sync"
+    pacman-optimize && sync
+  fi
+}
+
+
+springclean "$@"
