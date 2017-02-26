@@ -1,5 +1,5 @@
 [Unit]
-Description=Script to periodically ping external servers to record ip address changes.
+Description=Script to periodically ping external servers that record ip address changes
 
 [Service]
 ExecStart=/bin/bash /root/scripts/ip/dhcp_update.arch
