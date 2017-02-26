@@ -1,0 +1,108 @@
+startw() {
+  if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: $0 [ -p --password <password> ] [ -d --detach ] [ s stop | m menu ] [ -i --internetrc <path> ]"
+    return
+  fi
+
+  if [[ $1 == "-p" ]] || [[ $1 == "--password" ]]; then
+    PASS="$2"
+    shift 2
+  elif [[ $EUID != 0 ]]; then
+    read -s -p "Password: " PASS
+    echo
+  else
+    PASS="root"
+  fi
+
+  if [[ $1 == "-d" ]] || [[ $1 == "--detach" ]]; then
+    shift
+    startw -p "$PASS" "$@" &>/dev/null &
+    unset PASS
+    return
+  fi
+
+
+  if [[ $1 == "s" ]] || [[ $1 == "stop" ]]; then
+    shift
+
+    if [[ $1 == "-o" ]] || [[ $1 == "--only-internetrc" ]]; then
+      shift
+      if [[ $# == 1 ]]; then
+        startinternetrc "$PASS" Stop "$1"
+      else
+        startinternetrc "$PASS" Stop $HOME/.internetrc
+      fi
+      unset PASS
+      return
+    fi
+
+    if [[ $1 == "-i" ]] || [[ $1 == "--internetrc" ]]; then
+      shift
+    fi
+    if [[ $# == 1 ]]; then
+      startinternetrc "$PASS" Stop "$1"
+    else
+      startinternetrc "$PASS" Stop $HOME/.internetrc
+    fi
+
+    echo "==> Stopping wifi service netctl-auto"
+    echo "$PASS" | su root -c "systemctl stop netctl-auto@wlp1s0.service" 2>/dev/null
+    unset PASS
+    return
+  fi
+
+
+  if [[ $1 == "m" ]] || [[ $1 == "menu" ]]; then
+    echo "==> Starting wifi-menu dialog (once you use this, you can not return to netctl-auto this session!)"
+    echo "$PASS" | su root -c "systemctl stop netctl-auto@wlp1s0.service" 2>/dev/null
+    echo "$PASS" | su root -c "wifi-menu" 2>/dev/null
+    shift
+
+  else
+    echo "==> Testing Internet connection..."
+    if ! connected; then
+      echo ":: Internet ping failed"
+      echo -n "==> Starting wifi service netctl-auto"
+      echo "$PASS" | su root -c "systemctl stop netctl-auto@wlp1s0.service" 2>/dev/null
+      echo "$PASS" | su root -c "systemctl start netctl-auto@wlp1s0.service" 2>/dev/null
+
+      false # start off this while loop
+      while [[ $? != 0 ]]; do
+        echo -n "."
+        sleep 1
+
+        echo "$PASS" | su root -c "systemctl status netctl-auto@wlp1s0.service" 2>/dev/null | grep -qe "timed out"
+        if [[ $? == 0 ]]; then
+          echo "error"
+          echo -n "  -> Restarting netctl-auto"
+          echo "$PASS" | su root -c "systemctl restart netctl-auto@wlp1s0.service" 2>/dev/null
+        fi
+
+        echo "$PASS" | su root -c "systemctl status netctl-auto@wlp1s0.service" 2>/dev/null | grep -qe "default route via"
+      done
+      echo
+    fi
+
+    echo "$PASS" | su root -c "systemctl status netctl-auto@wlp1s0.service" 2>/dev/null | grep -qe "Active: active"
+    if [[ $? == 0 ]]; then
+      echo -n ":: "
+      iw dev wlp1s0 link 2>/dev/null
+    fi
+
+  fi
+
+
+  if [[ $1 == "-i" ]] || [[ $1 == "--internetrc" ]]; then
+    shift
+    if [[ $# == 1 ]]; then
+      startinternetrc "$PASS" Start "$1"
+    else
+      startinternetrc "$PASS" Start $HOME/.internetrc
+    fi
+  fi
+
+  unset PASS
+}
+
+
+startw "$@"

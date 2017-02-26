@@ -1,0 +1,55 @@
+######################
+# Init git repository
+######################
+
+
+When we push to the server's repo, we're only updating its under-the-hood database (the ".git/" folder). The files in the repo, however, are never changed because they are the server's "working directory".
+
+So, we enable push:
+"git config --global receive.denyCurrentBranch ignore"
+
+and create a hook script in ".git/hooks/post-receive":
+"#!/bin/sh
+GIT_WORK_TREE=/home/user/dotfiles git checkout -f"
+
+finally enable the script to run in the directory after every push received:
+chmod +x .git/hooks/post-receive
+
+
+
+# create and send ~/.ssh/id_rsa.pub to the server at .ssh/authorized_keys
+ssh-keygen -t rsa -C "$EMAIL"
+
+# must fix ssh security errors
+chmod 700 .ssh; chmod 640 .ssh/*
+
+
+
+# Server:
+
+# use '--bare' on server (and 'repo_name.git') unless you need active files in the directory
+# but you'll have to update them each time with git checkout -f
+git init repo_name
+
+# enable push to a remote repo
+git config --global receive.denyCurrentBranch ignore
+#OR
+git config receive.denyCurrentBranch ignore
+
+
+#cat > .git/hooks/post-receive << MARK
+##!/bin/sh
+#GIT_WORK_TREE=$HOME/dotfiles git checkout -f
+#MARK
+#chmod +x .git/hooks/post-receive
+
+
+
+# Client:
+
+# Create your personal-info .gitconfig
+git config --global user.name "$NAME"
+git config --global user.email "$EMAIL"
+
+# get rid of 'git push' error message on current version of git
+git config --global push.default simple

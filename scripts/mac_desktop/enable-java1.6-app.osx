@@ -1,0 +1,15 @@
+echo "Warning: Run the app at least once FIRST so that it passes corruption security checks!" >/dev/stderr
+sleep 3
+
+grep --files-with-match --no-messages '<string>1.6\*</string>' /Applications/*/Contents/* | while read PLIST; do
+  if test "${PLIST:(-4)}" = ".bak"; then
+    echo "Skipping: '$PLIST'"
+  else
+    echo "Found: '$PLIST'"
+    #open "$1"
+    mv "${PLIST}" "${PLIST}.bak"
+    sed 's,<string>1.6\*</string>,<string>1.6+</string>,g' "${PLIST}" >"${PLIST}"
+    # Resign App Store Apps
+    #sudo codesign -f -s - /pathto.app
+  fi
+done

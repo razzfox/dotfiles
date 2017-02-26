@@ -1,0 +1,9 @@
+disable_reserved_space () {
+  for i in /dev/sd*; do
+    tune2fs -l $i | grep "Reserved block count:"
+    test $? = 0 && tune2fs -m 0 $i
+  done
+}
+
+
+disable_reserved_space "$@"

@@ -1,0 +1,30 @@
+# Try fstab -- FAIL
+#afpfs#afp://username:password@host/timecapsule volume /mountpoint fuse allow_other,group=fuse 0 0
+
+# Try netatalk -- FAIL
+#aura -A netatalk
+
+# Try cifs-utils -- FAIL
+#pacman -S cifs-utils samba smbclient smbnetfs
+#test -d /etc/samba/smb.conf || cat /etc/samba/smb.conf.default > /etc/samba/smb.conf
+#mount.cifs //10.0.1.1/peach /mnt/timecap -o user=root pass=carboncapture
+
+# Try afpfs-ng -- SUCCESS
+#pacman -S afpfs-ng fuse
+#groupadd fuse
+#usermod -aG fuse USER
+
+mount-timecapsule() {
+  test $# = 0 && return 1
+  mkdir --parents --verbose /mnt/"$1"
+
+  while ! mount_afp -o nofail,group=fuse afp://root:carboncapture@10.0.1.1/"$1" /mnt/"$1"; do
+    sleep 1
+  done
+}
+
+mount-timecapsule "$@"
+
+echo "Note: afpfsd does not set its cmdline properly."
+echo -n "afpfsd: "
+pgrep afpfsd

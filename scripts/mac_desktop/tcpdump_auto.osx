@@ -1,0 +1,6 @@
+# View HTTP traffic
+tcpdump_auto() {
+  sudo tcpdump -i en0 -n -s 0 -w - | grep -a -o -E "Host\: .*|GET \/.*"
+}
+
+tcpdump_auto "$@"

@@ -1,0 +1,33 @@
+test $EUID != 0 && return 1
+
+upgrade() {
+  test ! connected && echo "Error: No internet connectivity." >/dev/stderr && return 1
+
+  KERNEL="$(uname -a)"
+
+  echo ":: Sync system time and set hardware clock"
+  ntpd --panicgate --user=ntp:ntp && hwclock --systohc
+
+  echo ":: Update blocklist in '/etc/hosts"
+  hosts_update
+
+  echo ":: Update $(hostname).dhcp.io and $HOME/$(hostname)_ip.log"
+  $HOME/dotfiles/linux/root/scripts/update_ip.sh
+  echo -e $(date +%F)\t$($HOME/$(hostname).dhcp.io.sh 2>/dev/null) >> $HOME/$(hostname)_ip.log
+
+  echo ":: Downloading latest Arch Linux news feed"
+  archnews
+
+  echo ":: Upgrade Arch and AUR"
+  pacman -Syyu && aura -Au --noconfirm
+
+  if test "$HOSTNAME" = "terminal" -a "$KERNEL" != "$(uname -a)"; then
+    echo ":: Reinstall wifi driver (because kernel upgraded)"
+    aura -A --noconfirm broadcom-wl
+    echo " >> If linux kernel upgrade has left you without a wifi driver, either downgrade the kernel or reinstall the package:"
+    echo " >> # pacman -U /var/cache/pacman/pkg/broadcom-wl*.pkg.tar.xz && modprobe -f wl"
+  fi
+}
+
+
+upgrade "$@"
