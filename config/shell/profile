@@ -39,6 +39,9 @@ export LC_ALL="en_US.UTF-8"
 export EDITOR="$(which nano)" # single line-based editor (the distinction is no longer recognized)
 export VISUAL="$EDITOR" #  milti-line (whole screen) editor
 export PAGER="$(which less)" # view text output in scrolling pages instead of textdump
+# To stop glibc programs from calling stat on /etc/localtime
+export TZ=:/etc/localtime
+
 
 # Fix conflicts from system settings
 unalias -a
