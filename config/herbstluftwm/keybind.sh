@@ -24,9 +24,9 @@ hc () {
 
 SCREENSAVERON="xset -display :0 dpms force off" # Works best as a single key (not combo) because key-release events will reactivate the screen
 SCREENSAVEROFF="xset s off -dpms"
-SCREENOFF="chain : emit_hook keybrightness 0 : emit_hook brightness 0"
 SCREENON="chain : emit_hook brightness 100 : emit_hook keybrightness 100"
 SUSPEND="systemctl suspend"
+POWER="chain : emit_hook brightness power : emit_hook keybrightness power"
 
 TERMINAL="${TERMINAL:-$(which dmenu_run)}"
 
@@ -220,7 +220,7 @@ hc keybind XF86Eject spawn $SUSPEND
 #hc keybind Shift-XF86Eject spawn $SCREENSAVEROFF
 
 # keycode:116
-hc keybind XF86PowerOff $SCREENOFF
+hc keybind XF86PowerOff $POWER
 hc keybind Shift-XF86PowerOff $SCREENON
 
 
