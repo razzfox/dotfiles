@@ -59,6 +59,13 @@ br() {
           fi
     esac
 
+  elif test "$1" = "power"; then
+    if test "$BR" = "0"; then
+      BR_NEW=100
+    else
+      BR_NEW=0
+    fi
+
   else # integer
     BR_NEW=$1
 
