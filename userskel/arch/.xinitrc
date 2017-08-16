@@ -16,18 +16,19 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
 fi
 
 # Pointer and Background Color
-xsetroot -cursor_name left_ptr #-solid '#000000'
+xsetroot -cursor_name left_ptr & #-solid '#000000'
 
 # Multi Monitor Setup
-monitors = $( xrandr | grep -c " connected " )
+monitors=$( xrandr | grep -c " connected " )
 if test $monitors -gt 1 ; then
   echo ".xinitrc: Detected $monitors monitors connected."
-else
-  # Screen size and DPI
-  # uses xargs to remove extra spaces in string
-  export dimensions="$( xdpyinfo | grep dimension | xargs | cut -d ' ' -f 2 )"
-  export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d 'x' -f 1 )"
 fi
+
+# Screen size and DPI
+# uses xargs to remove extra spaces in string
+export dimensions="$( xdpyinfo | grep dimension | xargs | cut -d ' ' -f 2 )"
+export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d 'x' -f 1 )"
+
 
 #To determine your optimal resolutions and display names, simply run:
 #xrandr -q
@@ -41,26 +42,49 @@ fi
 #fi
 
 # Background (display from imagemagick)
-source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash && display -size $dimensions -density $density -window root "$(lr $HOME/walls | head -n 1)" &
+source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash
+WALLPAPER="$( lr $HOME/Pictures | head -n 1 )"
+WALLPAPER="${WALLPAPER:-$HOME/Pictures/wallpaper.png}"
+test -n "$dimensions" -a -n "$density" && display -size $dimensions -density $density -window root "$WALLPAPER" &
 
 # Standby/Suspend, Screensaver, and Energy Star/DPMS
-xset s off -dpms
-export screensaver="cmatrix -a -u 6 -b"
+xset s off -dpms &
+#export screensaver="cmatrix -a -u 6 -b"
 
 # Terminal
+# Must exist in /usr/share/fonts/TTF/
+FONTNAME="Anonymous Pro"
+#FONTNAME="Inconsolata-Regular"
+FONTSIZE=8
 export TERMINAL="$( which tilda 2>/dev/null || which guake 2>/dev/null || which st 2>/dev/null || which xterm 2>/dev/null )"
+case ${TERMINAL##*/} in
+  st)
+    test -f /usr/share/fonts/TTF/${FONTNAME}.ttf && TERMINAL="$TERMINAL -f '${FONTNAME}:size=${FONTSIZE}'" || TERMINAL="$TERMINAL -f 'size=${FONTSIZE}'"
+    ;;
+  *)
+    ;;
+esac
 
 # Clipboard Manager
 clipmenud &
 
-# Automatic mounting removable media
-thunar --daemon &
-
 # Audio
 pulseaudio --start &
 
-
-# Window Manager
-
-# Herbstluftwm
-exec herbstluftwm -c $HOME/.config/herbstluftwm/hlwmrc &>/tmp/hlwm-$USER-$(date +%F-%H-%M-%S).log
+# Window manager can not be selected inside startx? Currently being done in profile...
+case $WINDOWMANAGER in
+  gnome-shell)
+    gsettings set org.gnome.desktop.background picture-uri file://"$WALLPAPER" &
+    exec gnome-session
+    ;;
+  herbstluftwm)
+     # Fall through
+    ;&
+  *)
+    #echo "Error: Invalid input: $ANSWER" >/dev/stderr
+    # Automatic mounting removable media
+    thunar --daemon &
+    # Herbstluftwm
+    exec herbstluftwm -c $HOME/.config/herbstluftwm/hlwmrc &>/tmp/hlwm-$USER-$(date +%F-%H-%M-%S).log
+    ;;
+esac

@@ -17,8 +17,8 @@ dhcp_update () {
   # Main loop
   while true; do
     for uri in $( cat "$DHCP_UPDATE" ); do
-      printf '%s\t%s\t%s\n' "$( date )" "$uri" "$( curl -4s "$uri" )" | tee -a "$LOGFILE"
-      printf '%s\t%s\t%s\n' "$( date )" "$uri" "$( curl -6s "$uri" )" | tee -a "$LOGFILE"
+      printf '%s\t%s\t%s\n' "$( date )" "$uri" "$( curl -4 -s "$uri" )" | tee -a "$LOGFILE"
+      printf '%s\t%s\t%s\n' "$( date )" "$uri" "$( curl -6 -s "$uri" )" | tee -a "$LOGFILE"
     done
 
     sleep $SLEEPTIME &

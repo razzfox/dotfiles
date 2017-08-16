@@ -69,7 +69,7 @@ esac
 
 
 # If on linux framebuffer tty1, prompt to start X11
-if test "$TERM" = linux -a "$(tty)" = "/dev/tty1" -a "$EUID" -ne "0"; then
+if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
   unset ANSWER
   echo -n "Start X11? (Y/n): "
   read ANSWER
@@ -81,7 +81,10 @@ if test "$TERM" = linux -a "$(tty)" = "/dev/tty1" -a "$EUID" -ne "0"; then
       ;&
     *)
       #echo "Error: Invalid input: $ANSWER" >/dev/stderr
-      exec startx
+      select WINDOWMANAGER in herbstluftwm gnome-shell; do
+        export WINDOWMANAGER
+        exec startx
+      done
       ;;
   esac
 fi

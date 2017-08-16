@@ -26,6 +26,7 @@ SCREENSAVERON="xset -display :0 dpms force off" # Works best as a single key (no
 SCREENSAVEROFF="xset s off -dpms"
 SCREENOFF="chain : emit_hook keybrightness 0 : emit_hook brightness 0"
 SCREENON="chain : emit_hook brightness 100 : emit_hook keybrightness 100"
+SUSPEND="systemctl suspend"
 
 TERMINAL="${TERMINAL:-$(which dmenu_run)}"
 
@@ -215,8 +216,8 @@ hc keybind XF86AudioMute emit_hook volume mute
 hc keybind Shift-XF86AudioMute emit_hook volume mute-input
 
 # keycode:161
-hc keybind XF86Eject spawn $SCREENSAVERON
-hc keybind Shift-XF86Eject spawn $SCREENSAVEROFF
+hc keybind XF86Eject spawn $SUSPEND
+#hc keybind Shift-XF86Eject spawn $SCREENSAVEROFF
 
 # keycode:116
 hc keybind XF86PowerOff $SCREENOFF
@@ -255,8 +256,8 @@ hc keybind Super-Shift-F11 emit_hook volume 0
 hc keybind Super-F12 emit_hook volume up
 hc keybind Super-Shift-F12 emit_hook volume 100
 
-hc keybind Super-Break $SCREENSAVERON
-hc keybind Super-Shift-Break $SCREENSAVEROFF
+hc keybind Super-Break $SUSPEND
+#hc keybind Super-Shift-Break $SCREENSAVEROFF
 
 # Macbook layout?
 # hc keybind Super-F6 emit_hook play prev
