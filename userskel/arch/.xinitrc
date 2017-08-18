@@ -73,6 +73,9 @@ pulseaudio --start &
 
 # Window manager can not be selected inside startx? Currently being done in profile...
 case $WINDOWMANAGER in
+  startxfce4)
+    exec startxfce4
+    ;;
   gnome-shell)
     gsettings set org.gnome.desktop.background picture-uri file://"$WALLPAPER" &
     exec gnome-session
