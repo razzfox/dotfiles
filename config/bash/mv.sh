@@ -1,10 +1,10 @@
-mv () {
+move () {
   echo $( which mv ) -vn --strip-trailing-slashes "$@"
   $( which mv ) -vn --strip-trailing-slashes "$@"
-  
+
   conflict=0
   for last; do true ; done
-    
+
   if test -d "$last" ; then
   for i in "$@" ; do
     file="${i%/}"
@@ -18,7 +18,7 @@ mv () {
       fi
     fi
   done
-  
+
   else
     diff -qs --no-dereference "$1" "${last}"
   fi
