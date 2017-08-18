@@ -28,7 +28,7 @@ DESKTOP="herbstluftwm dzen2 dmenu mime-editor xorg-server xorg-server-utils xorg
 
 SERVER="transmission-cli transmission-remote-cli"
 
-PRINTER="cups ghostscript gsfonts gutenprint"
+PRINTER="cups ghostscript gsfonts gutenprint gtk3-print-backends"
 # AUR: brother-hll2360d
 
 

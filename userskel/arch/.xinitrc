@@ -42,10 +42,10 @@ export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d
 #fi
 
 # Background (display from imagemagick)
-source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash
-WALLPAPER="$( lr $HOME/Pictures | head -n 1 )"
-WALLPAPER="${WALLPAPER:-$HOME/Pictures/wallpaper.png}"
-test -n "$dimensions" -a -n "$density" && display -size $dimensions -density $density -window root "$WALLPAPER" &
+#source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash
+#WALLPAPER="$( lr $HOME/Pictures | head -n 1 )"
+#WALLPAPER="${WALLPAPER:-$HOME/Pictures/wallpaper.png}"
+#test -n "$dimensions" -a -n "$density" && display -size $dimensions -density $density -window root "$WALLPAPER" &
 
 # Standby/Suspend, Screensaver, and Energy Star/DPMS
 xset s off -dpms &

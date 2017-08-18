@@ -3,7 +3,7 @@ test -t 0 || return 1
 
 # Start multiplexer here because this point is where interactivity starts
 # and multiple open terminals and shells are possible.
-if test -z "$DVTM" -a -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a ! -e "$HOME/.nodvtm" -a ! -e "$HOME/.notmux"; then
+if test -z "$DVTM" -a -z "$TMUX" -a "$TERM" != "linux" -a "$EUID" != "0" -a "${PWD%/*}" != "$HOME/AndroidStudioProjects" -a ! -e "$HOME/.nodvtm" -a ! -e "$HOME/.notmux"; then
   unset ANSWER
   echo -n "Start dvtm(1) or tmux(2)? (Y/n): "
   read ANSWER
