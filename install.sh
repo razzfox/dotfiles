@@ -19,7 +19,7 @@ fi
 
 # Detect ID (distro) and OS (kernel)
 touch .notmux
-test -n "$ID" || source dotfiles/config/shell/profile
+test -n "$ID" || source dotfiles/config/bash/profile
 rm .notmux
 
 if test "$EUID" = 0; then

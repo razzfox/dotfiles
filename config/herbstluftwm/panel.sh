@@ -193,10 +193,10 @@ draw_text () {
 }
 
 #acpi -b | cut -d' ' -f4
-source $HOME/.config/shell/bat.arch
-source $HOME/.config/shell/br.arch
+source $HOME/.config/bash/bat.arch
+source $HOME/.config/bash/br.arch
 # vl commands: up down mute mute_source <num>
-source $HOME/.config/shell/vl.arch
+source $HOME/.config/bash/vl.arch
 
 # getdate can not be a varibale because of automatic bash smart quoting. FAIL
 get_date () {
