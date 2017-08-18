@@ -1,0 +1,65 @@
+#run a terminal
+super + t
+    st
+
+super + shift + enter
+    st
+
+#Close a window
+super + q
+    WID=$(cat $X11FS/focused); \
+    rmdir $X11FS/$WID
+
+super + w
+    WID=$(cat $X11FS/focused); \
+    rmdir $X11FS/$WID
+
+#Move a window
+super + h
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/x) ; \ 
+    echo $(($POS-6)) > $X11FS/$WID/geometry/x
+
+super + j
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/y) ; \ 
+    echo $(($POS+6)) > $X11FS/$WID/geometry/y
+
+super + k
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/y) ; \ 
+    echo $(($POS-6)) > $X11FS/$WID/geometry/y
+
+super + l
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/x) ; \ 
+    echo $(($POS+6)) > $X11FS/$WID/geometry/x
+
+#Resize a window
+super + control + h
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/x) ; \ 
+    echo $(($POS-6)) > $X11FS/$WID/geometry/x
+
+super + control + j
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/y) ; \ 
+    echo $(($POS+6)) > $X11FS/$WID/geometry/y
+
+super + control + k
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/y) ; \ 
+    echo $(($POS-6)) > $X11FS/$WID/geometry/y
+
+super + control + l
+    WID=$(cat $X11FS/focused); \
+    POS=$(cat $X11FS/$WID/geometry/x) ; \ 
+    echo $(($POS+6)) > $X11FS/$WID/geometry/x
+
+#exit
+super + shift + q
+    kill $( cat ${X11FS}.pid )
+
+super + Escape
+    kill $( cat ${X11FS}.pid )
+#    pkill .xinitrc
