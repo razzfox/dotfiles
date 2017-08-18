@@ -19,9 +19,10 @@ color_number () {
   #HASH=$(echo $1 | tr -cd '[:alnum:]' | cksum | cut -c1-4)
   #echo $(( 0x${HASH:0:2} % 13 + 1 ))
   HASH=$(echo $1 | tr -cd '[:alnum:]' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 )
-  echo $(( ${HASH} % 6 + 1 ))
+  # Must be adjusted by 1 so that it is never 0 (black)
   # mod a 3 digit number to get 1..13 for 1..6 and 0..6 (ignoring light gray and white)
   # or just 1..6
+  echo $(( 1 + ${HASH} % 6 ))
 }
 
 color_word () {
@@ -32,7 +33,8 @@ color_number256 () {
   #HASH=$(echo $1 | tr -cd '[:alnum:].' | md5sum) # hash input
   #echo $(( 0x${HASH:1:5} % 256 )) # avoid negative sign and convert to decimal, mod a 3 digit number to get 0..255
   HASH=$(echo $1 | tr -cd '[:alnum:].' | tr abcdefghijklmnopqrstuvwxyz 01234567890123456789012345 ) #| cut -c1-3)
-  echo $(( ${HASH} % 256 ))
+  echo $(( 1 + ${HASH} % 256 ))
+  # Must be adjusted by 1 so that it is never 0 (black)
 }
 
 color_word256 () {
