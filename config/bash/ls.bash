@@ -103,23 +103,16 @@ lr() {
       GUESS=$(( $RANDOM % ${#FILES[*]} ))
     done
     LIST[$GUESS]="${FILES[$i]}"
+
+    # Print after each insertion (no pipeline wait)
+    printf '%s\n' "${LIST[i]}"
   done
 
-  #printf -- '%s\n' "${LIST[@]}"
-  for i in "${LIST[@]}"; do
-    echo "$i"
-  done
-}
+  # Print after all items are shuffled (makes pipeline wait)
+  #for i in "${LIST[@]}"; do
+  #  echo "$i"
+  #done
 
-lscd() {
-  cd "$1"
-  echo -ne "$C_UL$C_G$PWD$C_F"
-  echo -n " | dir($(ls -Al | grep -c ^d))"
-  echo -n " | reg($(ls -Al | grep -c ^-))"
-  echo -n " | lnk($(ls -Al | grep -c ^l))"
-  echo -n " | oth($(ls -Al | egrep -c '^(b|c|p|s)'))"
-  echo -n " | all($(ls -A | grep -c ^))"
-  echo -n " | dot($(($(ls -A | grep -c ^) - $(\ls -d * 2>/dev/null | grep -c ^))))"
-  echo
-  ls || true
+  # Or just use sort --sort-random (makes pipeline wait)
+  #printf '%s\n' "${!FILES[@]}" | sort --sort-random
 }
