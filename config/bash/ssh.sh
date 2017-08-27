@@ -2,8 +2,8 @@
 
 test $EUID = 0 && return 1
 
-if test ! -d $HOME/.ssh; then
-  source "${DOTFILES:-$HOME/dotfiles}"/bootstrap/ssh/settings.sh
+if test ! -e $HOME/.ssh/ssh_servers -o ! -d $HOME/.ssh; then
+  source "${DOTFILES}"/bootstrap/ssh/settings.sh
 fi
 
 
