@@ -10,20 +10,20 @@ test -z "${DOTFILES:-$HOME/dotfiles}" -a $# = 1 && DOTFILES="$1"
 test -z "${DOTFILES:-$HOME/dotfiles}" -a $# = 0 && DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 test ! -d "${DOTFILES:-$HOME/dotfiles}" -a -d dotfiles && DOTFILES="$PWD/dotfiles"
 
-export DOTFILES="$(readlink -f "${DOTFILES:-$HOME/dotfiles}")"
-if test ! -d "${DOTFILES:-$HOME/dotfiles}"; then
-  echo "Error: '${DOTFILES:-$HOME/dotfiles}' does not exist." >/dev/stderr
+export DOTFILES="$(readlink -f "$DOTFILES")"
+if test ! -d "${DOTFILES}"; then
+  echo "Error: '${DOTFILES}' does not exist." >/dev/stderr
   return 1
 fi
 
 
 # Detect ID (distro) and OS (kernel)
 touch .notmux
-test -n "$ID" || source dotfiles/config/shell/profile
+test -n "$ID" || source dotfiles/config/bash/profile
 rm .notmux
 
 if test "$EUID" = 0; then
-  for FILE in "${DOTFILES:-$HOME/dotfiles}"/userskel/root/{*,.??*}; do
+  for FILE in "${DOTFILES}"/userskel/root/{*,.??*}; do
     # create directories and symlink files
     test -e "$FILE" && cp --force --recursive --symbolic-link --verbose "$FILE" ./
   done
@@ -31,20 +31,25 @@ fi
 
 
 # Links
-for FILE in "${DOTFILES:-$HOME/dotfiles}"/userskel/{default,$ID}/{*,.??*}; do
+for FILE in "${DOTFILES}"/userskel/{default,$ID}/{*,.??*}; do
   # create directories and symlink files
   test -e "$FILE" && cp --force --recursive --symbolic-link --verbose "$FILE" ./
 done
 
-for FILE in "${DOTFILES:-$HOME/dotfiles}"/config/{*,.??*}; do
+for FILE in "${DOTFILES}"/config/{*,.??*}; do
   # single symlink
   test -e "$FILE" && ln --force --relative --symbolic --verbose "$FILE" .config/
 done
 
 
+echo "Install specific programs by sourcing their bootstrap scripts:"
+echo "source ${DOTFILES}/bootstrap/bash/install.sh"
+source ${DOTFILES}/bootstrap/bash/install.sh
+
+
 # Enable 'git push' synchronization from other servers
-echo "#\!/bin/env GIT_WORK_TREE='${DOTFILES:-$HOME/dotfiles}' git checkout -f" > "${DOTFILES:-$HOME/dotfiles}"/.git/hooks/post-receive
-chmod +x "${DOTFILES:-$HOME/dotfiles}"/.git/hooks/post-receive
+echo "#\!/bin/env GIT_WORK_TREE='${DOTFILES:-$HOME/dotfiles}' git checkout -f" > "${DOTFILES}"/.git/hooks/post-receive
+chmod +x "${DOTFILES}"/.git/hooks/post-receive
 
 # Allow receiving a push to this repo
 git config --global receive.denyCurrentBranch ignore

@@ -70,13 +70,14 @@ __gg_commit_message () {
 true
 }
 
+ggp () {
+  git pull && gg "$@" && git push
+}
+
 gg() {
   # Test if gitconfig is set up
-  grep -F name $HOME/.gitconfig && grep -F email $HOME/.gitconfig
-  if test $? != 0; then
-    echo "gg: Error: '$HOME/.gitconfig' is not set up!"
-    return 1
-  fi
+  echo -n "gitconfig:"
+  source "$DOTFILES"/bootstrap/git/install.sh || return 1
 
   echo -e "${C_EMP}git status$C_F"
 

@@ -11,7 +11,7 @@
 #grep " window-status-current-format " "$TMUX_CONF" | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" >> $HOME/style_hostname
 #grep " status-right " "$TMUX_CONF" | sed "s/bg=colour[0-9]*/bg=colour$(color_number $HOSTNAME)/" | tr \" \' >> $HOME/style_hostname
 
-source $HOME/.config/shell/set_prompt.bash
+source $HOME/.config/bash/set_prompt.bash
 
 # It is necessary to do this way because I only want to change the color, not the existing format
 echo -n "set -g " >> $HOME/style_hostname

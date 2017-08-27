@@ -8,20 +8,20 @@ nanodotfiles() {
   unset NS
   for i in "$@" ; do
     # I dont know why all of these stop working when I put them in quotes, but they only glob without quotes, even with 'shopt -s extglob'
-    file=${DOTFILES}/config/shell/${i}*
+    file=${DOTFILES}/config/bash/${i}*
     if test -f ${file} ; then
       NS="$NS ${file}"
     else
       echo "Press Ctrl-C to exit."
-      select j in ${DOTFILES}/config/shell/${i}* ; do
-        if echo ${DOTFILES}/config/shell/${i}* | grep "$j" ; then
+      select j in ${DOTFILES}/config/bash/${i}* ; do
+        if echo ${DOTFILES}/config/bash/${i}* | grep "$j" ; then
           NS="$NS ${j}"
         fi
         break
       done
     fi
   done
-  
+
   nanosource $NS
 }
 
@@ -30,5 +30,9 @@ nanoexec() {
 }
 
 nanoignore() {
+  nano -I "$@"
+}
+
+nanopaste() {
   nano -I "$@"
 }
