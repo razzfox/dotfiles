@@ -185,11 +185,54 @@ draw_tags () {
 }
 
 draw_text () {
-  # right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
-  right=" $separator^fg($textcolor) cpu^fg($fgcolor)$cpuload^fg($textcolor) hd^fg($fgcolor)${diskspace}% $separator^fg($textcolor) br^fg($fgcolor)$brightness^fg($textcolor) vl^fg($fgcolor)$volume $separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
-  right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
   echo -n "$separator$flash ^bg()^fg()${windowtitle//^/^^}" # print left-aligned text
+
+#-e "button3=;button4=exec:herbstclient use_index -1;button5=exec:herbstclient use_index +1"
+# right=" $separator^fg($textcolor)^ca(button3=$br 1;button4=exec:$br up;button5=exec:$br down) br^fg($fgcolor)$brightness^fg($textcolor)^ca()^ca(button3=$vol mute;button4=exec:$vol up;button5=exec:$vol down) vl^fg($fgcolor)$volume ^ca()$separator $date $separator^fg($textcolor) bat^fg($fgcolor)$battery    "
+  right=" $separator^fg($textcolor)"
+  right+=" cpu^fg($fgcolor)$cpuload^fg($textcolor)"
+  right+=" hd^fg($fgcolor)${diskspace}%"
+  right+=" $separator^fg($textcolor)"
+  right+=" br^fg($fgcolor)$brightness^fg($textcolor)"
+  right+=" vl^fg($fgcolor)$volume"
+  right+=" $separator"
+#  right+=" ^ca(1,bash $HOME/.config/herbstluftwm/popup_calendar.sh $panel_y $panel_height)${date}^ca()"
+  right+=" ^ca(1,herbstclient emit_hook popup_calendar)${date}^ca()"
+  right+=" $separator^fg($textcolor)"
+  right+=" bat^fg($fgcolor)$battery    "
+
+  right_text_width=$(textwidth "$font" "$(echo \"$right\" | sed 's.\^[^(]*([^)]*)..g')") # get width of right aligned text
   echo "^pa($(($panel_width - $right_text_width)))$right" # print right-aligned text
+}
+
+popup_calendar () {
+width=180
+padding=10
+monitor=( $(herbstclient list_monitors |
+  grep '\[FOCUS\]$'|cut -d' ' -f2|
+  tr x ' '|sed 's/\([-+]\)/ \1/g') )
+x=$((${monitor[2]} + ${monitor[0]} - width - padding))
+
+TODAY=$(( $( date +'%d') + 0 ))
+MONTH=$( date +'%m' )
+YEAR=$( date +'%Y' )
+
+NEXTYEAR=$YEAR
+test $MONTH -eq 12 && NEXTYEAR=$(( $YEAR + 1 ))
+NEXTMONTH=$( expr \( $MONTH + 1 \) % 12 )
+
+(
+echo '^bg(grey70)^fg(#111111)'
+# current month, highlight header and today
+cal | sed -e "1 s/^\s*//; 3,$ s/\(.*\)/\1                    /; 3,$ s/\(.\{20\}\).*/\1/" \
+  | sed -r -e "1,2 s/.*/^fg(white)&^fg()/" \
+  -e "s/(^| )($TODAY)($| )/\1^bg(white)^fg(#111)\2^fg()^bg()\3/"
+# separator
+echo "---------------------"
+# next month, highlight header
+cal $NEXTMONTH $NEXTYEAR \
+  | sed -e "1 s/^\s*//; 1,2 s/.*/^fg(white)&^fg()/; 3,$ s/\(.*\)/\1                    /; 3,$ s/\(.\{20\}\).*/\1/"
+) | dzen2 -p 0 -fn 'Monospace-9' -x $x -y $((${panel_y:-20} - ${panel_height:-0})) -w $width -l 17 -sa c -e 'onstart=uncollapse;button1=exit;button3=exit' -bg '#242424'
 }
 
 #acpi -b | cut -d' ' -f4
@@ -200,6 +243,7 @@ source $HOME/.config/bash/vl.arch
 
 # getdate can not be a varibale because of automatic bash smart quoting. FAIL
 get_date () {
+  # Popup calendar widget
   date=$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )
   if test "$date" != "$dateprev"; then
     dateprev="$date"
@@ -317,6 +361,7 @@ setflash () {
 # Initialize Variables
 date="$( date +"^fg($fgcolor)%I:%M^fg($textcolor), %Y-%m-^fg($fgcolor)%d" )"
 dateprev="$date"
+popup_calendarprev=
 battery="$( bat )"
 batteryprev="$battery"
 volume="$( vl )"
@@ -435,6 +480,9 @@ herbstclient --idle | while true; do
     date)
       date="${cmd[@]:1}"
       ;;
+    popup_calendar)
+      popup_calendar &
+      ;;
     battery)
       battery="${cmd[@]:1}"
       ;;
@@ -483,7 +531,6 @@ herbstclient --idle | while true; do
 
   ### dzen2 ###
   # After the data is gathered and processed, the output gets piped to dzen2.
-done | dzen2 -w $panel_width -x $panel_x -y $panel_y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor" \
--e "button3=;button4=exec:herbstclient use_index -1;button5=exec:herbstclient use_index +1"
+done | dzen2 -w $panel_width -x $panel_x -y $panel_y -fn "$font" -h $panel_height -ta l -bg "$bgcolor" -fg "$fgcolor"
 
 sighandler
