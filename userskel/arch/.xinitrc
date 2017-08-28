@@ -42,10 +42,10 @@ export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d
 #fi
 
 # Background (display from imagemagick)
-#source "${DOTFILES:-$HOME/dotfiles}"/config/shell/ls.bash
-#WALLPAPER="$( lr $HOME/Pictures | head -n 1 )"
-#WALLPAPER="${WALLPAPER:-$HOME/Pictures/wallpaper.png}"
-#test -n "$dimensions" -a -n "$density" && display -size $dimensions -density $density -window root "$WALLPAPER" &
+xloadimage -onroot -fullscreen "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" &
+# Multiple monitors
+#xloadimage -onroot -at 0,0 "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" -at 1920,0 "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" &
+#$dimensions
 
 # Standby/Suspend, Screensaver, and Energy Star/DPMS
 xset s off -dpms &
