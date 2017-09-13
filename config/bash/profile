@@ -90,7 +90,7 @@ if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
 fi
 
 
-# Source shell functions and settings if interactive
+# Shell functions if interactive
 if test -t 0; then
-  source $HOME/.config/shell/$(basename $SHELL)rc
+ source $HOME/.config/${SHELL##*/}/${SHELL##*/}rc
 fi

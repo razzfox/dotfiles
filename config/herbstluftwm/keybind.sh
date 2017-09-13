@@ -57,6 +57,8 @@ hc keybind Super-k spawn $CLIPMENU
 # Add Window
 # New Terminal (shell)
 hc keybind Super-Shift-Return spawn $TERMINAL
+hc keybind Super-Shift-Enter spawn $TERMINAL
+hc keybind Control-Shift-Return spawn $TERMINAL
 # Launch App
 hc keybind Super-space substitute MONITOR monitors.focus.index spawn $DMENU_LAUNCH -m MONITOR
 # New Tag and Launch App
@@ -273,6 +275,18 @@ hc keybind Super-Break $SUSPEND
 #
 # hc keybind Super-F12 $SCREENOFF
 # hc keybind Super-Shift-F12 $SCREENON
+
+#A1048 iMac Keyboard
+# hc keybind Super-F9 emit_hook volume mute
+# hc keybind Super-Shift-F9 emit_hook volume mute-input
+# hc keybind Super-F10 emit_hook volume down
+# hc keybind Super-Shift-F10 emit_hook volume 0
+# hc keybind Super-F11 emit_hook volume up
+# hc keybind Super-Shift-F11 emit_hook volume 100
+
+# hc keybind Super-F12 $SCREENOFF
+# hc keybind Super-Shift-F12 $SCREENON
+#hc keybind Super-Break $SUSPEND
 
 
 # Chain commands

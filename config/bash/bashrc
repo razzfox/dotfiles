@@ -31,7 +31,7 @@ fi
 fi
 
 
-# Dotfiles
+# Shell functions
 for file in $HOME/.config/${SHELL##*/}/{*.${SHELL##*/},*.sh,*.${ID:-arch},*.${OS:-linux}}; do
   source "$file" >/dev/null
 done
