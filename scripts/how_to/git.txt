@@ -53,3 +53,11 @@ git config --global user.email "$EMAIL"
 
 # get rid of 'git push' error message on current version of git
 git config --global push.default simple
+
+
+# Fix tracked/committed files after adding them to .gitignore
+# When they are still being tracked.
+# Warning: Commit all work first.
+git rm -r --cached .
+git add .
+git commit -m "Fixed untracked files."
