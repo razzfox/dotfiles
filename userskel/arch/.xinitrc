@@ -15,6 +15,11 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
+source /etc/vconsole.conf
+if test "$KEYMAP" = "dvorak"; then
+  setxkbmap -model pc105 -layout us -variant dvorak
+fi
+
 # Pointer and Background Color
 xsetroot -cursor_name left_ptr & #-solid '#000000'
 
@@ -72,7 +77,10 @@ clipmenud &
 pulseaudio --start &
 
 # Window manager can not be selected inside startx? Currently being done in profile...
-case $WINDOWMANAGER in
+case ${WINDOWMANAGER:-notset} in
+  notset)
+    echo ".xinitrc: Error: No wm env var set." >&2
+    ;;
   startxfce4)
     exec startxfce4
     ;;
