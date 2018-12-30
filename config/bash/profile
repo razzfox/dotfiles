@@ -81,9 +81,11 @@ if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
       ;&
     *)
       #echo "Error: Invalid input: $ANSWER" >/dev/stderr
-      select WINDOWMANAGER in herbstluftwm gnome-shell startxfce4; do
-        export WINDOWMANAGER
-        exec startx
+      select WINDOWMANAGER in herbstluftwm gnome-session startxfce4; do
+        if test -n "$WINDOWMANAGER"; then
+          export WINDOWMANAGER
+          startx
+        fi
       done
       ;;
   esac

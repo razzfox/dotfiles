@@ -1,1 +1,1 @@
-sudo pacman -S xloadimage xorg-server xorg-xinit
+sudo pacman -S xorg-server xorg-xinit
