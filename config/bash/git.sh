@@ -4,16 +4,6 @@ what_the_commit_message() {
   curl --silent --connect-timeout 1 http://whatthecommit.com/index.txt
 }
 
-git_download_functions () {
-  source $HOME/git-completion.bash 2>/dev/null && source $HOME/git-prompt.sh 2>/dev/null && return
-
-  echo "Downloading 'git-completion.bash' and 'git-prompt.sh'" >/dev/stderr
-  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > $HOME/git-completion.bash
-  curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh > $HOME/git-prompt.sh
-  source $HOME/git-completion.bash
-  source $HOME/git-prompt.sh
-}
-
 git_prune() {
   git remote prune origin
 }
