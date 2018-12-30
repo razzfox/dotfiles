@@ -47,7 +47,7 @@ export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d
 #fi
 
 # Background (display from imagemagick)
-xloadimage -onroot -fullscreen "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" &
+#xloadimage -onroot -fullscreen "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" &
 # Multiple monitors
 #xloadimage -onroot -at 0,0 "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" -at 1920,0 "$( printf '%s\n' Pictures/* | sort --random-sort | head -n 1 )" &
 #$dimensions
@@ -78,13 +78,10 @@ pulseaudio --start &
 
 # Window manager can not be selected inside startx? Currently being done in profile...
 case ${WINDOWMANAGER:-notset} in
-  notset)
-    echo ".xinitrc: Error: No wm env var set." >&2
-    ;;
   startxfce4)
     exec startxfce4
     ;;
-  gnome-shell)
+  gnome-session)
     gsettings set org.gnome.desktop.background picture-uri file://"$WALLPAPER" &
     exec gnome-session
     ;;
@@ -92,7 +89,8 @@ case ${WINDOWMANAGER:-notset} in
      # Fall through
     ;&
   *)
-    #echo "Error: Invalid input: $ANSWER" >/dev/stderr
+    echo ".xinitrc: Invalid WINDOWMANAGER var: $WINDOWMANAGER" >/dev/stderr
+    echo ".xinitrc: Can not run bash-select inside xinitrc." >&2
     # Automatic mounting removable media
     thunar --daemon &
     # Herbstluftwm

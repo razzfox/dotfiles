@@ -1,0 +1,16 @@
+SRC='/home/razz/Downloads/archlinux-2017.06.01-x86_64.iso'
+MNT='/mnt'
+DEST='/dev/sda4'
+
+echo dd if="$SRC" of=$DEST
+read -t 4 -n 1 -p "Press any key to abort" || dd if=$SRC of=$DEST
+
+mount "$SRC" "$MNT"
+cp -v "$MNT"/loader/entries/archiso-x86_64.conf /boot/loader/entries/
+
+mkdir -p /boot/arch/boot/x86_64
+cp -v "$MNT"/arch/boot/x86_64/vmlinuz /boot/arch/boot/x86_64/
+cp -v "$MNT"/arch/boot/intel_ucode.img /boot/arch/boot/
+cp -v "$MNT"/arch/boot/x86_64/archiso.img /boot/arch/boot/x86_64/
+
+umount "$MNT"

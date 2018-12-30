@@ -5,9 +5,9 @@
 
 # Locate dotfiles
 cd
-test -z "${DOTFILES:-$HOME/dotfiles}" -a $# = 1 && DOTFILES="$1"
+test -d "${DOTFILES:-$HOME/dotfiles}" -a $# = 1 && DOTFILES="$1"
 # BASH_SOURCE only works if install.sh is in the dotfiles root
-test -z "${DOTFILES:-$HOME/dotfiles}" -a $# = 0 && DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+test -d "${DOTFILES:-$HOME/dotfiles}" -a $# = 0 && DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 test ! -d "${DOTFILES:-$HOME/dotfiles}" -a -d dotfiles && DOTFILES="$PWD/dotfiles"
 
 export DOTFILES="$(readlink -f "$DOTFILES")"

@@ -68,6 +68,30 @@ Windows_NT|CYGWIN_NT-*)
 esac
 
 
+# If on linux framebuffer tty1, prompt to start X11
+if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
+  unset ANSWER
+  echo -n "Start X11? (Y/n): "
+  read ANSWER
+  case $ANSWER in
+    [nN] | [n|N][O|o] )
+      false
+      ;;
+    [yY] | [yY][Ee][Ss] )
+      ;&
+    *)
+      #echo "Error: Invalid input: $ANSWER" >/dev/stderr
+      select WINDOWMANAGER in herbstluftwm gnome-session startxfce4; do
+        if test -n "$WINDOWMANAGER"; then
+          export WINDOWMANAGER
+          startx
+        fi
+      done
+      ;;
+  esac
+fi
+
+
 # Shell functions if interactive
 if test -t 0; then
  source $HOME/.config/${SHELL##*/}/${SHELL##*/}rc
