@@ -23,6 +23,13 @@ fi
 # Pointer and Background Color
 xsetroot -cursor_name left_ptr & #-solid '#000000'
 
+# Set color themes and fonts
+# Syntax is name.Class.resource: value
+# Note: The "older" .Xdefaults file is still read when an X11 program starts, but only if xrdb has not been used in the current session.
+# This command effectively disables .Xdefaults, but it is still a valid file. It has not been "replaced" as a standard by any means.
+# This situation is reminiscent of the .bashrc, .bash_profile, and "older" .profile confusion/debate.
+[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+
 # Multi Monitor Setup
 monitors=$( xrandr | grep -c " connected " )
 if test $monitors -gt 1 ; then
