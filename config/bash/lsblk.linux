@@ -1,4 +1,4 @@
 # List block devices info
 lsblk() {
-  $(which lsblk) --output NAME,FSTYPE,SIZE,LABEL,MOUNTPOINT,UUID
+  $(which lsblk) --output NAME,FSTYPE,LABEL,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT $@
 }

@@ -71,12 +71,12 @@ case ${TERMINAL##*/} in
 esac
 
 # Clipboard Manager
-clipmenud &
+#clipmenud &
 
 # Audio
 pulseaudio --start &
 
-# Window manager can not be selected inside startx? Currently being done in profile...
+# Can not run bash-select inside xinitrc. Currently being done in profile...
 case ${WINDOWMANAGER:-notset} in
   startxfce4)
     exec startxfce4
@@ -89,8 +89,6 @@ case ${WINDOWMANAGER:-notset} in
      # Fall through
     ;&
   *)
-    echo ".xinitrc: Invalid WINDOWMANAGER var: $WINDOWMANAGER" >/dev/stderr
-    echo ".xinitrc: Can not run bash-select inside xinitrc." >&2
     # Automatic mounting removable media
     thunar --daemon &
     # Herbstluftwm

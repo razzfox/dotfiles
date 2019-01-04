@@ -1,5 +1,5 @@
 #!/bin/bash
-
+exec &>panel.out
 # Geometry
 monitor=${1:-0}
 geometry=( $(herbstclient monitor_rect "$monitor") ) # formatted X Y W H
@@ -24,7 +24,13 @@ fi
 
 
 # Theme
-font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
+#############################
+#font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
+#############################
+#font='-*-*-*-*-*-*-12-*-*-*-*-*-*-*'
+#font='terminus'
+font='*'
+
 # Window Title text
 fgcolor="$( herbstclient get frame_border_inner_color )"
 bgcolor="$( herbstclient get frame_bg_normal_color )"
