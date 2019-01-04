@@ -1,17 +1,28 @@
-# Super/Mod4  | + Shift         + Control       + Alt/Option    [none]
-#-------------|---------------------------------------------------------------
-# /\,\/,<-,-> | (move-window)   (resize-frame)  (create-frame)  (focus-window)
-# Backspace   |                                 (remove-frame)  (remove-frame)
-# Tab         | (cycle-window)                                  (cycle-window)
-# 1..0        | (assign-tag)                                    (current-tag)
-# f key       | (floating)      (pseudo-tile)   (cycle-layout)  (fullscreen)
-# q key       | (quit)
-# r key       | (reload)
-# x key       | (delete-tag)                                    (close-window)
-# c key       | (create-tag)
-# t / Enter   | (terminal)
-# space       | (dmenu_run)     (dmenu_explore.sh)  (dmenu.sh)
-# e key       |
+# Key         | Super/Mod4      + Shift         + Control
+#-------------|-------------------------------------------------------------
+# /\,\/,<-,-> | (focus-window)  (move-window)   (resize-frame)              
+# [ < ][ > ]  | (focus-tag-next) (assign-window-tag-next) (focus-monitor)
+#                                (assign-window-monitor-next)
+
+# Enter       | (create-frame)  (terminal)                                  
+# [C]         | (create-tag)    (create-tag-for-window)                     
+# [X]         | (remove-frame)  (remove-tag)                                
+# [W]         |                 (close-window)
+
+### Layout ###
+# [O]         | (rotate-frames) (rotate-frames-reverse)
+# [F]         | (fullscreen)    (floating)      (pseudotile)
+
+#### Tags ####
+# [1]..[0]    | (focus-tag-N)   (assign-window-tag-N)                       
+# Tab         | (focus-tag-cycle) (focus-tag-cycle-reverse)                  
+# [ ' ][ " ]  | (focus-tag-prev) (assign-window-tag-prev)                    
+
+### General ###
+# space       | (dmenu_run)     (create-tag-dmenu) (dmenu_explore.sh)
+# [Q]         |                 (quit-hlwm)     (quit-panel)
+# [R]         |                 (reload-hlwm)   (reload-monitors)
+
 
 # The separator here must be separate from the separator used below, so it can run a chain inside a chain
 hc () {
@@ -46,23 +57,27 @@ hc keyunbind --all
 # can not use comma delimeter in the hc() chain already using comma.
 hc keybind Super-Shift-q chain : emit_hook quit_panel : quit
 hc keybind Super-Control-q emit_hook quit_panel
-# emits reload hook
-hc keybind Super-r reload
-hc keybind Super-Shift-r detect_monitors
+# reload hook also reloads panel
+hc keybind Super-Shift-r reload
+hc keybind Super-Control-r detect_monitors
 
 
 # Clipboard
 hc keybind Super-k spawn $CLIPMENU
+
 
 # Add Window
 # New Terminal (shell)
 hc keybind Super-Shift-Return spawn $TERMINAL
 hc keybind Super-Shift-Enter spawn $TERMINAL
 hc keybind Control-Shift-Return spawn $TERMINAL
+
 # Launch App
 hc keybind Super-space substitute MONITOR monitors.focus.index spawn $DMENU_LAUNCH -m MONITOR
+
 # New Tag and Launch App
 hc keybind Super-Shift-space substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT " : spawn $DMENU_LAUNCH
+
 # File Explorer
 hc keybind Super-Control-space spawn $DMENU_EXPLORE
 
@@ -77,8 +92,11 @@ hc mousebind Super-Shift-Control-Button1 zoom
 # Add Tag (emits tag_added)
 hc keybind Super-c substitute COUNT tags.count chain : add " 0 COUNT " : use " 0 COUNT "
 hc keybind Super-Shift-c substitute CLIENT clients.focus.instance chain : add CLIENT : move CLIENT : use CLIENT
+
+
 # Remove Tag (emits tag_removed)
 hc keybind Super-Shift-x substitute NAME tags.focus.name chain : use_index -1 : merge_tag NAME
+
 
 # Focus Tags
 # Done here initially and on reload, but also done via hooks in panel.sh
@@ -106,6 +124,10 @@ hc keybind Super-apostrophe use_previous
 # does not emit tag_added nor tag_removed
 hc keybind Super-Shift-apostrophe substitute WINID clients.focus.winid chain : use_previous : bring WINID : substitute INDEX tags.focus.index emit_hook rename_index INDEX : use_previous
 
+# To mirror browser tab behavior
+hc keybind Super-Tab use_index +1
+hc keybind Super-Shift-Tab use_index -1
+
 
 # Focus Monitors
 monitor_names=( $( herbstclient list_monitors ) )
@@ -128,14 +150,17 @@ hc keybind Super-Control-Shift-period shift_to_monitor +1
 #hc keybind Super-Shift-w close
 hc keybind Super-Shift-w close_and_remove
 
+
 # Focus Window
 hc keybind Super-Up focus up
 hc keybind Super-Down focus down
 hc keybind Super-Left focus left
 hc keybind Super-Right focus right
 
-hc keybind Super-Tab cycle_all +1
-hc keybind Super-Shift-Tab cycle_all -1
+# Changed to tag
+#hc keybind Super-Tab cycle_all +1
+#hc keybind Super-Shift-Tab cycle_all -1
+
 
 # Move Window between Frames
 hc keybind Super-Shift-Up shift up
@@ -155,8 +180,10 @@ hc keybind Super-backslash split right 0.5
 # hc keybind Super-Alt-Left split left 0.5
 # hc keybind Super-Alt-Right split right 0.5
 
+
 # Remove Frame
 hc keybind Super-x remove
+
 
 # Resize Frame
 RESIZESTEP=0.025
@@ -165,12 +192,14 @@ hc keybind Super-Control-Down resize down +$RESIZESTEP
 hc keybind Super-Control-Left resize left +$RESIZESTEP
 hc keybind Super-Control-Right resize right +$RESIZESTEP
 
+
 # Frame Layout inside Monitor
-hc keybind Super-f chain : cycle_layout +1 : emit_hook cycle_layout +1
+#hc keybind Super-f chain : cycle_layout +1 : emit_hook cycle_layout +1
+hc keybind Super-f fullscreen toggle
 hc keybind Super-Shift-f chain : floating toggle : substitute BOOLEAN tags.focus.floating substitute INDEX tags.focus.index emit_hook floating BOOLEAN INDEX
 # emits fullscreen hook with string on/off (not true/false) and winid
-hc keybind Super-Control-f fullscreen toggle
-hc keybind Super-Control-p chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
+hc keybind Super-Control-f chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
+
 
 # Rotate Frames inside Monitor
 hc keybind Super-o chain : lock : rotate : rotate : rotate : unlock
