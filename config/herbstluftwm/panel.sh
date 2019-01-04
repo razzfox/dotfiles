@@ -14,13 +14,16 @@ panel_width=$screen_w
 # change for HiDPI monitors
 panel_height=${2:-14}
 
+#herbstclient list_padding -0
+#herbstclient pad MONITOR [PADUP [PADRIGHT [PADDOWN [PADLEFT]]]]
 if ${3:-true}; then # Top
   panel_y=$screen_y
-  herbstclient pad $monitor $panel_height
+  monitor_pad="$panel_height 0 0 0"
 else # Bottom
   panel_y=$(( ${screen_h} - ${panel_height} ))
-  herbstclient pad $monitor 0 0 $panel_height
+  monitor_pad="0 0 $panel_height 0"
 fi
+herbstclient pad $monitor $monitor_pad
 
 
 # Theme
@@ -48,7 +51,7 @@ flashcolor="$urgentcolor"
 
 # Functions
 sighandler () {
-  herbstclient pad $monitor 0
+  herbstclient pad $monitor 0 0 0 0
   kill $PID $@
   exit
 }

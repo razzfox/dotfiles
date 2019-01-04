@@ -25,7 +25,7 @@ source $HOME/.config/herbstluftwm/keybind.sh
 # Panel based on: /etc/xdg/herbstluftwm/panel.sh
 panel="nice -n 19 bash $HOME/.config/herbstluftwm/panel.sh"
 panel_height=14
-panel_top=false
+panel_top=true
 for monitor in $(herbstclient list_monitors | cut -d':' -f1); do
   # Inherits the current environment with colors from style.sh
   herbstclient spawn $panel $monitor $panel_height $panel_top
