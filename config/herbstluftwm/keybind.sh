@@ -1,27 +1,31 @@
 # Key         | Super/Mod4      + Shift         + Control
-#-------------|-------------------------------------------------------------
-# /\,\/,<-,-> | (focus-window)  (move-window)   (resize-frame)              
-# [ < ][ > ]  | (focus-tag-next) (assign-window-tag-next) (focus-monitor)
-#                                (assign-window-monitor-next)
+#-------------|-------------------------------------------------
+#### Open #####
+# Enter       | (create-frame)  (open-terminal) (rotate-frames)
+# space       | (dmenu_run)     (dmenu_run-new-tag) (dmenu_explore)
+# [C]         | (create-tag)    (move-window-new-tag)
 
-# Enter       | (create-frame)  (terminal)                                  
-# [C]         | (create-tag)    (create-tag-for-window)                     
-# [X]         | (remove-frame)  (remove-tag)                                
+#### Close ####
+# [X]         | (remove-frame)  (remove-tag)
 # [W]         |                 (close-window)
 
-### Layout ###
-# [O]         | (rotate-frames) (rotate-frames-reverse)
-# [F]         | (fullscreen)    (floating)      (pseudotile)
+#### Layout ###
+# /\,\/,<-,-> | (focus-window)  (move-window)   (resize-frame)
+# [O]         | (stack-windows) (pseudotile-window)
+# [F]         | (float-windows) (fullscreen-window)
+# mouseclick  |                 (move-window)   (resize-window)
 
-#### Tags ####
-# [1]..[0]    | (focus-tag-N)   (assign-window-tag-N)                       
-# Tab         | (focus-tag-cycle) (focus-tag-cycle-reverse)                  
-# [ ' ][ " ]  | (focus-tag-prev) (assign-window-tag-prev)                    
+#### Tags #####
+# [1]..[0]    | (focus-N-tag)   (move-window-N-tag) (focus-N-monitor)
+#                                Shift-Control: (move-window-N-monitor)
+# Tab         | (focus-next-tag) (focus-prev-tag)
+# [ ' ][ " ]  | (focus-last-tag) (move-window-last-tag)
+# [ < ][ > ]  | (focus-next-tag) (move-window-next-tag) (focus-next-monitor)
+#                                Shift-Control: (move-window-next-monitor)
 
-### General ###
-# space       | (dmenu_run)     (create-tag-dmenu) (dmenu_explore.sh)
-# [Q]         |                 (quit-hlwm)     (quit-panel)
+#### Quit #####
 # [R]         |                 (reload-hlwm)   (reload-monitors)
+# [Q]         |                 (quit-hlwm)     (quit-panel)
 
 
 # The separator here must be separate from the separator used below, so it can run a chain inside a chain
@@ -62,10 +66,6 @@ hc keybind Super-Shift-r reload
 hc keybind Super-Control-r detect_monitors
 
 
-# Clipboard
-hc keybind Super-k spawn $CLIPMENU
-
-
 # Add Window
 # New Terminal (shell)
 hc keybind Super-Shift-Return spawn $TERMINAL
@@ -81,12 +81,15 @@ hc keybind Super-Shift-space substitute COUNT tags.count chain : add " 0 COUNT "
 # File Explorer
 hc keybind Super-Control-space spawn $DMENU_EXPLORE
 
+# Clipboard
+hc keybind Super-k spawn $CLIPMENU
+
 
 # Mouse (Floating mode)
 hc mouseunbind --all
 hc mousebind Super-Shift-Button1 move
-hc mousebind Super-Control-Button1 resize
-hc mousebind Super-Shift-Control-Button1 zoom
+hc mousebind Super-Control-Button1 zoom
+hc mousebind Super-Shift-Control-Button1 resize
 
 
 # Add Tag (emits tag_added)
@@ -110,6 +113,11 @@ for i in ${!tag_names[@]} ; do
     fi
 done
 
+# Tab Focus (mirrors browser tab behavior)
+hc keybind Super-Tab use_index +1
+hc keybind Super-Shift-Tab use_index -1
+
+# [ < ][ > ]
 hc keybind Super-period use_index +1
 hc keybind Super-Shift-period substitute INDEX tags.focus.index substitute COUNT tags.count chain : move_index +1 : emit_hook rename_index INDEX +1 COUNT
 # fn-RightArrow
@@ -120,13 +128,11 @@ hc keybind Super-Shift-comma substitute INDEX tags.focus.index substitute COUNT 
 # fn-LeftArrow
 hc keybind Super-Home use_index -1
 hc keybind Super-Shift-Home substitute INDEX tags.focus.index substitute COUNT tags.count chain : move_index -1 : emit_hook rename_index INDEX -1 COUNT
+
+# Focus Last Tag [ ' ][ " ]
 hc keybind Super-apostrophe use_previous
 # does not emit tag_added nor tag_removed
 hc keybind Super-Shift-apostrophe substitute WINID clients.focus.winid chain : use_previous : bring WINID : substitute INDEX tags.focus.index emit_hook rename_index INDEX : use_previous
-
-# To mirror browser tab behavior
-hc keybind Super-Tab use_index +1
-hc keybind Super-Shift-Tab use_index -1
 
 
 # Focus Monitors
@@ -147,7 +153,8 @@ hc keybind Super-Control-Shift-period shift_to_monitor +1
 
 
 # Remove Window
-#hc keybind Super-Shift-w close
+hc keybind Super-Control-w close
+# also remove frame
 hc keybind Super-Shift-w close_and_remove
 
 
@@ -156,10 +163,6 @@ hc keybind Super-Up focus up
 hc keybind Super-Down focus down
 hc keybind Super-Left focus left
 hc keybind Super-Right focus right
-
-# Changed to tag
-#hc keybind Super-Tab cycle_all +1
-#hc keybind Super-Shift-Tab cycle_all -1
 
 
 # Move Window between Frames
@@ -171,14 +174,13 @@ hc keybind Super-Shift-Right shift right
 
 # Add Frame
 hc keybind Super-Return split explode
-hc keybind Super-minus split bottom 0.5
-hc keybind Super-backslash split right 0.5
-
 # Depreciated (tmux uses alt as modifier, try to reduce overlap, since intent is ambiguous)
 # hc keybind Super-Alt-Up split top 0.5
 # hc keybind Super-Alt-Down split bottom 0.5
 # hc keybind Super-Alt-Left split left 0.5
 # hc keybind Super-Alt-Right split right 0.5
+hc keybind Super-minus split bottom 0.5
+hc keybind Super-backslash split right 0.5
 
 
 # Remove Frame
@@ -193,17 +195,20 @@ hc keybind Super-Control-Left resize left +$RESIZESTEP
 hc keybind Super-Control-Right resize right +$RESIZESTEP
 
 
-# Frame Layout inside Monitor
-#hc keybind Super-f chain : cycle_layout +1 : emit_hook cycle_layout +1
-hc keybind Super-f fullscreen toggle
-hc keybind Super-Shift-f chain : floating toggle : substitute BOOLEAN tags.focus.floating substitute INDEX tags.focus.index emit_hook floating BOOLEAN INDEX
-# emits fullscreen hook with string on/off (not true/false) and winid
-hc keybind Super-Control-f chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
+# Rotate Frames inside Monitor (rotate 3x CC to emulate Clockwise rotate)
+hc keybind Super-Control-Return chain : lock : rotate : rotate : rotate : unlock
 
 
-# Rotate Frames inside Monitor
-hc keybind Super-o chain : lock : rotate : rotate : rotate : unlock
-hc keybind Super-Shift-o rotate
+# Window mode
+# emits hook with string on/off (not true/false) and winid
+hc keybind Super-f chain : floating toggle : substitute BOOLEAN tags.focus.floating substitute INDEX tags.focus.index emit_hook floating BOOLEAN INDEX
+hc keybind Super-Shift-f fullscreen toggle
+
+
+# Window Layout inside Frame
+hc keybind Super-o cycle_layout 1 grid vertical
+hc keybind Super-Control-o set_layout horizontal
+hc keybind Super-Shift-o chain : pseudotile toggle : substitute BOOLEAN clients.focus.pseudotile substitute WINID clients.focus.winid emit_hook pseudotile BOOLEAN WINID
 
 
 # Media Keys
