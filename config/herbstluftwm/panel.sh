@@ -1,5 +1,5 @@
 #!/bin/bash
-exec &>panel.out
+#exec &>panel.out
 # Geometry
 monitor=${1:-0}
 geometry=( $(herbstclient monitor_rect "$monitor") ) # formatted X Y W H
