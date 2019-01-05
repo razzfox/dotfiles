@@ -49,14 +49,6 @@ flashcolor="$urgentcolor"
 #bordercolor="$(herbstclient get frame_bg_active_color)"
 
 
-# Functions
-sighandler () {
-  herbstclient pad $monitor 0 0 0 0
-  kill $PID $@
-  exit
-}
-trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
-
 tag () {
 case "$1" in
   # create)
@@ -378,7 +370,7 @@ volumeprev="$volume"
 brightness="$( br )"
 brightnessprev="$brightness"
 cores="$( grep -c ^processor /proc/cpuinfo )"
-cpuload="0 0 0 0"
+cpuload="---"
 diskspace="$( df -lh | awk '{if ($6 == "/") { print $5 }}' | head -1 | cut -d'%' -f1 )"
 diskspaceprev="$diskspace"
 
@@ -396,9 +388,7 @@ IFS=$'\t' read -ra tags <<< "$(herbstclient tag_status $monitor)"
 #   while pgrep --uid $USER herbstluftwm &>/dev/null && sleep $3; do A="$1\t$($2)"; test "$A" != "$Z" && Z="$A" && herbstclient emit_hook $A || break; done
 # }
 
-PIDFILE="/var/run/user/$UID/hlwm_panel.pid"
-# Check if event loop already exists
-! kill -s 0 $(cat $PIDFILE 2>/dev/null) 2>/dev/null && while true; do
+while true; do
   get_date
 
   # Inspiration from this address:
@@ -423,9 +413,16 @@ PIDFILE="/var/run/user/$UID/hlwm_panel.pid"
     get_cpuload$cores 3.625
   done
 # output to null so it doesn't print the entire block when terminated
-done &>/dev/null & PID="$! $PID"
+done &>/dev/null &
+PID="$! $PID"
 
-! kill -s 0 $(cat $PIDFILE 2>/dev/null) 2>/dev/null && echo $! >/var/run/user/$UID/hlwm_panel.pid
+
+# Signal handler declared after child processes so that it only applies to the last bash
+sighandler () {
+  kill $PID $@
+  exit
+}
+trap sighandler SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM
 
 
 ### Data handler ###
@@ -527,11 +524,10 @@ herbstclient --idle | while true; do
     #   fi
     #   ;;
     quit_panel)
-      sighandler
+      herbstclient pad $monitor 0 0 0 0
       break
       ;;
     reload)
-      sighandler
       break
       ;;
   esac &>/dev/null
