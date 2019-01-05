@@ -43,7 +43,7 @@ color_word256 () {
 
 set_prompt() {
   # NOTE: PS1 var requires '\[...\]' characters around color codes
-  GIT_PS1="\$(__git_ps1 \" on \[${C_EMP}\]%s\[${C_F}\]\")"
+  GIT_PS1="\$(parse_git_branch \" on \[${C_EMP}\]%s\[${C_F}\]\")"
   JOBS_PS1="\$(test \$? != 0 && echo -ne ' \[${C_Y}\](X)\[${C_F}\]')\$(test \j != 0 && echo -ne ' \[${C_B}\](\j)\[${C_F}\]')"
 
   if test $EUID = 0; then # root
