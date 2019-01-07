@@ -77,8 +77,6 @@ if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
     [nN] | [n|N][O|o] )
       false
       ;;
-    [yY] | [yY][Ee][Ss] )
-      ;&
     *)
       #echo "Error: Invalid input: $ANSWER" >/dev/stderr
       select WINDOWMANAGER in herbstluftwm gnome-session startxfce4; do
@@ -94,5 +92,5 @@ fi
 
 # Shell functions if interactive
 if test -t 0; then
- source $HOME/.config/${SHELL##*/}/${SHELL##*/}rc
+ source $HOME/.${SHELL##*/}rc
 fi

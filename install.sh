@@ -10,17 +10,32 @@ test -d "${DOTFILES:-$HOME/dotfiles}" -a $# = 1 && DOTFILES="$1"
 test -d "${DOTFILES:-$HOME/dotfiles}" -a $# = 0 && DOTFILES="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 test ! -d "${DOTFILES:-$HOME/dotfiles}" -a -d dotfiles && DOTFILES="$PWD/dotfiles"
 
-export DOTFILES="$(readlink -f "$DOTFILES")"
 if test ! -d "${DOTFILES}"; then
   echo "Error: '${DOTFILES}' does not exist." >/dev/stderr
   return 1
 fi
 
 
-# Detect ID (distro) and OS (kernel)
-touch .notmux
-test -n "$ID" || source dotfiles/config/bash/profile
-rm .notmux
+# Detect OS (kernel) and ID (distro)
+test -z "$OS" && export OS="$(uname | tr '[:upper:]' '[:lower:]')"
+case "$OS" in
+linux)
+  source /etc/os-release
+  test "$ID" = "archarm" && export ID='arch'
+  export OS
+  export ID
+  ;;
+darwin)
+  export PATH="/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:/usr/local/sbin:$PATH"
+  export ID='osx'
+  test -z "$HOME" && export HOME="/Users/$(whoami)"
+  ;;
+Windows_NT|CYGWIN_NT-*)
+  export OS='windows'
+  export ID='cygwin'
+  ;;
+esac
+
 
 if test "$EUID" = 0; then
   for FILE in "${DOTFILES}"/userskel/root/{*,.??*}; do

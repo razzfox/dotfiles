@@ -1,5 +1,3 @@
-source "${DOTFILES:-$HOME/dotfiles}"/bootstrap/nano/settings.sh
-
 nanosource() {
   nano "$@" && source "$@" && echo "sourced $@"
 }
