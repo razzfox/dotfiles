@@ -46,7 +46,7 @@ set_prompt() {
   JOBS_PS1="\$(test \$? != 0 && echo -ne ' \[${C_Y}\](X)\[${C_F}\]')\$(test \j != 0 && echo -ne ' \[${C_B}\](\j)\[${C_F}\]')"
 
   if test $EUID = 0; then # root
-    PS1=":: r00t $(color_word$fullcolor [$HOSTNAME])${JOBS_PS1} \[${C_EMG}\]\$PWD/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]-------->\[${C_F}\] "
+    PS1=":: ${C_BGR}${C_W}r00t$(tput sgr 0) $(color_word$fullcolor [$HOSTNAME])${JOBS_PS1} \[${C_EMG}\]\$PWD/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]-------->\[${C_F}\] "
   else # user
     PS1="$(color_word$fullcolor $USER) via $(color_word$fullcolor $HOSTNAME)${JOBS_PS1} in \[${C_EMG}\]\w/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]\$\[${C_F}\] "
   fi
