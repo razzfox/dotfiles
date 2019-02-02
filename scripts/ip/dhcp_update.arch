@@ -1,5 +1,5 @@
 DHCP_UPDATE="${HOME:-/root}/.config/dhcp_update.conf"
-PIDFILE="/run/dhcp_update.pid"
+PIDFILE="/var/run/dhcp_update.pid"
 LOGFILE="/var/log/dhcp_update.log"
 # sleep 10 hours (10*60*60=36000)
 SLEEPTIME=36000
