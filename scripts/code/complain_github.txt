@@ -1,0 +1,2 @@
+THIS PACKAGE IS A REQUIREMENT xcb-util-wm
+and possibly sxhkd

@@ -1,0 +1,12 @@
+Have a selection above the prompt of commonly used commands and numbers, so that a simple '$1' command will run it (like '!1', but displayed)
+
+ 
+disallow duplicates
+
+saves multiple histories in a sane way (not with a server of vars, and not relpaceing the whole file like bash)
+saves substituted commands 'cmd $(cmd2)' and $VARS as its actual output 'cmd cmdx cmdy cmdz', or additionally
+
+have a special syntax for cat file, echo file, file input and file command line
+ex: if cat file outputs blah, then cat <<( file ) should be 'cat blah' without making a subshell just to put the file on the command line.
+
+strip newlines, or rerun command for every newline, or run as-is with newlines in the cmd? does that break posix?

@@ -5,7 +5,7 @@ trash_date () {
   mv "$@" $TRASH
 }
 
-rm () {
+trash () {
   TRASH=$HOME/.trash
   mkdir -p $TRASH
   mv -n "$@" $TRASH || trash_date "$@"

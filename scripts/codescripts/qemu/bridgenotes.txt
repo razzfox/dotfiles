@@ -1,0 +1,26 @@
+dhcpcd log shows "no ipv6 router available"
+I havent found a way yet to disable ipv6 and force it to try ipv4 instead!
+starting create_ap seems to fix this. win10 gets a local ipv4 address instead.
+I may be missing a "default router" for the tap0?
+Maybe this is because hostapd is a router on the bridge?
+
+It seems that creare_ap starts dhcpcd -q -w br0
+when dhcpcd is not already running
+
+try -4 --ipv4only ?
+
+try stop dhcpcd and start dhcpcd@br0 in scripts?
+
+try adding default route to tap0?
+
+yes, it turns out that I either want to add a virtual router inside my bridge,
+or I need to set my default router on the tap interface to the real gw (gateway).
+
+In the case that my host is connected to my ISP, I probably can only receive one
+IP address, so I must use a virtual router no matter what.
+
+After letting create_ap use the existing bridge, I noticed that tap0 state is
+disabled, not forwarding. After reading create_ap bridge code, it leaves an
+existing bridge alone, but it will create a new bridge with subnets and router etc.
+
+try adding tap0 default route to br0's gateway ip (or its primary/internal-ip/subnet? or its secondary/external-ip?)

@@ -3,11 +3,15 @@
 # GIT_PS1_SHOWCOLORHINTS=1
 # GIT_PS1_DESCRIBE_STYLE="branch"
 # GIT_PS1_SHOWUPSTREAM="auto git"
-GIT_PS1_SHOWDIRTYSTATE=0
+# GIT_PS1_SHOWDIRTYSTATE=0
 
 # Alternative to __git_ps1
-parse_git_branch () {
-  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+git_branch () {
+  git branch --no-color -v 2>/dev/null
+}
+
+git_status () {
+  git status -s 2>/dev/null
 }
 
 if test "${TERM##*-}" = "256color"; then
@@ -42,11 +46,11 @@ color_word256 () {
 
 set_prompt() {
   # NOTE: PS1 var requires '\[...\]' characters around color codes
-  GIT_PS1="\$(parse_git_branch \" on \[${C_EMP}\]%s\[${C_F}\]\")"
+  GIT_PS1="\$(test \"\$(git_status)\" = '' && echo \"\$(git_branch)\" || echo ${C_BGG}${C_B}\"\$(git_branch)\"\033[m )"
   JOBS_PS1="\$(test \$? != 0 && echo -ne ' \[${C_Y}\](X)\[${C_F}\]')\$(test \j != 0 && echo -ne ' \[${C_B}\](\j)\[${C_F}\]')"
 
   if test $EUID = 0; then # root
-    PS1=":: ${C_BGR}${C_W}r00t$(tput sgr 0) $(color_word$fullcolor [$HOSTNAME])${JOBS_PS1} \[${C_EMG}\]\$PWD/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]-------->\[${C_F}\] "
+    PS1=":: ${C_BGR}${C_W}r00t\033[m $(color_word$fullcolor [$HOSTNAME])${JOBS_PS1} \[${C_EMG}\]\$PWD/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]-------->\[${C_F}\] "
   else # user
     PS1="$(color_word$fullcolor $USER) via $(color_word$fullcolor $HOSTNAME)${JOBS_PS1} in \[${C_EMG}\]\w/\[${C_F}\]${GIT_PS1} \n\[${C_EMW}\]\$\[${C_F}\] "
   fi

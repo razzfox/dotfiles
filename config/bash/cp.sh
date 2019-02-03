@@ -1,4 +1,4 @@
 cp () {
-  echo $( which cp ) -vnr "$@"
-  $( which cp ) -vnr "$@"
+  echo $( which cp ) -v "$@"
+  $( which cp ) -v "$@"
 }

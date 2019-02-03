@@ -1,0 +1,2 @@
+smb-share:domain=ICHD,server=204.228.223.82,share=users,user=rfox,pass=fxrz317#1/RFox/
+smb://ICHD;rfox@204.228.223.82/users/RFox/

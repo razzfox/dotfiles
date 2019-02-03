@@ -63,8 +63,9 @@ source ${DOTFILES}/bootstrap/bash/install.sh
 
 
 # Enable 'git push' synchronization from other servers
-echo "#\!/bin/env GIT_WORK_TREE='${DOTFILES:-$HOME/dotfiles}' git checkout -f" > "${DOTFILES}"/.git/hooks/post-receive
-chmod +x "${DOTFILES}"/.git/hooks/post-receive
+# But this it is not always great to overwrite server changes
+#echo "#\!/bin/env GIT_WORK_TREE='${DOTFILES:-$HOME/dotfiles}' git checkout -f" > "${DOTFILES}"/.git/hooks/post-receive
+#chmod +x "${DOTFILES}"/.git/hooks/post-receive
 
 # Allow receiving a push to this repo
 git config --global receive.denyCurrentBranch ignore

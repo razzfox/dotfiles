@@ -87,6 +87,13 @@ if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
       done
       ;;
   esac
+else
+  if ! test -f .notmux -o -n "$TMUX"; then
+    echo -n "Starting tmux"
+    sleep 1 
+    echo "..."
+    tmux list-sessions && exec tmux a || exec tmux
+  fi
 fi
 
 

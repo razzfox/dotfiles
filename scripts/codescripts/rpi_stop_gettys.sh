@@ -1,0 +1,14 @@
+systemctl disable getty@.service
+systemctl stop getty@.service
+systemctl stop getty@1.service
+systemctl stop getty@2.service
+systemctl stop getty@3.service
+systemctl stop getty@4.service
+systemctl stop getty@5.service
+systemctl stop getty@6.service
+systemctl disable serial-getty@ttyAMA0
+systemctl stop serial-getty@ttyAMA0
+systemctl mask serial-getty@ttyAMA0.service
+systemctl stop getty@tty1.service
+systemctl disable getty@tty1.service
+systemctl mask getty@tty1.service
