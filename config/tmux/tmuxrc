@@ -21,11 +21,11 @@ set -g history-limit 1000000
 # Hold shift to select text in terminal with mouse, and to middle-click paste
 # Selecting by dragging text works as expected, and scroll wheel works
 set -g mouse on
-#bind m set -g mouse on \; display-message "Mouse ON"
-#bind M set -g mouse off \; display-message "Mouse OFF"
+bind m set -g mouse on \; display-message "Mouse ON"
+bind M set -g mouse off \; display-message "Mouse OFF"
 
 # Do not close windows when processes die
-#set -g remain-on-exit on
+set -g remain-on-exit on
 
 
 # Terminal

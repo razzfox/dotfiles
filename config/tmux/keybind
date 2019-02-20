@@ -13,34 +13,68 @@ bind -n M-r unbind-key -a \; source-file "$TMUX_CONF" \; display-message "tmux: 
 bind -n M-? list-keys
 
 
-# Buffer and Clipboard
+# Buffer actions
+
+# Defaults
+#bind -n M-= choose-buffer
+unbind M-=
+#bind -n M-+ delete-buffer
+unbind M-+
+#bind -n M-[ copy-mode
+unbind M-[
+#bind -n M-] paste-buffer
+unbind M-]
+
+
+# List buffers
+# Use d to delete and p to paste from list
+bind -n M-V choose-buffer
+
+
+# Clipboard
+# Note: Separating the paste-buffer command is a lot slower. It must take a while for the run command to return, so it's best to include it.
+
 # Linux X.org (requires xclip)
-# Save into system clipboard (+) with preselection.
-bind -n M-k choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 -sel clipboard\" \; run \" tmux display \\\"Clipboard \(+\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
-# Copy from + clipboard.
-bind -n M-u run "tmux set-buffer \"$(xclip -out -display :0 -sel clipboard)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(+\) $(xclip -out -display :0 -sel clipboard | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
-# Save into selection clipboard (*) with preselection.
-bind -n M-K choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 \" \; run \" tmux display \\\"Clipboard \(*\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
-# Copy from * clipboard.
-bind -n M-U run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(*\) $(xclip -o | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
+# System clipboard (+)
+# Copy buffer with preselection
+#bind -n M-V choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 -sel clipboard\" \; run \" tmux display \\\"Clipboard \(+\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
+bind -n M-V choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 -sel clipboard\" " \; display-message "Copied to system clipboard \(+\)"
 
-bind -n M-{ command-prompt -p 'save history to filename:' -I '$HOME/tmux_#I_history.txt' 'capture-pane -J -S - -E -; save-buffer %1 ; delete-buffer'
-bind -n M-} command-prompt "find-window '%%'"
+# Paste system clipboard
+#bind -n M-v run "tmux set-buffer \"$(xclip -out -display :0 -sel clipboard)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(+\) $(xclip -out -display :0 -sel clipboard | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
+bind -n M-v run "tmux set-buffer \"$(xclip -out -display :0 -sel clipboard)\"; tmux paste-buffer" \; display-message "Pasted from system clipboard \(+\)"
 
-bind -n M-= choose-buffer
-bind -n M-+ delete-buffer
-bind -n M-[ copy-mode
-bind -n M-] paste-buffer
+# Selection-buffer (*)
+# Copy buffer with preselection
+#bind -n M-Z choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 \" \; run \" tmux display \\\"Clipboard \(*\) filled with: $(tmux save-buffer -b %1 - | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \\\" \" "
+bind -n M-Z choose-buffer "run \"tmux save-buffer -b %% - | xclip -in -display :0 \" " \; display-message "Copied to selection-buffer \(*\)"
+
+# Paste selection-buffer
+#bind -n M-z run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; run "tmux display \"Copied from \(*\) $(xclip -o | dd ibs=1 obs=1 status=noxfer count=80 2> /dev/null)... \""
+bind -n M-z run "tmux set-buffer \"$(xclip -out -display :0)\"; tmux paste-buffer" \; display-message "Pasted from selection-buffer \(*\)"
+
+
+# macOS
+# ?
+#
+
+
+# History / Scrollback Buffer
+# Save history to file
+bind -n M-'S' command-prompt -p 'save history to filename:' -I '$HOME/tmux_#I_history.txt' 'capture-pane -J -S - -E -; save-buffer %1 ; delete-buffer'
+
+# Find/grep string in scrollback buffer
+bind -n M-F command-prompt "find-window '%%'"
 
 
 # Manage Windows (Tags)
 bind -n M-c new-window
 bind -n M-Space command-prompt -p "tmux command (new window):" "new-window '%%'"
 
+# Kill Window
 bind -n M-X confirm-before -p "kill-window (Tag) '#I #W'? (y/N)" kill-window
 
 # Reorder Windows (Tags)
-# Meta-C does not work?
 bind -n M-C-, swap-window -t :-1
 bind -n M-C-. swap-window -t :+1
 bind -n M-C-"'" swap-window -t :!
@@ -63,6 +97,7 @@ bind -n M-0 select-window -t :0
 
 # Select Windows (Tags)
 # BUG: using Shift with arrow keys does not work
+# Shift or Super?
 # The following four options are ignored
 #bind -n M-S-Left previous-window
 #bind -n M-S-Right next-window
@@ -80,24 +115,30 @@ bind -n M-0 select-window -t :0
 
 # Manage Panes (Frames/Windows)
 # New pane right
+bind -n M-Enter command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
 bind -n M-\ split-window -h
 bind -n M-'|' command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
-
-bind -n M-Enter command-prompt -p "tmux command (new pane right):" "split-window -h '%%'"
 
 # New pane down
 bind -n M-- split-window -v
 bind -n M-_ command-prompt -p "tmux command (new pane down):" "split-window -v '%%'"
 
+
 # Kill pane
 #bind -n M-W confirm-before -p "kill-pane (Frame) '#I #W[#P]'? (y/N)" kill-pane
 bind -n M-W kill-pane
 
-bind -n M-'\;' respawn-pane
-#bind -n M-: confirm-before -p "kill and respawn-pane (Frame) '#I #W[#P]'? (y/N)" 'respawn-pane -k'
-bind -n M-: command-prompt -p "tmux command (respawn '#I #W[#P]'):" "respawn-pane -k '%%'"
+# Close a dead pane (respawn only runs if dead, but spawns with kill-pane command)
+bind -n M-w respawn-pane "tmux kill-pane"
 
-bind -n M-x respawn-pane "tmux kill-pane"
+
+# May not really need a respawn command
+# Respawn current pane
+#bind -n M-'\;' confirm-before -p "kill and respawn-pane (Frame) '#I #W[#P]'? (y/N)" 'respawn-pane -k'
+#bind -n M-'\;' respawn-pane
+# Respawn other pane
+#bind -n M-: command-prompt -p "tmux command (respawn '#I #W[#P]'):" "respawn-pane -k '%%'"
+
 
 # Move pane to new window. 'C' is case-sensitive
 # BUG: Using capital C key is broken

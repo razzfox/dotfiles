@@ -243,17 +243,17 @@ hc keybind XF86AudioPrev emit_hook play prev
 
 # keycode:115
 hc keybind XF86AudioRaiseVolume emit_hook volume up
-hc keybind Shift-XF86AudioRaiseVolume emit_hook volume +20
+hc keybind Shift-XF86AudioRaiseVolume emit_hook volume 100
 # keycode:114
 hc keybind XF86AudioLowerVolume emit_hook volume down
-hc keybind Shift-XF86AudioLowerVolume emit_hook volume -20
+hc keybind Shift-XF86AudioLowerVolume emit_hook volume 0
 # keycode:113
 hc keybind XF86AudioMute emit_hook volume mute
 hc keybind Shift-XF86AudioMute emit_hook volume mute-input
 
 # keycode:161
 hc keybind XF86Eject spawn $SUSPEND
-#hc keybind Shift-XF86Eject spawn $SCREENSAVEROFF
+hc keybind Shift-XF86Eject spawn $SCREENSAVEROFF
 
 # keycode:116
 hc keybind XF86PowerOff $POWER
@@ -275,52 +275,46 @@ hc keybind Super-Shift-F4 substitute COUNT tags.count chain : add " 0 COUNT " : 
 # keycode:63
 #hc keybind Super-F5 spawn true
 #hc keybind Super-Shift-F5 spawn true
+
+# Macbook Pro
+####
 #hc keybind Super-F6 spawn true
 #hc keybind Super-Shift-F6 spawn true
-
-hc keybind Super-F7 emit_hook play prev
-hc keybind Super-Shift-F7 emit_hook play -15
-hc keybind Super-F8 emit_hook play
-hc keybind Super-Shift-F7 emit_hook play stop
-hc keybind Super-F9 emit_hook play next
-hc keybind Super-Shift-F9 emit_hook play +15
-
-hc keybind Super-F10 emit_hook volume mute
-hc keybind Super-Shift-F10 emit_hook volume mute-input
-hc keybind Super-F11 emit_hook volume down
-hc keybind Super-Shift-F11 emit_hook volume 0
-hc keybind Super-F12 emit_hook volume up
-hc keybind Super-Shift-F12 emit_hook volume 100
+####
+#hc keybind Super-F7 emit_hook play prev
+#hc keybind Super-Shift-F7 emit_hook play -15
+#hc keybind Super-F8 emit_hook play
+#hc keybind Super-Shift-F7 emit_hook play stop
+#hc keybind Super-F9 emit_hook play next
+#hc keybind Super-Shift-F9 emit_hook play +15
+####
+#hc keybind Super-F10 emit_hook volume mute
+#hc keybind Super-Shift-F10 emit_hook volume mute-input
+#hc keybind Super-F11 emit_hook volume down
+#hc keybind Super-Shift-F11 emit_hook volume 0
+#hc keybind Super-F12 emit_hook volume up
+#hc keybind Super-Shift-F12 emit_hook volume 100
+####
 
 hc keybind Super-Break $SUSPEND
-#hc keybind Super-Shift-Break $SCREENSAVEROFF
+hc keybind Super-Shift-Break $SCREENSAVEROFF
 
-# Macbook layout?
-# hc keybind Super-F6 emit_hook play prev
-# hc keybind Super-F7 emit_hook play
-# hc keybind Super-F8 emit_hook play next
-#
-# hc keybind Super-F9 emit_hook volume mute
-# hc keybind Super-Shift-F9 emit_hook volume mute-input
-# hc keybind Super-F10 emit_hook volume down
-# hc keybind Super-Shift-F10 emit_hook volume 0
-# hc keybind Super-F11 emit_hook volume up
-# hc keybind Super-Shift-F11 emit_hook volume 100
-#
-# hc keybind Super-F12 $SCREENOFF
-# hc keybind Super-Shift-F12 $SCREENON
-
-#A1048 iMac Keyboard
-# hc keybind Super-F9 emit_hook volume mute
-# hc keybind Super-Shift-F9 emit_hook volume mute-input
-# hc keybind Super-F10 emit_hook volume down
-# hc keybind Super-Shift-F10 emit_hook volume 0
-# hc keybind Super-F11 emit_hook volume up
-# hc keybind Super-Shift-F11 emit_hook volume 100
-
-# hc keybind Super-F12 $SCREENOFF
-# hc keybind Super-Shift-F12 $SCREENON
-#hc keybind Super-Break $SUSPEND
+# Macbook Air and A1048 iMac Keyboard
+####
+hc keybind Super-F6 emit_hook play prev
+hc keybind Super-F7 emit_hook play
+hc keybind Super-F8 emit_hook play next
+####
+hc keybind Super-F9 emit_hook volume mute
+hc keybind Super-Shift-F9 emit_hook volume mute-input
+hc keybind Super-F10 emit_hook volume down
+hc keybind Super-Shift-F10 emit_hook volume 0
+hc keybind Super-F11 emit_hook volume up
+hc keybind Super-Shift-F11 emit_hook volume 100
+####
+hc keybind Super-F12 $SUSPEND
+hc keybind Super-Shift-F12 $SCREENSAVEROFF
+####
 
 
 # Chain commands

@@ -1,7 +1,6 @@
 test $EUID = 0 && return 1
 which sed >/dev/null || return
 which awk >/dev/null || return
-which pactl >/dev/null || return
 which pacmd >/dev/null || return
 pulseaudio --check || return
 
@@ -26,23 +25,23 @@ vl() {
   case "$1" in
   U|u|[U,u]p)
     # raise volume by 2%
-    pactl set-sink-volume "$SINK" +2%
+    pacmd set-sink-volume "$SINK" "$(( ( ${CURVOL} + 2 ) * 65535 / 100 ))"
     ;;
   D|d|[D,d]own|[D,d]o)
     # lowers volume by 2%
-    pactl set-sink-volume "$SINK" -2%
+    pacmd set-sink-volume "$SINK" "$(( ( ${CURVOL} - 2 ) * 65535 / 100 ))"
     ;;
   M|m|[M,m]u|[M,m]ute)
     # mutes the volume entirely
-    pactl set-sink-mute "$SINK" toggle
+    pacmd set-sink-mute "$SINK" $(test -n "$MUTED" && echo 0 || echo 1)
     ;;
   [M,m]i|[M,m]ute-[I,i]nput)
     # mutes the microphone entirely
-    pactl set-source-mute "$SOURCE" toggle
+    pacmd set-source-mute "$SOURCE" $(test -n "$SOURCE_MUTED" && echo 0 || echo 1)
     ;;
   set)
     NEWVOL="${2%%%}"
-    pactl set-sink-volume "$SINK" "${NEWVOL}%"
+    pacmd set-sink-volume "$SINK" "$(( ${NEWVOL} * 65535 / 100 ))"
     ;;
   --help|-h)
     echo "vl {up,down,mute,mute-input,set [n]}
