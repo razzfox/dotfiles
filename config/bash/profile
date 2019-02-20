@@ -12,8 +12,7 @@ if test -f $HOME/.ssh/id_rsa -a ! -S ${SSH_AUTH_SOCK:-/dev/null} ; then
   if test ! -S ${SSH_AUTH_SOCK:-/dev/null} ; then
     eval $( ssh-agent -s | tee /tmp/ssh-$USER ) &>/dev/null
 
-    echo "SSH-Agent: $SSH_AGENT_PID"
-    echo -n "bash: .profile: Press Enter to skip. "
+    echo "SSH-Agent: $SSH_AGENT_PID Enter ssh-key password if necessary or Enter to skip."
     if ! ssh-add $HOME/.ssh/id_rsa 2>/dev/null ; then
       kill $SSH_AGENT_PID
       rm /tmp/ssh-$USER
