@@ -1,4 +1,6 @@
 #!/bin/bash
-sed "s/bind -n M-/bind /g" $HOME/.config/tmux/keybind > $HOME/keybind_prefix
-tmux source-file $HOME/keybind_prefix
-rm $HOME/keybind_prefix
+TEMPFILE=$(dirname $TMUX_CONF)/keybind_prefix
+
+sed "s/bind -n M-/bind /g" $HOME/.config/tmux/keybind >$TEMPFILE
+tmux source-file $TEMPFILE
+rm $TEMPFILE
