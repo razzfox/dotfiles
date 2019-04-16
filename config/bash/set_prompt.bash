@@ -7,7 +7,10 @@
 
 # Alternative to __git_ps1
 git_branch () {
-  git branch --no-color -v 2>/dev/null
+  #git branch --no-color -v 2>/dev/null | cut -d' ' -f-3
+  # Must either quote or escape the '*' to stop shell globbing
+  str=( '\'$(git branch --no-color -v 2>/dev/null) )
+  echo ${str[@]:1:2}
 }
 
 git_status () {

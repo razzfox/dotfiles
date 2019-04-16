@@ -1,4 +1,6 @@
-if $(which ls) --color &>/dev/null # Detect which ls flavor is in use
+ls=$(which ls)
+
+if $ls --color &>/dev/null # Detect which ls flavor is in use
   then # GNU
     colorflag='--color'
   else # OSX
@@ -6,11 +8,11 @@ if $(which ls) --color &>/dev/null # Detect which ls flavor is in use
 fi
 
 ls() {
-  $(which ls) -F $colorflag "$@"
+  $ls -F $colorflag "$@"
 }
 
 # include hidden files
-lss() {
+la() {
   ls -A "$@"
 }
 
@@ -19,15 +21,16 @@ ll() {
   ls -lh "$@"
 }
 
+# include hidden files
 lll() {
   ls -lhA "$@"
 }
 
 # List only directories
-lsd() {
+lsdir() {
   unset DIRS
   if test $# = 0; then
-    lsd .
+    lsdir .
     return
   fi
 
@@ -40,15 +43,15 @@ lsd() {
   ls -d "${DIRS[@]}"
 }
 
-lld() {
+lldir() {
   lll "$@" | grep ^d
 }
 
 # List only files
-lsf() {
+lsfile() {
   unset FILES
   if test $# = 0; then
-    lsf .
+    lsfile .
     return
   fi
 
@@ -61,12 +64,12 @@ lsf() {
   ls "${FILES[@]}"
 }
 
-llf() {
+llfile() {
   lll "$@" | grep --invert-match ^d
 }
 
 # List files in random order
-lr() {
+lsrand() {
   unset LIST
   unset FILES
 
@@ -79,7 +82,7 @@ lr() {
   else
     # if no input and no command line options, use working directory
     if test "$#" = 0; then
-      lr .
+      lsrand .
       return $?
     fi
   fi

@@ -1,11 +1,13 @@
+du=$(which du)
+
 # Filesize
 du() {
-  $(which du) --dereference-args --human-readable --summarize --one-file-system "$@"
+  $du -aLHcsxh "$@"
 }
 
 # Filesize including dotfiles
 du_all() {
-  $(which du) --all --dereference-args --human-readable --max-depth=1 --one-file-system "$@"
+  du --all "$@"
 }
 
 # Filesize sorted decreasing
@@ -14,5 +16,5 @@ du_sort() {
 }
 
 du_tree() {
-  $(which tree) -axhF --du -I '.git|.npm|.gem|.android|.atom|.local|Library' "$@"
+  tree -axhF --du -I '.git|.npm|.gem|.android|.atom|.local|Library' "$@"
 }

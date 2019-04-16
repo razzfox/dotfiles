@@ -4,6 +4,22 @@ what_the_commit_message() {
   curl --silent --connect-timeout 1 http://whatthecommit.com/index.txt
 }
 
+ggs() {
+  git status
+}
+
+ggp() {
+  git pull
+}
+
+ggreset() {
+  git reset HEAD --hard
+}
+
+ggch() {
+  git checkout -f
+}
+
 git_prune() {
   git remote prune origin
 }
