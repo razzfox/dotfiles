@@ -2,7 +2,7 @@ du=$(which du)
 
 # Filesize
 du() {
-  $du -aLHcsxh "$@"
+  $du -LHcsxh "$@"
 }
 
 # Filesize including dotfiles
