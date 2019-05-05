@@ -6,4 +6,4 @@ set nowrap
 set suspend
 set quickblank
 set backup
-set backupdir ~/.config/nano/backups
+set backupdir ~/.cache/nano

@@ -1,0 +1,3 @@
+cpu_thermal_throttling() {
+  pmset -g thermlog
+}

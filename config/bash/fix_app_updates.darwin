@@ -1,0 +1,6 @@
+fix_app_updates() {
+  # This takes a really long time... use background tasks?
+  for appName in $HOME/Applications/*.app; do
+    xattr -dr com.apple.quarantine "$appName" &
+  done
+}

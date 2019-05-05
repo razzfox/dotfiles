@@ -9,14 +9,14 @@
 # Build from source takes hours, and actually fails on my machine, so that option is unattractive
 # Longterm solution would be to add a bottle select option in brew as a pull request
 # How:
-# Comment out the Mojave bottle line in node.rb
+# Comment out the Mojave bottle line, and change High Sierra version to 10.14
 # Note:
-# I am not sure how brew handles this when node updates
-# Probably should pin node version until manuall updating
+# I am not sure how brew handles this when brew updates. Probably needs to be redone.
+# I am making this file unwritable to protect against brew updating accidentally
 
+nano /usr/local/Homebrew/Library/Homebrew/os/mac/version.rb
 
-brew unpin node
-export EDITOR=nano
-brew edit node
-brew install node
-brew pin node
+sudo chflags schg /usr/local/Homebrew/Library/Homebrew/os/mac/version.rb
+
+# To undo unwritable flag:
+#sudo chflags noschg /usr/local/Homebrew/Library/Homebrew/os/mac/version.rb

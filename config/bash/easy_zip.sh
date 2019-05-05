@@ -38,7 +38,7 @@ return $e
 
 
 easy_zip() {
-  $(which zip) -r "${1%/}.zip" "${1}"
+  $(which zip) -yr "${1%/}.zip" "${1}"
 }
 
 zip() {

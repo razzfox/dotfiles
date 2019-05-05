@@ -131,13 +131,10 @@ bind -n M-W kill-pane
 # Close a dead pane (respawn only runs if dead, but spawns with kill-pane command)
 bind -n M-w respawn-pane "tmux kill-pane"
 
-
-# May not really need a respawn command
 # Respawn current pane
-#bind -n M-'\;' confirm-before -p "kill and respawn-pane (Frame) '#I #W[#P]'? (y/N)" 'respawn-pane -k'
-#bind -n M-'\;' respawn-pane
-# Respawn other pane
-#bind -n M-: command-prompt -p "tmux command (respawn '#I #W[#P]'):" "respawn-pane -k '%%'"
+bind -n M-'\;' respawn-pane
+# Kill and Respawn with new command
+bind -n M-: command-prompt -p "tmux command (respawn '#I #W[#P]'):" "respawn-pane -k '%%'"
 
 
 # Move pane to new window. 'C' is case-sensitive
@@ -182,15 +179,15 @@ bind -n M-f next-layout
 #bind -r S-Down move-pane -t bottom
 
 # Resize panes
-bind -n C-Left resize-pane -L 5
-bind -n C-Right resize-pane -R 5
-bind -n C-Up resize-pane -U 5
-bind -n C-Down resize-pane -D 5
+bind -n C-S-Left resize-pane -L 5
+bind -n C-S-Right resize-pane -R 5
+bind -n C-S-Up resize-pane -U 5
+bind -n C-S-Down resize-pane -D 5
 # corrects for nested tmux sessions
-bind -r C-Left resize-pane -L 5
-bind -r C-Right resize-pane -R 5
-bind -r C-Up resize-pane -U 5
-bind -r C-Down resize-pane -D 5
+bind -r C-S-Left resize-pane -L 5
+bind -r C-S-Right resize-pane -R 5
+bind -r C-S-Up resize-pane -U 5
+bind -r C-S-Down resize-pane -D 5
 
 # Select panes
 bind -n M-Left select-pane -L

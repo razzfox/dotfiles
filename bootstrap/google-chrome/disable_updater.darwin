@@ -1,0 +1,1 @@
+launchctl unload -w /Volumes/Home/razz/Library/LaunchAgents/com.google.keystone.agent.plist

@@ -1,3 +1,5 @@
+mkdir -p $HOME/.cache/nano
+
 nanosource() {
   nano "$@" && source "$@" && echo "sourced $@"
 }

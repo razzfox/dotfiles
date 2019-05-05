@@ -2,11 +2,11 @@
 
 # Option 1: run mute command on LogoutHook
 echo "Create logout hook to run mute command"
-echo 7299 | sudo -S defaults write com.apple.loginwindow LogoutHook bash "${DOTFILES:-$HOME/dotfiles}"/shell/set_chime.osx
+echo 7299 | sudo -S defaults write com.apple.loginwindow LogoutHook 'bash "${DOTFILES:-$HOME/dotfiles}"/config/bash/set_chime.osx'
 
 # Option 2: Run script in sleep loop, sleep until capture HUP signal and run mute command
 # Put this in a LaunchAgents file
-( trap "bash '${DOTFILES:-$HOME/dotfiles}'/shell/set_chime.osx" SIGHUP SIGINT SIGTERM; sleep infinity & wait ) &
+( trap "bash '${DOTFILES:-$HOME/dotfiles}'/config/bash/set_chime.osx" SIGHUP SIGINT SIGTERM; sleep infinity & wait ) &
 
 set_chime() {
   # System volume
