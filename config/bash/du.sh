@@ -2,17 +2,17 @@ du=$(which du)
 
 # Filesize
 du() {
-  $du -aLHcsxh "$@"
+  $du -LHcsxh "$@"
 }
 
 # Filesize including dotfiles
 du_all() {
-  du --all "$@"
+  $du -h --all .*[A-z]
 }
 
 # Filesize sorted decreasing
 du_sort() {
-  du "$@" | sort -hr
+  $du "$@" | sort -hr
 }
 
 du_tree() {
