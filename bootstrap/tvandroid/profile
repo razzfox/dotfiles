@@ -1,0 +1,69 @@
+termux-setup-storage
+
+# Fix Termux bugs
+export ANDROID_DATA=/data ANDROID_ROOT=/system
+export USER=${USER:-$(whoami)}
+
+if ! pgrep -f transmission-daemon; then
+  echo "Starting transmission-daemon..."
+  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
+fi
+
+#if ! pgrep -f aria2; then
+#  echo "Starting aria2..."
+#  nohup aria2c --enable-rpc --rpc-listen-all &>>$HOME/.config/aria2c.log & disown
+#  pushd webui-aria2
+#  nohup node node-server.js &>>$HOME/.config/webui-aria2.log & disown
+#  popd
+#fi
+
+if ! pgrep -f sshd; then
+  echo "Starting sshd..."
+  sshd -p 7299
+fi
+
+if ! pgrep -f dhcp_update; then
+  echo "Starting dhcp_update..."
+  # Chroot does not work inside the chroot, so only use for processes tha need it
+  # This process uses /var/run and /var/log
+  nohup termux-chroot bash dotfiles/scripts/ip/dhcp_update.arch &>>$HOME/.config/dhcp_update.log & disown
+fi
+
+if ! pgrep -f inbucket; then
+  echo "Starting inbucket..."
+  # Note: This command must be running on a server:
+  # socat TCP4-LISTEN:25,fork,reuseaddr TCP4:craft.dhcp.io:2500 & disown
+  # socat TCP4-LISTEN:110,fork,reuseaddr TCP4:craft.dhcp.io:1100 & disown
+  # Settings can be generated here:
+  # https://www.inbucket.org/configurator/
+  export INBUCKET_MAILBOXNAMING="local"
+  export INBUCKET_SMTP_ADDR="0.0.0.0:2500"
+  export INBUCKET_SMTP_DOMAIN="razzfox.me"
+  export INBUCKET_SMTP_MAXMESSAGEBYTES="10240000"
+  export INBUCKET_SMTP_TIMEOUT="10s"
+  export INBUCKET_POP3_ADDR="0.0.0.0:1100"
+  export INBUCKET_POP3_DOMAIN="razzfox.me"
+  export INBUCKET_POP3_TIMEOUT="10s"
+  export INBUCKET_WEB_ADDR="0.0.0.0:9090"
+  export INBUCKET_WEB_MAILBOXPROMPT=""
+  export INBUCKET_STORAGE_TYPE="memory"
+  export INBUCKET_STORAGE_RETENTIONPERIOD="2160h"
+  export INBUCKET_STORAGE_RETENTIONSLEEP="86400s"
+  mkdir -p $HOME/.config/inbucket
+  pushd $HOME/go/src/github.com/jhillyerd/inbucket
+  #nohup env INBUCKET_WEB_ADDR=0.0.0.0:9090 $HOME/go/bin/inbucket $HOME/.config/inbucket/inbucket.conf &>>$HOME/.config/inbucket/mail_server.log & disown
+  # $HOME/.config/inbucket/inbucket.conf
+  nohup $HOME/go/bin/inbucket &>>$HOME/.config/inbucket/mail_server.log & disown
+  popd
+fi
+
+echo 'Running storage_links.sh...'
+bash storage_links.sh &
+
+# Remove VLC auto-generated file (it should be in a cache location)
+rmdir internal/Subtitles
+
+echo 'Starting bash profile...'
+sleep 1
+
+source $HOME/dotfiles/config/bash/profile
