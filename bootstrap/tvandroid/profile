@@ -58,7 +58,7 @@ if ! pgrep -f inbucket; then
 fi
 
 echo 'Running storage_links.sh...'
-bash storage_links.sh &
+bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &
 
 # Remove VLC auto-generated file (it should be in a cache location)
 rmdir internal/Subtitles
