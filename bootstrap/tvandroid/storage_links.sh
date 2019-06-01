@@ -6,9 +6,8 @@ termux-setup-storage && test -d storage && rm -r storage &
 # Note: ln -f follows links instead of replacing them without -n (no-follow)
 
 # hardcoded usbs
-#ln -sfn /storage/7BB3-1816/Android/data/com.termux external
 # /sdcard -> /storage/self/primary -> /storage/emulated/0
-ln -sfn /storage/emulated/0 internal
+ln -sfn /storage/emulated/0 $HOME/internal
 
 # known usbs (key follows var rules: start with a letter, no punctuation)
 #[uuidsdcard]='internal'
@@ -23,9 +22,9 @@ for drive in /storage/[0-9]*; do
   if test -n "${knownUSB}"; then
     # create link using known name
     ln -sfn ${drive}/Android/data/com.termux/files $HOME/${knownUSB}
-  else
-    mkdir -p $HOME/usb
-    # create link using uuid before dash
-    ln -sfn ${drive}/Android/data/com.termux/files $HOME/usb/${driveName%%-*}
   fi
+
+  mkdir -p $HOME/usb
+  # create link using uuid before dash
+  ln -sfn ${drive}/Android/data/com.termux/files $HOME/usb/${driveName%%-*}
 done

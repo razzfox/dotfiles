@@ -57,6 +57,16 @@ if ! pgrep -f inbucket; then
   popd
 fi
 
+if ! pgrep -f app.js; then
+  # Note: This command must be running on a server:
+  # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
+  # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
+  echo "Starting www..."
+  pushd $HOME/www
+  nohup while true; do node app.js 8080 &>>$HOME/.config/www.log & disown
+  popd
+fi
+
 echo 'Running storage_links.sh...'
 bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &
 
