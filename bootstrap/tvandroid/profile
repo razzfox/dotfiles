@@ -1,36 +1,58 @@
-termux-setup-storage
+# trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+
+function ctrl_c() {
+  touch .notmux
+}
+
 
 # Fix Termux bugs
 export ANDROID_DATA=/data ANDROID_ROOT=/system
 export USER=${USER:-$(whoami)}
+export TZ=$(getprop persist.sys.timezone)
 
-if ! pgrep -f transmission-daemon; then
-  echo "Starting transmission-daemon..."
-  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
-fi
 
-#if ! pgrep -f aria2; then
-#  echo "Starting aria2..."
-#  nohup aria2c --enable-rpc --rpc-listen-all &>>$HOME/.config/aria2c.log & disown
-#  pushd webui-aria2
-#  nohup node node-server.js &>>$HOME/.config/webui-aria2.log & disown
-#  popd
-#fi
-
+echo -n "sshd: "
 if ! pgrep -f sshd; then
-  echo "Starting sshd..."
+  echo "Starting..."
   sshd -p 7299
 fi
 
+echo -n "www: "
+if ! pgrep -f app.js; then
+  # Note: This command must be running on a server:
+  # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
+  # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
+  echo "Starting..."
+  wwwLog=$HOME/.config/www.log
+  wwwPorts="8080 4433"
+  wwwKeys="$HOME/keys/privkey.pem $HOME/keys/fullchain.pem"
+  pushd $HOME/www
+  # Note: node will still exit on sighup despite using nohup!
+  # so, use a bash loop. It will restart the first time after disconnecting,
+  # and output must be given to the outer bash command
+  nohup bash -c "while true; do node app.js $wwwPorts $wwwKeys ; done" &>>$wwwLog & disown
+  #nohup node app.js $wwwPorts $wwwKeys &>>$wwwLog & disown
+  popd
+fi
+
+echo -n "transmission-daemon: "
+if ! pgrep -f transmission-daemon; then
+  echo "Starting..."
+  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
+fi
+
+echo -n "dhcp_update: "
 if ! pgrep -f dhcp_update; then
-  echo "Starting dhcp_update..."
+  echo "Starting..."
   # Chroot does not work inside the chroot, so only use for processes tha need it
   # This process uses /var/run and /var/log
   nohup termux-chroot bash dotfiles/scripts/ip/dhcp_update.arch &>>$HOME/.config/dhcp_update.log & disown
 fi
 
+echo -n "inbucket: "
 if ! pgrep -f inbucket; then
-  echo "Starting inbucket..."
+  echo "Starting..."
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:25,fork,reuseaddr TCP4:craft.dhcp.io:2500 & disown
   # socat TCP4-LISTEN:110,fork,reuseaddr TCP4:craft.dhcp.io:1100 & disown
@@ -57,23 +79,13 @@ if ! pgrep -f inbucket; then
   popd
 fi
 
-if ! pgrep -f app.js; then
-  # Note: This command must be running on a server:
-  # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
-  # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
-  echo "Starting www..."
-  pushd $HOME/www
-  nohup while true; do node app.js 8080 &>>$HOME/.config/www.log & disown
-  popd
-fi
-
 echo 'Running storage_links.sh...'
-bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &
+bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &>/dev/null & disown
 
 # Remove VLC auto-generated file (it should be in a cache location)
-rmdir internal/Subtitles
+rmdir internal/Subtitles &>/dev/null
 
-echo 'Starting bash profile...'
+echo 'Running bash_profile... Press Control-C to disable tmux'
 sleep 1
 
 source $HOME/dotfiles/config/bash/profile
