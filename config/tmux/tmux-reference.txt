@@ -1,0 +1,225 @@
+KEY BINDINGS
+     The default command key bindings are:
+
+           C-b         Send the prefix key (C-b) through to the application.
+           C-o         Rotate the panes in the current window forwards.
+           C-z         Suspend the tmux client.
+           !           Break the current pane out of the window.
+           "           Split the current pane into two, top and bottom.
+           #           List all paste buffers.
+           $           Rename the current session.
+           %           Split the current pane into two, left and right.
+           &           Kill the current window.
+           '           Prompt for a window index to select.
+           ,           Rename the current window.
+           -           Delete the most recently copied buffer of text.
+           .           Prompt for an index to move the current window.
+           0 to 9      Select windows 0 to 9.
+           :           Enter the tmux command prompt.
+           ;           Move to the previously active pane.
+           =           Choose which buffer to paste interactively from a list.
+           ?           List all key bindings.
+           D           Choose a client to detach.
+           [           Enter copy mode to copy text or view the history.
+           ]           Paste the most recently copied buffer of text.
+           c           Create a new window.
+           d           Detach the current client.
+           f           Prompt to search for text in open windows.
+           i           Display some information about the current window.
+           l           Move to the previously selected window.
+           n           Change to the next window.
+           o           Select the next pane in the current window.
+           p           Change to the previous window.
+           q           Briefly display pane indexes.
+           r           Force redraw of the attached client.
+           s           Select a new session for the attached client interactively.
+           L           Switch the attached client back to the last session.
+           t           Show the time.
+           w           Choose the current window interactively.
+           x           Kill the current pane.
+           {           Swap the current pane with the previous pane.
+           }           Swap the current pane with the next pane.
+           ~           Show previous messages from tmux, if any.
+           Page Up     Enter copy mode and scroll one page up.
+           Up, Down
+           Left, Right
+                       Change to the pane above, below, to the left, or to the right of the current pane.
+           M-1 to M-5  Arrange panes in one of the five preset layouts: even-horizontal, even-vertical, main-horizontal, main-vertical, or tiled.
+           M-n         Move to the next window with a bell or activity marker.
+           M-o         Rotate the panes in the current window backwards.
+           M-p         Move to the previous window with a bell or activity marker.
+           C-Up, C-Down
+           C-Left, C-Right
+                       Resize the current pane in steps of one cell.
+           M-Up, M-Down
+           M-Left, M-Right
+                       Resize the current pane in steps of five cells.
+
+     Key bindings may be changed with the bind-key and unbind-key commands.
+
+WINDOWS AND PANES
+     A tmux window may be in one of several modes.  The default permits direct access to the terminal attached to the window.  The other is copy mode, which permits a section
+     of a window or its history to be copied to a paste buffer for later insertion into another window.  This mode is entered with the copy-mode command, bound to ‘[’ by
+     default.  It is also entered when a command that produces output, such as list-keys, is executed from a key binding.
+
+     The keys available depend on whether emacs or vi mode is selected (see the mode-keys option).  The following keys are supported as appropriate for the mode:
+
+           Function                     vi              emacs
+           Back to indentation          ^               M-m
+           Bottom of history            G               M-<
+           Clear selection              Escape          C-g
+           Copy selection               Enter           M-w
+           Cursor down                  j               Down
+           Cursor left                  h               Left
+           Cursor right                 l               Right
+           Cursor to bottom line        L
+           Cursor to middle line        M               M-r
+           Cursor to top line           H               M-R
+           Cursor up                    k               Up
+           Delete entire line           d               C-u
+           Delete/Copy to end of line   D               C-k
+           End of line                  $               C-e
+           Go to line                   :               g
+           Half page down               C-d             M-Down
+           Half page up                 C-u             M-Up
+           Jump forward                 f               f
+           Jump to forward              t
+           Jump backward                F               F
+           Jump to backward             T
+           Jump again                   ;               ;
+           Jump again in reverse        ,               ,
+           Next page                    C-f             Page down
+           Next space                   W
+           Next space, end of word      E
+           Next word                    w
+           Next word end                e               M-f
+           Other end of selection       o
+           Paste buffer                 p               C-y
+           Previous page                C-b             Page up
+           Previous word                b               M-b
+           Previous space               B
+           Quit mode                    q               Escape
+           Rectangle toggle             v               R
+           Scroll down                  C-Down or C-e   C-Down
+           Scroll up                    C-Up or C-y     C-Up
+           Search again                 n               n
+           Search again in reverse      N               N
+           Search backward              ?               C-r
+           Search forward               /               C-s
+           Start of line                0               C-a
+           Start selection              Space           C-Space
+           Top of history               g               M->
+           Transpose characters                         C-t
+
+     The next and previous word keys use space and the ‘-’, ‘_’ and ‘@’ characters as word delimiters by default, but this can be adjusted by setting the word-separators ses‐
+     sion option.  Next word moves to the start of the next word, next word end to the end of the next word and previous word to the start of the previous word.  The three
+     next and previous space keys work similarly but use a space alone as the word separator.
+
+     The jump commands enable quick movement within a line.  For instance, typing ‘f’ followed by ‘/’ will move the cursor to the next ‘/’ character on the current line.  A
+     ‘;’ will then jump to the next occurrence.
+
+     Commands in copy mode may be prefaced by an optional repeat count.  With vi key bindings, a prefix is entered using the number keys; with emacs, the Alt (meta) key and a
+     number begins prefix entry.  For example, to move the cursor forward by ten words, use ‘M-1 0 M-f’ in emacs mode, and ‘10w’ in vi.
+
+     When copying the selection, the repeat count indicates the buffer index to replace, if used.
+
+     Mode key bindings are defined in a set of named tables: vi-edit and emacs-edit for keys used when line editing at the command prompt; vi-choice and emacs-choice for keys
+     used when choosing from lists (such as produced by the choose-window command); and vi-copy and emacs-copy used in copy mode.  The tables may be viewed with the list-keys
+     command and keys modified or removed with bind-key and unbind-key.  One command accepts an argument, copy-pipe, which copies the selection and pipes it to a command.  For
+     example the following will bind ‘C-q’ to copy the selection into /tmp as well as the paste buffer:
+
+           bind-key -temacs-copy C-q copy-pipe "cat >/tmp/out"
+
+     The paste buffer key pastes the first line from the top paste buffer on the stack.
+
+     The synopsis for the copy-mode command is:
+
+     copy-mode [-u] [-t target-pane]
+             Enter copy mode.  The -u option scrolls one page up.
+
+KEY BINDINGS
+     tmux allows a command to be bound to most keys, with or without a prefix key.  When specifying keys, most represent themselves (for example ‘A’ to ‘Z’).  Ctrl keys may be
+     prefixed with ‘C-’ or ‘^’, and Alt (meta) with ‘M-’.  In addition, the following special key names are accepted: Up, Down, Left, Right, BSpace, BTab, DC (Delete), End,
+     Enter, Escape, F1 to F20, Home, IC (Insert), NPage/PageDown/PgDn, PPage/PageUp/PgUp, Space, and Tab.  Note that to bind the ‘"’ or ‘'’ keys, quotation marks are neces‐
+     sary, for example:
+
+           bind-key '"' split-window
+           bind-key "'" new-window
+
+     Commands related to key bindings are as follows:
+
+     bind-key [-cnr] [-t key-table] key command [arguments]
+                   (alias: bind)
+             Bind key key to command.  By default (without -t) the primary key bindings are modified (those normally activated with the prefix key); in this case, if -n is
+             specified, it is not necessary to use the prefix key, command is bound to key alone.  The -r flag indicates this key may repeat, see the repeat-time option.
+
+             If -t is present, key is bound in key-table: the binding for command mode with -c or for normal mode without.  To view the default bindings and possible commands,
+             see the list-keys command.
+
+     list-keys [-t key-table]
+                   (alias: lsk)
+             List all key bindings.  Without -t the primary key bindings - those executed when preceded by the prefix key - are printed.
+
+             With -t, the key bindings in key-table are listed; this may be one of: vi-edit, emacs-edit, vi-choice, emacs-choice, vi-copy or emacs-copy.
+
+     send-keys [-lR] [-t target-pane] key ...
+                   (alias: send)
+             Send a key or keys to a window.  Each argument key is the name of the key (such as ‘C-a’ or ‘npage’ ) to send; if the string is not recognised as a key, it is
+             sent as a series of characters.  The -l flag disables key name lookup and sends the keys literally.  All arguments are sent sequentially from first to last.  The
+             -R flag causes the terminal state to be reset.
+
+     send-prefix [-2] [-t target-pane]
+             Send the prefix key, or with -2 the secondary prefix key, to a window as if it was pressed.
+
+     unbind-key [-acn] [-t key-table] key
+                   (alias: unbind)
+             Unbind the command bound to key.  Without -t the primary key bindings are modified; in this case, if -n is specified, the command bound to key without a prefix
+             (if any) is removed.  If -a is present, all key bindings are removed.
+
+             If -t is present, key in key-table is unbound: the binding for command mode with -c or for normal mode without.
+
+
+STATUS LINE
+
+           Symbol    Meaning
+           *         Denotes the current window.
+           -         Marks the last window (previously selected).
+           #         Window is monitored and activity has been detected.
+           !         A bell has occurred in the window.
+           +         Window is monitored for content and it has appeared.
+           ~         The window has been silent for the monitor-silence interval.
+           Z         The window's active pane is zoomed.
+
+     The # symbol relates to the monitor-activity and + to the monitor-content window options.  The window name is printed in inverted colours if an alert (bell, activity or
+     content) is present.
+
+     The colour and attributes of the status line may be configured, the entire status line using the status-style session option and individual windows using the
+     window-status-style window option.
+
+     The status line is automatically refreshed at interval if it has changed, the interval may be controlled with the status-interval session option.
+
+     Commands related to the status line are as follows:
+
+     command-prompt [-I inputs] [-p prompts] [-t target-client] [template]
+             Open the command prompt in a client.  This may be used from inside tmux to execute commands interactively.
+
+             If template is specified, it is used as the command.  If present, -I is a comma-separated list of the initial text for each prompt.  If -p is given, prompts is a
+             comma-separated list of prompts which are displayed in order; otherwise a single prompt is displayed, constructed from template if it is present, or ‘:’ if not.
+
+             Both inputs and prompts may contain the special character sequences supported by the status-left option.
+
+             Before the command is executed, the first occurrence of the string ‘%%’ and all occurrences of ‘%1’ are replaced by the response to the first prompt, the second
+             ‘%%’ and all ‘%2’ are replaced with the response to the second prompt, and so on for further prompts.  Up to nine prompt responses may be replaced (‘%1’ to ‘%9’).
+
+     confirm-before [-p prompt] [-t target-client] command
+                   (alias: confirm)
+             Ask for confirmation before executing command.  If -p is given, prompt is the prompt to display; otherwise a prompt is constructed from command.  It may contain
+             the special character sequences supported by the status-left option.
+
+             This command works only from inside tmux.
+
+     display-message [-p] [-c target-client] [-t target-pane] [message]
+                   (alias: display)
+             Display a message.  If -p is given, the output is printed to stdout, otherwise it is displayed in the target-client status line.  The format of message is
+             described in the FORMATS section; information is taken from target-pane if -t is given, otherwise the active pane for the session attached to target-client.
+

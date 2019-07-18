@@ -26,6 +26,10 @@ fi
 herbstclient pad $monitor $monitor_pad
 
 
+# Start pulseaudio
+pulseaudio --check >/dev/null || echo "Pulseaudio error" >/dev/error
+
+
 # Theme
 #############################
 #font='-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*'
@@ -263,9 +267,61 @@ get_battery () {
   fi
 }
 
+vl() {
+  # fork of https://github.com/graysky2/pulseaudio-ctl
+
+  # Setup
+  SINK=$(pacmd list-sinks|awk '/* index:/{ print $3 }')
+  SOURCE=$(pacmd list-sources|awk '/* index:/{ print $3 }')
+  CURVOL=$(pacmd list-sinks|grep -A 15 '* index'| awk '/volume: front/{ print $5 }' | sed 's/%//g')
+  MUTED=$(pacmd list-sinks|grep -A 15 '* index'|awk '/muted:/{ print $2 }')
+  test "$MUTED" = "yes" && MUTED=",muted" || MUTED=""
+  SOURCE_MUTED=$(pacmd list-sources|grep -A 15 '* index'|awk '/muted:/{ print $2 }')
+  test "$SOURCE_MUTED" = "yes" && SOURCE_MUTED=",source_muted" || SOURCE_MUTED=""
+
+  # Logic and output
+  case "$1" in
+  U|u|[U,u]p)
+    # raise volume by 2%
+    pacmd set-sink-volume "$SINK" "$(( ( ${CURVOL} + 2 ) * 65535 / 100 ))"
+    ;;
+  D|d|[D,d]own|[D,d]o)
+    # lowers volume by 2%
+    pacmd set-sink-volume "$SINK" "$(( ( ${CURVOL} - 2 ) * 65535 / 100 ))"
+    ;;
+  M|m|[M,m]u|[M,m]ute)
+    # mutes the volume entirely
+    pacmd set-sink-mute "$SINK" $(test -n "$MUTED" && echo 0 || echo 1)
+    ;;
+  [M,m]i|[M,m]ute-[I,i]nput)
+    # mutes the microphone entirely
+    pacmd set-source-mute "$SOURCE" $(test -n "$SOURCE_MUTED" && echo 0 || echo 1)
+    ;;
+  set)
+    NEWVOL="${2%%%}"
+    pacmd set-sink-volume "$SINK" "$(( ${NEWVOL} * 65535 / 100 ))"
+    ;;
+  --help|-h)
+    echo "vl {up,down,mute,mute-input,set [n]}
+    - up and down adjust volume in 2% increments.
+    - mute toggles the mute status on/off.
+    - mute-input toggles the input status on/off.
+    - set takes a % value.
+    - atmost only takes effect if current volume is higher than this."
+    ;;
+  *)
+    echo "$CURVOL%$MUTED$SOURCE_MUTED"
+    return 0
+    ;;
+  esac
+
+  # Runs loop after above commands to print state after possible changes
+  vl
+}
+
 get_volume () {
   # Run in case settings are changed via terminal or otherwise
-  volume="$( vl )"
+  volume="$( vl $@ )"
   if test "$volume" != "$volumeprev"; then
     volumeprev="$volume"
     herbstclient emit_hook $(echo -ne "volume\t$volume") 2>/dev/null || break

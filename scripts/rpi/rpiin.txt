@@ -1,0 +1,2 @@
+pacman -S xorg-server xorg-server-utils xorg-xinit mesa xf86-video-fbdev xf86-video-vesa xorg-xsetroot xorg-xdpyinfo
+#herbstluftwm dmenu dzen2

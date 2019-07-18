@@ -55,9 +55,10 @@ linux)
   export OS
   export ID
   ;;
-darwin)
+darwin|macos)
   export PATH="/Volumes/shared/documentation/sdk/platform-tools:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/nano/bin:/usr/local/sbin:$PATH"
   export ID='osx'
+  export OS='macos'
   test -z "$HOME" && export HOME="/Users/$(whoami)"
   ;;
 Windows_NT|CYGWIN_NT-*)
@@ -88,7 +89,7 @@ if test "$TERM" = linux -a "$EUID" -ne "0" && ! pgrep xinit; then
       ;;
   esac
 else
-  if ! test -f .notmux -o -n "$TMUX" && which tmux &>/dev/null; then
+  if ! test -f .notmux -o -n "$TMUX" -o "$TERM_PROGRAM" == "vscode" && which tmux &>/dev/null; then
     echo -n "Starting tmux"
     sleep 1 
     echo "..."

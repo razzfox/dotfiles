@@ -1,9 +1,0 @@
-[Unit]
-Description=Deletes .motd on startup
-
-[Service]
-User=%i
-ExecStart=/usr/bin/rm /home/%i/.motd /root/.motd
-
-[Install]
-WantedBy=multi-user.target

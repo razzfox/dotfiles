@@ -38,8 +38,8 @@ fi
 
 # Screen size and DPI
 # uses xargs to remove extra spaces in string
-export dimensions="$( xdpyinfo | grep dimension | xargs | cut -d ' ' -f 2 )"
-export density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d 'x' -f 1 )"
+dimensions="$( xdpyinfo | grep dimension | xargs | cut -d ' ' -f 2 )"
+density="$( xdpyinfo | grep resolution | xargs | cut -d ' ' -f 2 | cut -d 'x' -f 1 )"
 
 
 #To determine your optimal resolutions and display names, simply run:

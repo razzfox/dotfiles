@@ -1,4 +1,4 @@
-cp () {
-  echo $( which cp ) -v "$@"
-  $( which cp ) -v "$@"
-}
+#cp () {
+#  echo $( which cp ) -v "$@"
+#  $( which cp ) -v "$@"
+#}

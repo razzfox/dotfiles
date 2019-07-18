@@ -10,3 +10,7 @@ lless() {
   #-fFMR
   $(which less) $LESS --LINE-NUMBERS "$@"
 }
+
+lessend() {
+  $(which less) $LESS +G "$@"
+}

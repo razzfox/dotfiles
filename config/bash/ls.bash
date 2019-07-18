@@ -7,9 +7,9 @@ if $ls --color &>/dev/null # Detect which ls flavor is in use
     colorflag='-G'
 fi
 
-ls() {
-  $ls -F $colorflag "$@"
-}
+#ls() {
+#  $ls -F $colorflag "$@"
+#}
 
 # include hidden files
 la() {
