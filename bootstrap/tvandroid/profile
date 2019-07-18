@@ -36,11 +36,40 @@ if ! pgrep -f app.js; then
   popd
 fi
 
-echo -n "transmission-daemon: "
-if ! pgrep -f transmission-daemon; then
+echo -n "electron-gifs: "
+echo -n "backend: "
+if ! pgrep -f videoAPI.js; then
+  # Note: This command must be running on a server:
+  # socat TCP4-LISTEN:3080,fork,reuseaddr TCP4:craft.dhcp.io:3080 & disown
   echo "Starting..."
-  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
+  gifsLog=$HOME/.config/gifs.log
+  pushd $HOME/electron-gifs
+  # Note: node will still exit on sighup despite using nohup!
+  # so, use a bash loop. It will restart the first time after disconnecting,
+  # and output must be given to the outer bash command
+  nohup bash -c "while true; do node src/videoAPI.js ; done" &>>$gifsLog & disown
+  popd
 fi
+
+echo -n "react: "
+if ! pgrep -f start.js; then
+  # Note: This command must be running on a server:
+  # socat TCP4-LISTEN:3000,fork,reuseaddr TCP4:craft.dhcp.io:3000 & disown
+  echo "Starting..."
+  gifsLog=$HOME/.config/gifs.log
+  pushd $HOME/electron-gifs
+  # Note: node will still exit on sighup despite using nohup!
+  # so, use a bash loop. It will restart the first time after disconnecting,
+  # and output must be given to the outer bash command
+  nohup bash -c "while true; do node node_modules/react-scripts/scripts/start.js ; done" & disown
+  popd
+fi
+
+#echo -n "transmission-daemon: "
+#if ! pgrep -f transmission-daemon; then
+#  echo "Starting..."
+#  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
+#fi
 
 echo -n "dhcp_update: "
 if ! pgrep -f dhcp_update; then
