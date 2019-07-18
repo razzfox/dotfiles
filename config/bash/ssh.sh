@@ -1,3 +1,4 @@
+
 # set -x
 
 test $EUID = 0 && return 1
@@ -68,17 +69,25 @@ ssh_server() {
     share="${servershare##*:}"
     test "$share" = "$servershare" && unset share
     test "$share" -eq "$share" 2>/dev/null && unset share
+    name="${server}"
 
-    # get subdomain or at least remove tld
-    name="${server%%.*}"
+    # use an alias instead of the DNS name
+    if test -z "${server##*,*}" ; then
+      name="${name##*,}"
+      server="${server%%,*}"
+    else
+      # use subdomain
+      name="${server%%.*}"
+    fi
+
+    # keep local in name
     # substr: take out longest string from front(##) before(*x) a '.' char
     test "${server##*.}" = "local" && name="${name}local"
 
     # rename if it is only a number
-    if test $name -eq $name 2>/dev/null; then
-      name="ip${server//./_}"
-    fi
+    test -z ${name//[0-9]} && name="ip${server//./_}"
 
+    # Set a variable for the server and check for duplicates
     #nameupper="${name^^}"
     nameupper="$(echo $name | tr '[:lower:]' '[:upper:]')"
     # if variable already exists, and is not the same server
@@ -98,10 +107,13 @@ ssh_server() {
         name="${name//.}"
       fi
     fi
+
     # remove all periods
     name="${name//.}"
+
     #namelower=${name,,}
     namelower="$(echo $name | tr '[:upper:]' '[:lower:]')"
+
     #export ${name^^}="${user}@$server"
     export ${nameupper}="${user}@$server"
 
@@ -124,7 +136,8 @@ ssh_server() {
 
     eval "ssh$namelower () { $sshcmd $sshops \$$nameupper \"\$@\" $SHELL ; }"
     eval "mosh$namelower () { mosh --ssh="ssh -p $port" \$$nameupper \"\$@\" ; }"
-    eval "rsync$namelower () { $rsynccmd $rsyncops \"\$@\" \$${nameupper}:${share:-\~/} ; }"
+    eval "rsyncup$namelower () { $rsynccmd $rsyncops \"\$@\" \$${nameupper}:${share:-\~/} ; }"
+    eval "rsyncdown$namelower () { $rsynccmd $rsyncops \$${nameupper}:${share:-\~/}\"\$@\" ; }"
 }
 
 # Optional SERVERS string array
