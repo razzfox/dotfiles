@@ -31,7 +31,7 @@ if ! pgrep -f app.js; then
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while true; do node app.js $wwwPorts $wwwKeys ; done" &>>$wwwLog & disown
+  nohup bash -c "while sleep 2; do node app.js $wwwPorts $wwwKeys ; done" >$wwwLog & disown
   #nohup node app.js $wwwPorts $wwwKeys &>>$wwwLog & disown
   popd
 fi
@@ -47,7 +47,7 @@ if ! pgrep -f videoAPI.js; then
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while true; do node src/videoAPI.js ; done" &>>$gifsLog & disown
+  nohup bash -c "while sleep 2; do node src/videoAPI.js ; done" >$gifsLog & disown
   popd
 fi
 
@@ -56,12 +56,12 @@ if ! pgrep -f start.js; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:3000,fork,reuseaddr TCP4:craft.dhcp.io:3000 & disown
   echo "Starting..."
-  gifsLog=$HOME/.config/gifs.log
+  reactLog=$HOME/.config/react.log
   pushd $HOME/electron-gifs
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while true; do node node_modules/react-scripts/scripts/start.js ; done" & disown
+  nohup bash -c "while sleep 2; do node node_modules/react-scripts/scripts/start.js ; done" >$reactLog & disown
   popd
 fi
 
