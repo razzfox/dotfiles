@@ -1,3 +1,5 @@
+echo "Start bash .profile"
+
 # trap ctrl-c and call ctrl_c()
 trap ctrl_c INT
 
@@ -19,57 +21,94 @@ if ! pgrep -f sshd; then
 fi
 
 echo -n "www: "
-if ! pgrep -f app.js; then
+if ! pgrep -f 'node \.'; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
   # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
   echo "Starting..."
-  wwwLog=$HOME/.config/www.log
   wwwPorts="8080 4433"
   wwwKeys="$HOME/keys/privkey.pem $HOME/keys/fullchain.pem"
-  pushd $HOME/www
+  nodeCmd="node . $wwwPorts $wwwKeys"
+  nodeApp=www
+  nodeLog=$HOME/.config/${nodeApp}.log
+  pushd $HOME/${nodeApp}
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do node app.js $wwwPorts $wwwKeys ; done" >$wwwLog & disown
+  nohup bash -c "while sleep 2; do ${nodeCmd} ; done" >$nodeLog & disown
   #nohup node app.js $wwwPorts $wwwKeys &>>$wwwLog & disown
   popd
 fi
 
-echo -n "electron-gifs: "
-echo -n "backend: "
-if ! pgrep -f videoAPI.js; then
+# possibly: npm start
+# put this one first because they both look for start.js
+echo -n "react_robotinventory: "
+
+echo -n "react: "
+if ! pgrep -f 'npm start'; then
   # Note: This command must be running on a server:
-  # socat TCP4-LISTEN:3080,fork,reuseaddr TCP4:craft.dhcp.io:3080 & disown
+  # Set the port number in .env
+  # socat TCP4-LISTEN:3001,fork,reuseaddr TCP4:craft.dhcp.io:3001 & disown
   echo "Starting..."
-  gifsLog=$HOME/.config/gifs.log
-  pushd $HOME/electron-gifs
+  reactCmd='npm start'
+  reactApp=react_robotinventory
+  reactLog=$HOME/.config/${reactApp}.log
+  pushd $HOME/${reactApp}
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do node src/videoAPI.js ; done" >$gifsLog & disown
+  nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
+#  nohup bash -c "while sleep 2; do node node_modules/react-scripts/scripts/start.js ; done" >$reactLog & disown
+  popd
+fi
+
+
+# possible combined: npm run-script react-start
+
+echo -n "electron-gifs: "
+
+echo -n "youtube-dl: "
+pip install --upgrade youtube_dl || pip3 install --upgrade youtube_dl &
+
+echo -n "backend: "
+if true && ! pgrep -f videoAPI.js; then
+  # Note: This command must be running on a server:
+  # socat TCP4-LISTEN:3080,fork,reuseaddr TCP4:craft.dhcp.io:3080 & disown
+  echo "Starting..."
+  reactCmd='node src/videoAPI.js'
+  reactApp=electron-gifs
+  reactLog=$HOME/.config/${reactApp}.log
+  gifsLog=$HOME/.config/gifs.log
+  pushd $HOME/${reactApp}
+  # Note: node will still exit on sighup despite using nohup!
+  # so, use a bash loop. It will restart the first time after disconnecting,
+  # and output must be given to the outer bash command
+  nohup bash -c "while sleep 2; do $reactCmd ; done" >$gifsLog & disown
   popd
 fi
 
 echo -n "react: "
-if ! pgrep -f start.js; then
+if true && ! pgrep -f start.js; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:3000,fork,reuseaddr TCP4:craft.dhcp.io:3000 & disown
   echo "Starting..."
-  reactLog=$HOME/.config/react.log
-  pushd $HOME/electron-gifs
+  reactCmd='node node_modules/react-scripts/scripts/start.js'
+  reactApp=electron-gifs
+  reactLog=$HOME/.config/${reactApp}.log
+  pushd $HOME/${reactApp}
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do node node_modules/react-scripts/scripts/start.js ; done" >$reactLog & disown
+  nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
   popd
 fi
 
+# disabled
 #echo -n "transmission-daemon: "
-#if ! pgrep -f transmission-daemon; then
-#  echo "Starting..."
-#  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
-#fi
+if false && ! pgrep -f transmission-daemon; then
+  echo "Starting..."
+  transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
+fi
 
 echo -n "dhcp_update: "
 if ! pgrep -f dhcp_update; then
@@ -108,13 +147,14 @@ if ! pgrep -f inbucket; then
   popd
 fi
 
-echo 'Running storage_links.sh...'
+echo 'storage_links.sh...'
 bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &>/dev/null & disown
+
+echo 'download_keys.sh...'
+bash keys/download_keys.sh &>/dev/null & disown
 
 # Remove VLC auto-generated file (it should be in a cache location)
 rmdir internal/Subtitles &>/dev/null
 
-echo 'Running bash_profile... Press Control-C to disable tmux'
-sleep 1
-
-source $HOME/dotfiles/config/bash/profile
+#echo 'Running bash_profile... Press Control-C to disable tmux'
+#sleep 1
