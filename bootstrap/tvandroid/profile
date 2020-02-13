@@ -14,14 +14,25 @@ export USER=${USER:-$(whoami)}
 export TZ=$(getprop persist.sys.timezone)
 
 
-echo -n "sshd: "
-if ! pgrep -f sshd; then
+# Select services
+# TODO: checkout termux-services
+sshd=true
+www=true
+reactrobot=false
+gifs=false
+transmission=true
+dhcp=true
+inbucket=true
+
+
+$sshd && echo -n "sshd: "
+if $sshd && ! pgrep -f sshd; then
   echo "Starting..."
   sshd -p 7299
 fi
 
-echo -n "www: "
-if ! pgrep -f 'node \.'; then
+$www && echo -n "www: "
+if $www && ! pgrep -f 'node \.'; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
   # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
@@ -42,10 +53,8 @@ fi
 
 # possibly: npm start
 # put this one first because they both look for start.js
-echo -n "react_robotinventory: "
-
-echo -n "react: "
-if ! pgrep -f 'npm start'; then
+$reactrobot && echo -n "react_robotinventory: "
+if $reactrobot && ! pgrep -f 'npm start'; then
   # Note: This command must be running on a server:
   # Set the port number in .env
   # socat TCP4-LISTEN:3001,fork,reuseaddr TCP4:craft.dhcp.io:3001 & disown
@@ -57,69 +66,51 @@ if ! pgrep -f 'npm start'; then
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
+  nohup bash -c "while sleep 2; do $reactCmd ; done &>$reactLog" & disown
 #  nohup bash -c "while sleep 2; do node node_modules/react-scripts/scripts/start.js ; done" >$reactLog & disown
   popd
 fi
 
 
 # possible combined: npm run-script react-start
+if $gifs && ! pgrep -f videoAPI.js; then
+  echo -n "youtube-dl: "
+  pipLog=$HOME/.config/pip.log
+  pip install --upgrade youtube_dl &>${pipLog} || pip3 install --upgrade youtube_dl &>${pipLog} &
 
-echo -n "electron-gifs: "
-
-echo -n "youtube-dl: "
-pip install --upgrade youtube_dl || pip3 install --upgrade youtube_dl &
-
-echo -n "backend: "
-if true && ! pgrep -f videoAPI.js; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:3080,fork,reuseaddr TCP4:craft.dhcp.io:3080 & disown
   echo "Starting..."
-  reactCmd='node src/videoAPI.js'
-  reactApp=electron-gifs
-  reactLog=$HOME/.config/${reactApp}.log
-  gifsLog=$HOME/.config/gifs.log
-  pushd $HOME/${reactApp}
-  # Note: node will still exit on sighup despite using nohup!
-  # so, use a bash loop. It will restart the first time after disconnecting,
-  # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do $reactCmd ; done" >$gifsLog & disown
-  popd
-fi
-
-echo -n "react: "
-if true && ! pgrep -f start.js; then
-  # Note: This command must be running on a server:
-  # socat TCP4-LISTEN:3000,fork,reuseaddr TCP4:craft.dhcp.io:3000 & disown
-  echo "Starting..."
+  backendCmd='node src/videoAPI.js'
   reactCmd='node node_modules/react-scripts/scripts/start.js'
-  reactApp=electron-gifs
+  reactApp=gifs
   reactLog=$HOME/.config/${reactApp}.log
+  backendLog=$HOME/.config/${reactApp}_backend.log
   pushd $HOME/${reactApp}
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
+  nohup bash -c "while sleep 2; do $reactCmd ; done" >$backendLog & disown
   nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
   popd
 fi
 
-# disabled
-#echo -n "transmission-daemon: "
-if false && ! pgrep -f transmission-daemon; then
+$transmission && echo -n "transmission-daemon: "
+if $transmission && ! pgrep -f transmission-daemon; then
   echo "Starting..."
   transmission-daemon --logfile $HOME/.config/transmission-daemon/log.txt --log-error
 fi
 
-echo -n "dhcp_update: "
-if ! pgrep -f dhcp_update; then
+$dhcp && echo -n "dhcp_update: "
+if $dhcp && ! pgrep -f dhcp_update; then
   echo "Starting..."
   # Chroot does not work inside the chroot, so only use for processes tha need it
   # This process uses /var/run and /var/log
   nohup termux-chroot bash dotfiles/scripts/ip/dhcp_update.arch &>>$HOME/.config/dhcp_update.log & disown
 fi
 
-echo -n "inbucket: "
-if ! pgrep -f inbucket; then
+$inbucket && echo -n "inbucket: "
+if $inbucket && ! pgrep -f inbucket; then
   echo "Starting..."
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:25,fork,reuseaddr TCP4:craft.dhcp.io:2500 & disown
@@ -151,7 +142,9 @@ echo 'storage_links.sh...'
 bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &>/dev/null & disown
 
 echo 'download_keys.sh...'
-bash keys/download_keys.sh &>/dev/null & disown
+pushd $HOME/keys
+bash download_keys.sh &>/dev/null & disown
+popd
 
 # Remove VLC auto-generated file (it should be in a cache location)
 rmdir internal/Subtitles &>/dev/null
