@@ -1,11 +1,26 @@
-echo "Start bash .profile"
+echo "Start .profile"
 
 # trap ctrl-c and call ctrl_c()
-trap ctrl_c INT
+if test -f .notmux; then
+  echo 'Press Control-C to disable tmux'
+  function ctrl_c() {
+    touch .notmux
+  }
+  trap ctrl_c INT
+else
+  echo 'Press Control-C to enable tmux'
+  function ctrl_c() {
+    rm .notmux
+  }
+  trap ctrl_c INT
+fi
 
-function ctrl_c() {
-  touch .notmux
-}
+
+echo -n 'storage_links.sh: '
+bash $HOME/dotfiles/tvandroid/storage_links.sh &>/dev/null & disown
+
+# Remove VLC auto-generated file (it should be in a cache location)
+rmdir internal/Subtitles &>/dev/null
 
 
 # Fix Termux bugs
@@ -20,6 +35,7 @@ sshd=true
 www=true
 reactrobot=false
 gifs=false
+gifsAPI=true
 transmission=true
 dhcp=true
 inbucket=true
@@ -32,10 +48,21 @@ if $sshd && ! pgrep -f sshd; then
 fi
 
 $www && echo -n "www: "
+if $www; then
+  echo -n 'download_keys.sh: '
+  date=$(date +%F)
+  stat=$(stat -c %y ./keys)
+  if test ${date:0:9} != ${stat:0:9}; then
+    bash $HOME/dotfiles/tvandroid/download_keys.sh $HOME/keys &>/dev/null & disown
+  else
+    echo ${stat%% *}
+  fi
+fi
 if $www && ! pgrep -f 'node \.'; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
   # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
+
   echo "Starting..."
   wwwPorts="8080 4433"
   wwwKeys="$HOME/keys/privkey.pem $HOME/keys/fullchain.pem"
@@ -43,10 +70,11 @@ if $www && ! pgrep -f 'node \.'; then
   nodeApp=www
   nodeLog=$HOME/.config/${nodeApp}.log
   pushd $HOME/${nodeApp}
+  nohup bash -c "while sleep 2; do ${nodeCmd} ; done" >$nodeLog & disown
+
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do ${nodeCmd} ; done" >$nodeLog & disown
   #nohup node app.js $wwwPorts $wwwKeys &>>$wwwLog & disown
   popd
 fi
@@ -58,40 +86,52 @@ if $reactrobot && ! pgrep -f 'npm start'; then
   # Note: This command must be running on a server:
   # Set the port number in .env
   # socat TCP4-LISTEN:3001,fork,reuseaddr TCP4:craft.dhcp.io:3001 & disown
+
   echo "Starting..."
-  reactCmd='npm start'
+  reactCmd=(npm start)
   reactApp=react_robotinventory
   reactLog=$HOME/.config/${reactApp}.log
   pushd $HOME/${reactApp}
+  nohup ${reactCmd[@]} &>>$reactLog & disown
+
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do $reactCmd ; done &>$reactLog" & disown
-#  nohup bash -c "while sleep 2; do node node_modules/react-scripts/scripts/start.js ; done" >$reactLog & disown
+  #nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
   popd
 fi
 
-
 # possible combined: npm run-script react-start
-if $gifs && ! pgrep -f videoAPI.js; then
+$gifsAPI && echo -n "gifs: "
+if $gifsAPI && ! pgrep -f videoAPI.js; then
   echo -n "youtube-dl: "
   pipLog=$HOME/.config/pip.log
-  pip install --upgrade youtube_dl &>${pipLog} || pip3 install --upgrade youtube_dl &>${pipLog} &
+  (
+    pip install --upgrade youtube_dl &>${pipLog} || pip3 install --upgrade youtube_dl &>${pipLog}
+  ) & disown
 
+  echo "Starting..."
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:3080,fork,reuseaddr TCP4:craft.dhcp.io:3080 & disown
-  echo "Starting..."
-  backendCmd='node src/videoAPI.js'
-  reactCmd='node node_modules/react-scripts/scripts/start.js'
-  reactApp=gifs
+
+  reactApp=videoeditor
+  backendCmd=(node src/videoAPI.js)
+  #reactCmd=(node node_modules/react-scripts/scripts/start.js)
+  reactCmd=(npx serve -l 3001 --no-clipboard --ssl-cert ../keys/fullchain.pem --ssl-key ../keys/privkey.pem build)
   reactLog=$HOME/.config/${reactApp}.log
   backendLog=$HOME/.config/${reactApp}_backend.log
   pushd $HOME/${reactApp}
+  echo -n "backend: "
+  nohup ${backendCmd[@]} &>>$backendLog & disown
+  if $gifs && ! pgrep -f "${reactCmd[@]}"; then
+    echo -n "frontend: "
+    nohup ${reactCmd[@]} &>>$reactLog & disown
+  fi
   # Note: node will still exit on sighup despite using nohup!
   # so, use a bash loop. It will restart the first time after disconnecting,
   # and output must be given to the outer bash command
-  nohup bash -c "while sleep 2; do $reactCmd ; done" >$backendLog & disown
-  nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
+  #nohup bash -c "while sleep 2; do $backendCmd ; done" >$backendLog & disown
+  #nohup bash -c "while sleep 2; do $reactCmd ; done" >$reactLog & disown
   popd
 fi
 
@@ -104,9 +144,12 @@ fi
 $dhcp && echo -n "dhcp_update: "
 if $dhcp && ! pgrep -f dhcp_update; then
   echo "Starting..."
-  # Chroot does not work inside the chroot, so only use for processes tha need it
-  # This process uses /var/run and /var/log
-  nohup termux-chroot bash dotfiles/scripts/ip/dhcp_update.arch &>>$HOME/.config/dhcp_update.log & disown
+  # Note: This process uses /var/run and /var/log, so proot is necessary.
+
+  taskCmd=(termux-chroot bash dotfiles/scripts/ip/dhcp_update.arch)
+  taskName=dhcp_update
+  taskLog=$HOME/.config/${taskName}.log
+  nohup ${taskCmd[@]} &>>$taskLog & disown
 fi
 
 $inbucket && echo -n "inbucket: "
@@ -115,6 +158,7 @@ if $inbucket && ! pgrep -f inbucket; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:25,fork,reuseaddr TCP4:craft.dhcp.io:2500 & disown
   # socat TCP4-LISTEN:110,fork,reuseaddr TCP4:craft.dhcp.io:1100 & disown
+
   # Settings can be generated here:
   # https://www.inbucket.org/configurator/
   export INBUCKET_MAILBOXNAMING="local"
@@ -130,24 +174,16 @@ if $inbucket && ! pgrep -f inbucket; then
   export INBUCKET_STORAGE_TYPE="memory"
   export INBUCKET_STORAGE_RETENTIONPERIOD="2160h"
   export INBUCKET_STORAGE_RETENTIONSLEEP="86400s"
+  # $HOME/.config/inbucket/inbucket.conf
+
+  taskCmd=($HOME/go/bin/inbucket)
+  taskName=inbucket
+  taskLog=$HOME/.config/${taskName}.log
   mkdir -p $HOME/.config/inbucket
   pushd $HOME/go/src/github.com/jhillyerd/inbucket
-  #nohup env INBUCKET_WEB_ADDR=0.0.0.0:9090 $HOME/go/bin/inbucket $HOME/.config/inbucket/inbucket.conf &>>$HOME/.config/inbucket/mail_server.log & disown
-  # $HOME/.config/inbucket/inbucket.conf
-  nohup $HOME/go/bin/inbucket &>>$HOME/.config/inbucket/mail_server.log & disown
+  nohup ${taskCmd[@]} &>>$taskLog & disown
   popd
 fi
 
-echo 'storage_links.sh...'
-bash $HOME/dotfiles/bootstrap/tvandroid/storage_links.sh &>/dev/null & disown
-
-echo 'download_keys.sh...'
-pushd $HOME/keys
-bash download_keys.sh &>/dev/null & disown
-popd
-
-# Remove VLC auto-generated file (it should be in a cache location)
-rmdir internal/Subtitles &>/dev/null
-
-#echo 'Running bash_profile... Press Control-C to disable tmux'
-#sleep 1
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

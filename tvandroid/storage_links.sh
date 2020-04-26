@@ -12,7 +12,7 @@ ln -sfn /storage/emulated/0 $HOME/internal
 
 # known usbs (key follows var rules: start with a letter, no punctuation)
 unset usb
-declare -A usb=( [uuid57B326F9]='external' )
+declare -A usb=( [uuid2CCC70DB]='external' [uuid57B326F9]='efi' )
 
 for drive in /storage/*[^self][^emulated]; do
   externalLocation=${drive}/Android/data/com.termux/files
