@@ -1,0 +1,11 @@
+#!/data/data/com.termux/files/usr/bin/sh
+#nohup ssh -R 7260:localhost:7299 u0_a171@craft.dhcp.io -p 7299 -N >/dev/null & disown
+#nohup bash -c 'while sleep 2; do ssh -R 7260:localhost:7299 u0_a171@craft.dhcp.io -p 7299 -N; done' >/dev/null & disown
+
+# somehow the ssh process goes into the background when the network changes
+# which creates another ssh process in the loop
+nohup bash -c "while sleep 2; do ssh -R 7260:localhost:7299 u0_a171@craft.dhcp.io -p 7299 -N -o 'ExitOnForwardFailure yes'; done" >/dev/null & disown
+
+# these ways are not as simple as the ssh fail option, but may come in handy for other service processes that do not behave
+#nohup bash -c 'while sleep 2; do ssh -R 7260:localhost:7299 u0_a171@craft.dhcp.io -p 7299 -N & wait; kill %1; done' >/dev/null & disown
+#nohup bash -c 'while sleep 2; do ssh -R 7260:localhost:7299 u0_a171@craft.dhcp.io -p 7299 -N; sleep 10; pkill -x ssh; done' >/dev/null & disown
