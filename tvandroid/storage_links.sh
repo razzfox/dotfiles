@@ -12,21 +12,33 @@ ln -sfn /storage/emulated/0 $HOME/internal
 
 # known usbs (key follows var rules: start with a letter, no punctuation)
 unset usb
-declare -A usb=( [uuid2CCC70DB]='external' [uuid57B326F9]='efi' )
+declare -A usb=(
+  [uuid5CC0010E]='external'
+  [external]='uuid5CC0010E'
+  # [uuid67E317ED]='external_efi'
+)
+
+echo ${usb[@]}
+
+# safely delete all links
+rm usb/*
 
 for drive in /storage/*[^self][^emulated]; do
-  externalLocation=${drive}/Android/data/com.termux/files
   driveBasename=${drive##*/}
 
   # check usb list for uuid with no dash
   knownUSB=${usb[uuid${driveBasename//-}]}
-
+  externalLocation=${drive}/Android/data/com.termux/files
+  # drive must have an Android app files location
   if test -n "${knownUSB}" -a -d "${externalLocation}"; then
     # create link using known name
-    ln -sfn ${externalLocation} $HOME/"${knownUSB}"
+    ln -vsfn ${externalLocation} $HOME/"${knownUSB}"
+  else
+    echo known: $knownUSB
+    echo appFiles: $externalLocation
   fi
 
   mkdir -p $HOME/usb
   # create link using uuid before dash
-  ln -sfn ${drive} $HOME/usb/${driveBasename%%-*}
+  ln -vsfn ${drive} $HOME/usb/${driveBasename%%-*}
 done

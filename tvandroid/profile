@@ -1,3 +1,11 @@
+# Status
+df -h | grep '/storage/emulated'
+
+# Zsh
+HISTFILE=$HOME/.${SHELL//*\/}_history
+SAVEHIST=100000000
+
+# Android TV D8:5D:E2:3B:61:D1
 echo "Start .profile"
 
 # trap ctrl-c and call ctrl_c()
@@ -30,43 +38,64 @@ export TZ=$(getprop persist.sys.timezone)
 
 
 # Select services
-# TODO: checkout termux-services
 sshd=true
+#7299
 www=true
+# router forwards (sub 2^10 port)
+# HTTP 80 => 8080
+# HTTPS 443 => 4430
+wwwPorts="8080 4430"
+uploads=true
+#3000
 reactrobot=false
 gifs=false
 gifsAPI=true
-transmission=true
+#3080
+transmission=false
+#9091
 dhcp=true
 inbucket=true
-
+# router forwards (sub 2^10 port)
+# SMTP 587 => 5870
+#5870,1110,9090
+codeserver=false
+#8000
 
 $sshd && echo -n "sshd: "
 if $sshd && ! pgrep -f sshd; then
   echo "Starting..."
-  sshd -p 7299
+  sshdlogs=".config/auth.log"
+  sshd -p 7299 -e -D >> $sshdlogs 2>&1 & disown
+  # default system log:
+  # logcat -s 'sshd:*'
 fi
 
+wwwKeyDir="$HOME/ssl/certs/razzfox.me"
+wwwKeys="${wwwKeyDir}/privkey.pem ${wwwKeyDir}/fullchain.pem"
 $www && echo -n "www: "
 if $www; then
   echo -n 'download_keys.sh: '
   date=$(date +%F)
-  stat=$(stat -c %y ./keys)
+  stat=$(stat -c %y ./ssl)
   if test ${date:0:9} != ${stat:0:9}; then
-    bash $HOME/dotfiles/tvandroid/download_keys.sh $HOME/keys &>/dev/null & disown
+    echo Update SSL Keys! Last update: ${stat%% *}
+    nodeCmd="node . $wwwPorts $wwwKeys"
+    pkill $nodeCmd
+    pushd ssl
+    zsh renew_certs.sh
+    popd
   else
     echo ${stat%% *}
   fi
 fi
-if $www && ! pgrep -f 'node \.'; then
+
+nodeCmd="node . $wwwPorts $wwwKeys"
+if $www && ! pgrep -f ${nodeCmd}; then
   # Note: This command must be running on a server:
   # socat TCP4-LISTEN:80,fork,reuseaddr TCP4:craft.dhcp.io:8080 & disown
   # socat TCP4-LISTEN:443,fork,reuseaddr TCP4:craft.dhcp.io:4433 & disown
 
   echo "Starting..."
-  wwwPorts="8080 4433"
-  wwwKeys="$HOME/keys/privkey.pem $HOME/keys/fullchain.pem"
-  nodeCmd="node . $wwwPorts $wwwKeys"
   nodeApp=www
   nodeLog=$HOME/.config/${nodeApp}.log
   pushd $HOME/${nodeApp}
@@ -79,7 +108,17 @@ if $www && ! pgrep -f 'node \.'; then
   popd
 fi
 
-# possibly: npm start
+$uploads && echo -n "uploads: "
+if $uploads && ! pgrep -f 'node .'; then
+  echo "Starting..."
+  serverCmd=(npm start)
+  serverApp=uploads
+  serverLog=$HOME/.config/${serverApp}.log
+  pushd $HOME/${serverApp}
+  nohup ${serverCmd[@]} &>>$serverLog & disown
+  popd
+fi
+
 # put this one first because they both look for start.js
 $reactrobot && echo -n "react_robotinventory: "
 if $reactrobot && ! pgrep -f 'npm start'; then
@@ -102,7 +141,7 @@ if $reactrobot && ! pgrep -f 'npm start'; then
 fi
 
 # possible combined: npm run-script react-start
-$gifsAPI && echo -n "gifs: "
+$gifsAPI && echo -n "gifsAPI: "
 if $gifsAPI && ! pgrep -f videoAPI.js; then
   echo -n "youtube-dl: "
   pipLog=$HOME/.config/pip.log
@@ -115,9 +154,10 @@ if $gifsAPI && ! pgrep -f videoAPI.js; then
   # socat TCP4-LISTEN:3080,fork,reuseaddr TCP4:craft.dhcp.io:3080 & disown
 
   reactApp=videoeditor
-  backendCmd=(node src/videoAPI.js)
+  # Warning: wwwKeys here would only create a single argument
+  backendCmd=(node src/videoAPI.js 3080 /data/data/com.termux/files/home/ssl/certs/razzfox.me/privkey.pem /data/data/com.termux/files/home/ssl/certs/razzfox.me/fullchain.pem)
   #reactCmd=(node node_modules/react-scripts/scripts/start.js)
-  reactCmd=(npx serve -l 3001 --no-clipboard --ssl-cert ../keys/fullchain.pem --ssl-key ../keys/privkey.pem build)
+  reactCmd=(npx serve -l 3001 --no-clipboard --ssl-key ${wwwKeyDir}/privkey.pem --ssl-cert ${wwwKeyDir}/fullchain.pem build)
   reactLog=$HOME/.config/${reactApp}.log
   backendLog=$HOME/.config/${reactApp}_backend.log
   pushd $HOME/${reactApp}
@@ -156,17 +196,17 @@ $inbucket && echo -n "inbucket: "
 if $inbucket && ! pgrep -f inbucket; then
   echo "Starting..."
   # Note: This command must be running on a server:
-  # socat TCP4-LISTEN:25,fork,reuseaddr TCP4:craft.dhcp.io:2500 & disown
-  # socat TCP4-LISTEN:110,fork,reuseaddr TCP4:craft.dhcp.io:1100 & disown
+  # socat TCP4-LISTEN:25,fork,reuseaddr TCP4:craft.dhcp.io:5870 & disown
+  # socat TCP4-LISTEN:110,fork,reuseaddr TCP4:craft.dhcp.io:1110 & disown
 
   # Settings can be generated here:
   # https://www.inbucket.org/configurator/
   export INBUCKET_MAILBOXNAMING="local"
-  export INBUCKET_SMTP_ADDR="0.0.0.0:2500"
+  export INBUCKET_SMTP_ADDR="0.0.0.0:5870"
   export INBUCKET_SMTP_DOMAIN="razzfox.me"
-  export INBUCKET_SMTP_MAXMESSAGEBYTES="10240000"
+  export INBUCKET_SMTP_MAXMESSAGEBYTES="20480000"
   export INBUCKET_SMTP_TIMEOUT="10s"
-  export INBUCKET_POP3_ADDR="0.0.0.0:1100"
+  export INBUCKET_POP3_ADDR="0.0.0.0:1110"
   export INBUCKET_POP3_DOMAIN="razzfox.me"
   export INBUCKET_POP3_TIMEOUT="10s"
   export INBUCKET_WEB_ADDR="0.0.0.0:9090"
@@ -185,5 +225,15 @@ if $inbucket && ! pgrep -f inbucket; then
   popd
 fi
 
+$codeserver && echo -n "code-server: "
+if $codeserver && ! pgrep -f code-server; then
+  echo "Starting..."
+  cmdLog=".config/code-server.log"
+  code-server >> $cmdLog 2>&1 & disown
+fi
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# ZSH
+export EDITOR=nano
